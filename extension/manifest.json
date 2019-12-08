@@ -1,0 +1,47 @@
+{
+  "name": "TabFloater",
+  "version": "1.0",
+  "description": "Extract your tabs to a floating panel",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "background": {
+    "scripts": [
+      "floater.js",
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "TabFloater"
+  },
+  "commands": {
+    "key-down": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Down"
+      },
+      "description": "Float tab / move tab down"
+    },
+    "key-up": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Up"
+      },
+      "description": "Unfloat tab / move tab up"
+    },
+    "key-left": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Left"
+      },
+      "description": "Move tab left"
+    },
+    "key-right": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Right"
+      },
+      "description": "Move tab right"
+    }
+  },
+  "manifest_version": 2
+}
