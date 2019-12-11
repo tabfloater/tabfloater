@@ -1,4 +1,5 @@
 const DefaultPosition = "topRight";
+const FloatingWindowTitle = "*** TabFloater ***";
 
 floatTab = function () {
     chrome.storage.local.get(['floatingTabProperties'], function (data) {
@@ -8,29 +9,30 @@ floatTab = function () {
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 var currentTab = tabs[0];
                 if (currentTab) {
-                    // chrome.tabs.executeScript(currentTab.id, { code: "document.title = '" + FloatingWindowTitle + "'" });
+                    var currentTabOriginalTitle = currentTab.title;
+                    chrome.tabs.executeScript(currentTab.id, { code: "document.title = '" + FloatingWindowTitle + "'" }, function () {
+                        let tabProps = {
+                            tabId: currentTab.id,
+                            parentWindowId: currentTab.windowId,
+                            originalIndex: currentTab.index,
+                            originalTitle: currentTabOriginalTitle,
+                            position: DefaultPosition
+                        };
 
-                    let tabProps = {
-                        tabId: currentTab.id,
-                        parentWindowId: currentTab.windowId,
-                        originalIndex: currentTab.index,
-                        position: DefaultPosition
-                    };
+                        chrome.windows.get(currentTab.windowId, function (window) {
+                            var positionData = getPositionDataForFloatingTab(window, DefaultPosition);
 
-                    chrome.windows.get(currentTab.windowId, function (window) {
-                        var positionData = getPositionDataForFloatingTab(window, DefaultPosition);
-
-                        chrome.windows.create({
-                            'tabId': currentTab.id,
-                            'type': 'popup',
-                            'top': positionData.top,
-                            'left': positionData.left,
-                            'width': positionData.width,
-                            'height': positionData.height,
-                            // setSelfAsOpener': true
-                            // focused: false     
-                        }, function () {
-                            chrome.storage.local.set({ floatingTabProperties: tabProps });
+                            chrome.windows.create({
+                                'tabId': currentTab.id,
+                                'type': 'popup',
+                                'top': positionData.top,
+                                'left': positionData.left,
+                                'width': positionData.width,
+                                'height': positionData.height,
+                                // focused: false
+                            }, function () {
+                                chrome.storage.local.set({ floatingTabProperties: tabProps });
+                            });
                         });
                     });
                 }
@@ -45,8 +47,10 @@ unfloatTab = function () {
         if (data.floatingTabProperties) {
             let tabProps = data.floatingTabProperties;
             chrome.tabs.get(tabProps.tabId, function () {
-                chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
-                    chrome.storage.local.remove(['floatingTabProperties']);
+                chrome.tabs.executeScript(tabProps.tabId, { code: "document.title = '" + tabProps.originalTitle + "'" }, function () {
+                    chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
+                        chrome.storage.local.remove(['floatingTabProperties']);
+                    });
                 });
             });
         }

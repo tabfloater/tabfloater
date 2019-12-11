@@ -1,7 +1,11 @@
 floatTabButton.onclick = function () {
-    chrome.extension.getBackgroundPage().floatTab();
+    chrome.runtime.getBackgroundPage(function (backgroundPage) {
+        backgroundPage.floatTab();
+    });
 };
 
 restoreTabButton.onclick = function () {
-    chrome.extension.getBackgroundPage().unfloatTab();
+    chrome.runtime.getBackgroundPage(function (backgroundPage) {
+        backgroundPage.unfloatTab();
+    });
 };

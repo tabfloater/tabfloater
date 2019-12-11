@@ -4,7 +4,9 @@
   "description": "Extract your tabs to a floating panel",
   "permissions": [
     "activeTab",
-    "storage"
+    "nativeMessaging",
+    "storage",
+    "tabs"
   ],
   "background": {
     "scripts": [
