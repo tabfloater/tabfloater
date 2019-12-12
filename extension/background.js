@@ -9,11 +9,30 @@ const CommandToPositionMapping = {
   "bottomRight,key-left": "bottomLeft",
 };
 
-chrome.commands.onCommand.addListener(function (command) {
-  chrome.storage.local.get(['floatingTabProperties'], function (data) {
+chrome.runtime.onStartup.addListener(function () {
+  extensionStartup();
+});
 
-    if (data.floatingTabProperties) {
-      var currentPosition = data.floatingTabProperties.position;
+chrome.runtime.onInstalled.addListener(function () {
+  extensionStartup();
+});
+
+function extensionStartup() {
+  clearFloatingTab();
+}
+
+chrome.tabs.onRemoved.addListener(function (closingTabId) {
+  getFloatingTab(function(floatingTab) {
+    if (floatingTab && floatingTab.id == closingTabId) {
+      clearFloatingTab();
+    }
+  });
+});
+
+chrome.commands.onCommand.addListener(function (command) {
+  getFloatingTab(function (floatingTab, tabProps) {
+    if (floatingTab) {
+      var currentPosition = tabProps.position;
       let inUpperHalf = currentPosition == "topLeft" || currentPosition == "topRight";
 
       if (inUpperHalf && command == "key-up") {
@@ -32,3 +51,4 @@ chrome.commands.onCommand.addListener(function (command) {
     }
   });
 });
+

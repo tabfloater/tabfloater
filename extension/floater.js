@@ -1,16 +1,14 @@
+const FloatingWindowTitle = "oowq2wjZo6bcXEaHXcQrKNxHDTMUd3hBECDFKWuF";
 const DefaultPosition = "topRight";
-const FloatingWindowTitle = "*** TabFloater ***";
 
 floatTab = function () {
-    chrome.storage.local.get(['floatingTabProperties'], function (data) {
-        let floatingTabAlreadyExists = data.floatingTabProperties != undefined;
-
-        if (!floatingTabAlreadyExists) {
+    getFloatingTab(function (floatingTab) {
+        if (!floatingTab) {
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 var currentTab = tabs[0];
                 if (currentTab) {
                     var currentTabOriginalTitle = currentTab.title;
-                    chrome.tabs.executeScript(currentTab.id, { code: "document.title = '" + FloatingWindowTitle + "'" }, function () {
+                    chrome.tabs.executeScript(currentTab.id, { code: "document.title = \"" + FloatingWindowTitle + "\"" }, function () {
                         let tabProps = {
                             tabId: currentTab.id,
                             parentWindowId: currentTab.windowId,
@@ -23,15 +21,15 @@ floatTab = function () {
                             var positionData = getPositionDataForFloatingTab(window, DefaultPosition);
 
                             chrome.windows.create({
-                                'tabId': currentTab.id,
-                                'type': 'popup',
-                                'top': positionData.top,
-                                'left': positionData.left,
-                                'width': positionData.width,
-                                'height': positionData.height,
+                                "tabId": currentTab.id,
+                                "type": "popup",
+                                "top": positionData.top,
+                                "left": positionData.left,
+                                "width": positionData.width,
+                                "height": positionData.height,
                                 // focused: false
                             }, function () {
-                                chrome.storage.local.set({ floatingTabProperties: tabProps });
+                                setFloatingTab(tabProps);
                             });
                         });
                     });
@@ -41,16 +39,12 @@ floatTab = function () {
     });
 }
 
-
 unfloatTab = function () {
-    chrome.storage.local.get(['floatingTabProperties'], function (data) {
-        if (data.floatingTabProperties) {
-            let tabProps = data.floatingTabProperties;
-            chrome.tabs.get(tabProps.tabId, function () {
-                chrome.tabs.executeScript(tabProps.tabId, { code: "document.title = '" + tabProps.originalTitle + "'" }, function () {
-                    chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
-                        chrome.storage.local.remove(['floatingTabProperties']);
-                    });
+    getFloatingTab(function(floatingTab, tabProps) {
+        if (floatingTab) {
+            chrome.tabs.executeScript(tabProps.tabId, { code: "document.title = \"" + tabProps.originalTitle + "\"" }, function () {
+                chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
+                    clearFloatingTab();
                 });
             });
         }
@@ -58,18 +52,14 @@ unfloatTab = function () {
 }
 
 repositionFloatingTab = function (newPosition) {
-    chrome.storage.local.get(['floatingTabProperties'], function (data) {
-        if (data.floatingTabProperties) {
-            let tabProps = data.floatingTabProperties;
+    getFloatingTab(function(floatingTab, tabProps) {
+        if (floatingTab) {
+            chrome.windows.get(tabProps.parentWindowId, function (parentWindow) {
+                let newPositionData = getPositionDataForFloatingTab(parentWindow, newPosition);
 
-            chrome.tabs.get(tabProps.tabId, function (floatingTab) {
-                chrome.windows.get(tabProps.parentWindowId, function (parentWindow) {
-                    let newPositionData = getPositionDataForFloatingTab(parentWindow, newPosition);
-
-                    chrome.windows.update(floatingTab.windowId, newPositionData, function () {
-                        tabProps.position = newPosition;
-                        chrome.storage.local.set({ floatingTabProperties: tabProps });
-                    });
+                chrome.windows.update(floatingTab.windowId, newPositionData, function () {
+                    tabProps.position = newPosition;
+                    setFloatingTab(tabProps);
                 });
             });
         }
@@ -96,4 +86,30 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
         width: halfWidth - padding * 2,
         height: halfHeight - padding * 2
     };
+}
+
+getFloatingTab = function(callback) {
+    chrome.storage.local.get(["floatingTabProperties"], function (data) {
+        if (data.floatingTabProperties) {
+            let tabProps = data.floatingTabProperties;
+            chrome.tabs.get(tabProps.tabId, function (floatingTab) {
+                if (!chrome.runtime.lastError) {
+                    callback(floatingTab, tabProps);
+                } else {
+                    clearFloatingTab();
+                    callback();
+                }
+            });
+        } else {
+            callback();
+        }
+    });
+}
+
+setFloatingTab = function(tabProps, callback) {
+    chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
+}
+
+clearFloatingTab = function(callback) {
+    chrome.storage.local.remove(["floatingTabProperties"], callback);
 }
