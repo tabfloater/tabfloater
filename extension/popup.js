@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
     setButtonStates();
 }
 
@@ -16,7 +16,7 @@ restoreTabButton.onclick = function () {
     });
 };
 
-setButtonStates = function() {
+setButtonStates = function () {
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
         backgroundPage.getFloatingTab(function (floatingTab) {
             let floatingTabAlreadyExists = floatingTab != undefined;

@@ -22,7 +22,7 @@ function extensionStartup() {
 }
 
 chrome.tabs.onRemoved.addListener(function (closingTabId) {
-  getFloatingTab(function(floatingTab) {
+  getFloatingTab(function (floatingTab) {
     if (floatingTab && floatingTab.id == closingTabId) {
       clearFloatingTab();
     }

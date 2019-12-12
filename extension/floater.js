@@ -8,7 +8,8 @@ floatTab = function () {
                 var currentTab = tabs[0];
                 if (currentTab) {
                     var currentTabOriginalTitle = currentTab.title;
-                    chrome.tabs.executeScript(currentTab.id, { code: "document.title = \"" + FloatingWindowTitle + "\"" }, function () {
+
+                    setTabTitle(currentTab.id, FloatingWindowTitle, function () {
                         let tabProps = {
                             tabId: currentTab.id,
                             parentWindowId: currentTab.windowId,
@@ -40,9 +41,9 @@ floatTab = function () {
 }
 
 unfloatTab = function () {
-    getFloatingTab(function(floatingTab, tabProps) {
+    getFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
-            chrome.tabs.executeScript(tabProps.tabId, { code: "document.title = \"" + tabProps.originalTitle + "\"" }, function () {
+            setTabTitle(tabProps.tabId, tabProps.originalTitle, function () {
                 chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
                     clearFloatingTab();
                 });
@@ -52,7 +53,7 @@ unfloatTab = function () {
 }
 
 repositionFloatingTab = function (newPosition) {
-    getFloatingTab(function(floatingTab, tabProps) {
+    getFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             chrome.windows.get(tabProps.parentWindowId, function (parentWindow) {
                 let newPositionData = getPositionDataForFloatingTab(parentWindow, newPosition);
@@ -88,7 +89,11 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
     };
 }
 
-getFloatingTab = function(callback) {
+setTabTitle = function (tabId, title, callback) {
+    chrome.tabs.executeScript(tabId, { code: "document.title = \"" + title + "\"" }, callback);
+}
+
+getFloatingTab = function (callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {
             let tabProps = data.floatingTabProperties;
@@ -106,10 +111,10 @@ getFloatingTab = function(callback) {
     });
 }
 
-setFloatingTab = function(tabProps, callback) {
+setFloatingTab = function (tabProps, callback) {
     chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
 }
 
-clearFloatingTab = function(callback) {
+clearFloatingTab = function (callback) {
     chrome.storage.local.remove(["floatingTabProperties"], callback);
 }
