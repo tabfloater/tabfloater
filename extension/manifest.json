@@ -17,7 +17,13 @@
   },
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "TabFloater"
+    "default_title": "TabFloater",
+    "default_icon": {
+      "16": "images/icons/16.png",
+      "32": "images/icons/32.png",
+      "48": "images/icons/48.png",
+      "128": "images/icons/128.png"
+    }
   },
   "commands": {
     "key-down": {
@@ -44,6 +50,12 @@
       },
       "description": "Move tab right"
     }
+  },
+  "icons": {
+    "16": "images/icons/16.png",
+    "32": "images/icons/32.png",
+    "48": "images/icons/48.png",
+    "128": "images/icons/128.png"
   },
   "manifest_version": 2
 }
