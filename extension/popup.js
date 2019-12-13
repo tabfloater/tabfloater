@@ -18,7 +18,7 @@ restoreTabButton.onclick = function () {
 
 setButtonStates = function () {
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
-        backgroundPage.getFloatingTab(function (floatingTab) {
+        backgroundPage.tryGetFloatingTab(function (floatingTab) {
             let floatingTabAlreadyExists = floatingTab != undefined;
             floatTabButton.disabled = floatingTabAlreadyExists;
             restoreTabButton.disabled = !floatingTabAlreadyExists;

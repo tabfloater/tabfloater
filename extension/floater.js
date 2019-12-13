@@ -2,7 +2,7 @@ const FloatingWindowTitle = "oowq2wjZo6bcXEaHXcQrKNxHDTMUd3hBECDFKWuF";
 const DefaultPosition = "topRight";
 
 floatTab = function () {
-    getFloatingTab(function (floatingTab) {
+    tryGetFloatingTab(function (floatingTab) {
         if (!floatingTab) {
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 var currentTab = tabs[0];
@@ -51,7 +51,7 @@ floatTab = function () {
 }
 
 unfloatTab = function () {
-    getFloatingTab(function (floatingTab, tabProps) {
+    tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             setTabTitle(tabProps.tabId, tabProps.originalTitle, function () {
                 chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
@@ -63,7 +63,7 @@ unfloatTab = function () {
 }
 
 repositionFloatingTab = function (newPosition) {
-    getFloatingTab(function (floatingTab, tabProps) {
+    tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             chrome.windows.get(tabProps.parentWindowId, function (parentWindow) {
                 let newPositionData = getPositionDataForFloatingTab(parentWindow, newPosition);
@@ -108,7 +108,7 @@ setTabTitle = function (tabId, title, callback) {
     chrome.tabs.executeScript(tabId, { code: "document.title = \"" + title + "\"" }, callback);
 }
 
-getFloatingTab = function (callback) {
+tryGetFloatingTab = function (callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {
             let tabProps = data.floatingTabProperties;

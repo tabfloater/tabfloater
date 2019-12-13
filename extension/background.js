@@ -22,7 +22,7 @@ function extensionStartup() {
 }
 
 chrome.tabs.onRemoved.addListener(function (closingTabId) {
-  getFloatingTab(function (floatingTab) {
+  tryGetFloatingTab(function (floatingTab) {
     if (floatingTab && floatingTab.id == closingTabId) {
       clearFloatingTab();
     }
@@ -30,7 +30,7 @@ chrome.tabs.onRemoved.addListener(function (closingTabId) {
 });
 
 chrome.commands.onCommand.addListener(function (command) {
-  getFloatingTab(function (floatingTab, tabProps) {
+  tryGetFloatingTab(function (floatingTab, tabProps) {
     if (floatingTab) {
       var currentPosition = tabProps.position;
       let inUpperHalf = currentPosition == "topLeft" || currentPosition == "topRight";
