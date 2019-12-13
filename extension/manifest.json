@@ -5,6 +5,7 @@
   "permissions": [
     "activeTab",
     "nativeMessaging",
+    "notifications",
     "storage",
     "tabs"
   ],

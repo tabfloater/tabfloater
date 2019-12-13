@@ -10,29 +10,39 @@ floatTab = function () {
                     var currentTabOriginalTitle = currentTab.title;
 
                     setTabTitle(currentTab.id, FloatingWindowTitle, function () {
-                        let tabProps = {
-                            tabId: currentTab.id,
-                            parentWindowId: currentTab.windowId,
-                            originalIndex: currentTab.index,
-                            originalTitle: currentTabOriginalTitle,
-                            position: DefaultPosition
-                        };
-
-                        chrome.windows.get(currentTab.windowId, function (window) {
-                            var positionData = getPositionDataForFloatingTab(window, DefaultPosition);
-
-                            chrome.windows.create({
-                                "tabId": currentTab.id,
-                                "type": "popup",
-                                "top": positionData.top,
-                                "left": positionData.left,
-                                "width": positionData.width,
-                                "height": positionData.height,
-                                // focused: false
-                            }, function () {
-                                setFloatingTab(tabProps);
+                        if (chrome.runtime.lastError) {
+                            // TODO doesn't work properly
+                            chrome.notifications.create(undefined, {
+                                type: "basic",
+                                iconUrl: chrome.runtime.getURL("images/icons/128.png"),
+                                title: "",
+                                message: "Unable to float this tab",
+                            })
+                        } else {
+                            let tabProps = {
+                                tabId: currentTab.id,
+                                parentWindowId: currentTab.windowId,
+                                originalIndex: currentTab.index,
+                                originalTitle: currentTabOriginalTitle,
+                                position: DefaultPosition
+                            };
+    
+                            chrome.windows.get(currentTab.windowId, function (window) {
+                                var positionData = getPositionDataForFloatingTab(window, DefaultPosition);
+    
+                                chrome.windows.create({
+                                    "tabId": currentTab.id,
+                                    "type": "popup",
+                                    "top": positionData.top,
+                                    "left": positionData.left,
+                                    "width": positionData.width,
+                                    "height": positionData.height,
+                                    // focused: false
+                                }, function () {
+                                    setFloatingTab(tabProps);
+                                });
                             });
-                        });
+                        }
                     });
                 }
             });
@@ -69,11 +79,16 @@ repositionFloatingTab = function (newPosition) {
 
 getPositionDataForFloatingTab = function (parentWindow, position) {
     const padding = 50;
+    const extraPaddingAtTop = 50;
+
     let halfWidth = parseInt(parentWindow.width / 2);
     let halfHeight = parseInt(parentWindow.height / 2);
     let newTop = parentWindow.top + padding;
     let newLeft = parentWindow.left + padding;
 
+    if (position.startsWith("top")) {
+        newTop += extraPaddingAtTop;
+    }
     if (position.startsWith("bottom")) {
         newTop += halfHeight;
     }
