@@ -11,6 +11,7 @@
   ],
   "background": {
     "scripts": [
+      "companion.js",
       "floater.js",
       "background.js"
     ],

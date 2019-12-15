@@ -48,19 +48,31 @@
           Companion status
         </div>
         <div class="column ">
-          <span class="tag is-success is-light is-unselectable">
+          <span id="companionStatusConnecting" class="tag is-info is-light is-unselectable">
+            <span class="icon">
+              <i class="fas fa-hourglass-end"></i>
+            </span>
+            <span>Connecting...</span>
+          </span>
+          <span id="companionStatusConnected" class="tag is-success is-light is-unselectable is-hidden">
             <span class="icon">
               <i class="fas fa-check"></i>
             </span>
             <span>Connected</span>
           </span>
-          <span class="tag is-warning is-light is-unselectable is-hidden">
+          <span id="companionStatusInactive" class="tag is-warning is-light is-unselectable is-hidden">
             <span class="icon">
               <i class="fas fa-exclamation-triangle"></i>
             </span>
             <span>Inactive</span>
           </span>
-          <span class="tag is-danger is-light is-unselectable is-hidden">
+          <span id="companionStatusError" class="tag is-danger is-light is-unselectable is-hidden">
+            <span class="icon">
+              <i class="fas fa-times"></i>
+            </span>
+            <span>Error</span>
+          </span>
+          <span id="companionStatusUnavailable" class="tag is-danger is-light is-unselectable is-hidden">
             <span class="icon">
               <i class="fas fa-times"></i>
             </span>
