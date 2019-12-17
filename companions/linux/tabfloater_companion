@@ -74,22 +74,49 @@ function send_status {
     send_message $json
 }
 
+function send_supported_operations {
+    local json="{\"operations\":[\"alwaysontop\",\"undecorate\",\"notaskbar\"]}"
+    send_message $json
+}
+
+function send_result {
+    local json="{\"result\":\"$1\"}"
+    send_message $json
+}
+
+function test_tools_availability {
+    if ! wmctrl --help > /dev/null ; then
+        return 1
+    fi
+
+    if ! xwininfo -version > /dev/null ; then
+        return 1
+    fi
+
+    return 0
+}
+
 input_json=$(get_json_input_strip_whitespace)
 action=$(get_json_single_value $input_json "action")
 
 if [ "$action" == "ping" ]; then
-    send_status "ok"
+    if test_tools_availability; then
+        send_status "ok"
+    else
+        send_status "inactive"
+    fi
 elif [ "$action" == "operations" ]; then
-    echo "action: operations"
+    send_supported_operations
 elif [ "$action" == "makepanel" ]; then
-    echo "action: makepanel"
-    echo "operations: "
     IFS=',' read -r -a requested_operations <<< $(get_json_array_value $input_json "operations")
 
     for element in "${requested_operations[@]}"
     do
-        echo "$element"
+        echo "$element" >> /dev/null
     done
+
+    send_result "ok"
+
 else
     echo "something else"
 fi
