@@ -39,7 +39,7 @@ function update(display, window, userData) {
 
     if (window.get_role() == "pop-up" && window.get_title() == "oowq2wjZo6bcXEaHXcQrKNxHDTMUd3hBECDFKWuF") {
 	log("--- new window created " + new Date().getTime());
-	Util.spawn(['/home/balazs/work/tabfloater-companion/linux/tabfloater_companion', 'oowq2wjZo6bcXEaHXcQrKNxHDTMUd3hBECDFKWuF', 'on']);
+	Util.spawn(['/home/balazs/work/tabfloater/companions/linux/window', 'oowq2wjZo6bcXEaHXcQrKNxHDTMUd3hBECDFKWuF', 'on']);
 //	window["skip-taskbar"] = false;
     }
 

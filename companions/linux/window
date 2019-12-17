@@ -2,10 +2,9 @@
 
 TITLE=$1
 OP=$2
-
 echo "running for: $TITLE, operation $OP"
-echo "wmctrl -l | grep -w "$TITLE" | tr -s ' ' | cut -d' ' -f1"
-WINDOW_ID=`wmctrl -l | grep -w "$TITLE" | tr -s ' ' | cut -d' ' -f1`
+WINDOW_ID=`xwininfo -name "$TITLE" | grep xwininfo | tr -s ' ' | cut -d' ' -f 4`
+
 
 echo "window id: $WINDOW_ID"
 
