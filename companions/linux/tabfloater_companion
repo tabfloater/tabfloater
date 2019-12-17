@@ -1,50 +1,95 @@
 #!/bin/bash
 
-function respondStatus {
-	
-    message="{\"status\": \"$1\" }"
-    # Calculate the byte size of the string.
-    # NOTE: This assumes that byte length is identical to the string length!
-    # Do not use multibyte (unicode) characters, escape them instead, e.g.
-    # message='"Some unicode character:\u1234"'
-    messagelen=${#message}
+function get_json_input_strip_whitespace() {
+    # As described in the Chrome native messaging protocol, the JSON is preceded
+    # with the message length in the first 4 bytes. We need to strip that, so we
+    # ignore the input characters until we reach the start of the JSON
+    # (the '{' character). We terminate reading from the input when we reach the
+    # closing character of the JSON ('}'). This wouldn't work for nested JSONs, but
+    # TabFloater only sends non-nested JSON, so this works fine.
 
-    # Convert to an integer in native byte order.
-    # If you see an error message in Chrome's stdout with
-    # "Native Messaging host tried sending a message that is ... bytes long.",
-    # then just swap the order, i.e. messagelen1 <-> messagelen4 and
-    # messagelen2 <-> messagelen3
-    messagelen1=$(( ($messagelen      ) & 0xFF ))               
-    messagelen2=$(( ($messagelen >>  8) & 0xFF ))               
-    messagelen3=$(( ($messagelen >> 16) & 0xFF ))               
-    messagelen4=$(( ($messagelen >> 24) & 0xFF ))               
+    local input="{"
 
-    # Print the message byte length followed by the actual message.
-    printf "$(printf '\\x%x\\x%x\\x%x\\x%x' \
-        $messagelen1 $messagelen2 $messagelen3 $messagelen4)%s" "$message"
+    while IFS= read -r -n1 c; do
+        if [ "$c" == '{' ]; then
+            break
+        fi
+    done
+    while IFS= read -r -n1 c; do
+        input="$input$c"
+        if [ "$c" == '}' ]; then
+            break
+        fi
+    done
+
+    echo $input | tr -d [:space:]
 }
 
- cut --help > /dev/null
+function get_first_capture_group() {
+    local str=$1
+    local regex=$2
 
-if [ $? -eq 0 ]; then
-    respondStatus "ok"
+    if [[ $str =~ $regex ]]; then
+        echo "${BASH_REMATCH[1]}"
+    else
+        echo ""
+    fi
+}
+
+function get_json_single_value () {
+    local json=$1
+    local json_key=$2
+    local regex="\"$json_key\":\"([^\"]*)\",?"
+
+    echo $(get_first_capture_group $json $regex)
+}
+
+function get_json_array_value () {
+    local json=$1
+    local json_key=$2
+    local regex="\"$json_key\":\[([^]]*)\],?"
+
+    echo $(get_first_capture_group $json $regex) | tr -d '"'
+}
+
+function send_message {
+    local message=$1
+    # Calculate the byte size of the string. This only works if the byte length
+    # is identical to the string length - it would not work, if we sent multibyte
+    # characters. TabFloater only sends ASCII characters, so this works fine. We
+    # then convert the length to an integer in native byte order - this only works
+    # for little endian systems, but the majority of modern desktops use that.
+    local messagelen=${#message}
+    local messagelen1=$(( ($messagelen      ) & 0xFF ))
+    local messagelen2=$(( ($messagelen >>  8) & 0xFF ))
+    local messagelen3=$(( ($messagelen >> 16) & 0xFF ))
+    local messagelen4=$(( ($messagelen >> 24) & 0xFF ))
+
+    # Print the message byte length followed by the actual message.
+    printf "$(printf '\\x%x\\x%x\\x%x\\x%x' $messagelen1 $messagelen2 $messagelen3 $messagelen4)%s" "$message"
+}
+
+function send_status {
+    local json="{\"status\":\"$1\"}"
+    send_message $json
+}
+
+input_json=$(get_json_input_strip_whitespace)
+action=$(get_json_single_value $input_json "action")
+
+if [ "$action" == "ping" ]; then
+    send_status "ok"
+elif [ "$action" == "operations" ]; then
+    echo "action: operations"
+elif [ "$action" == "makepanel" ]; then
+    echo "action: makepanel"
+    echo "operations: "
+    IFS=',' read -r -a requested_operations <<< $(get_json_array_value $input_json "operations")
+
+    for element in "${requested_operations[@]}"
+    do
+        echo "$element"
+    done
 else
-    respondStatus "inactive"
+    echo "something else"
 fi
-
-#respondStatus "ok"
-
-# Loop forever, to deal with chrome.runtime.connectNative
-# while IFS= read -r -n1 c; do
-#     # Read the first message
-#     # Assuming that the message ALWAYS ends with a },
-#     # with no }s in the string. Adopt this piece of code if needed.
-#     if [ "$c" != '}' ] ; then
-#         continue
-#     fi
-
-    
-
-# done
-
-
