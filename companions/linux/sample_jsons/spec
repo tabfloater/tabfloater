@@ -1,0 +1,54 @@
+Input always includes "action":
+
+{
+    "action": "ping"
+}
+
+possible values: 
+- ping: health check of companion
+- operations: get list of operations supported by the companion
+- makepanel: make the window a panel
+
+If action == makepanel, the json should also include an operations array:
+
+{
+    "action": "makepanel",
+    "operations" : [
+        "alwaysontop",
+        "undecorate"
+        "notaskbar"
+    ]
+}
+
+
+Output:
+
+For ping, the output should be:
+{
+    "status": "ok"
+}
+
+possible status values:
+- ok
+- inactive
+
+operations should return the list of supported ops. e.g:
+{
+    "operations": [
+        "alwaysontop",
+        "undecorate"
+        "notaskbar"
+    ]
+}
+
+makepanel should respond with this:
+{
+    "result": "ok"
+    "error": ""
+}
+
+result can be:
+- ok
+- error
+
+error should describe the error
