@@ -5,9 +5,14 @@ window.onload = function () {
 
 floatTabButton.onclick = function () {
     window.close();
-    chrome.runtime.getBackgroundPage(function (backgroundPage) {
-        backgroundPage.floatTab();
-    });
+
+    chrome.tabs.executeScript({
+        file: 'qq.js'
+      });
+
+    // chrome.runtime.getBackgroundPage(function (backgroundPage) {
+    //     backgroundPage.floatTab();
+    // });
 };
 
 unfloatTabButton.onclick = function () {
