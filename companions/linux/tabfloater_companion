@@ -8,7 +8,7 @@ function get_json_input_strip_whitespace() {
     # closing character of the JSON ('}'). This wouldn't work for nested JSONs, but
     # TabFloater only sends non-nested JSON, so this works fine.
 
-    local input="{"
+    local _input="{"
 
     while IFS= read -r -n1 c; do
         if [ "$c" == '{' ]; then
@@ -16,20 +16,20 @@ function get_json_input_strip_whitespace() {
         fi
     done
     while IFS= read -r -n1 c; do
-        input="$input$c"
+        _input="$_input$c"
         if [ "$c" == '}' ]; then
             break
         fi
     done
 
-    echo $input | tr -d [:space:]
+    echo $_input | tr -d [:space:]
 }
 
 function get_first_capture_group() {
-    local str=$1
-    local regex=$2
+    local _str=$1
+    local _regex=$2
 
-    if [[ $str =~ $regex ]]; then
+    if [[ $_str =~ $_regex ]]; then
         echo "${BASH_REMATCH[1]}"
     else
         echo ""
@@ -37,86 +37,60 @@ function get_first_capture_group() {
 }
 
 function get_json_single_value () {
-    local json=$1
-    local json_key=$2
-    local regex="\"$json_key\":\"([^\"]*)\",?"
+    local _json=$1
+    local _json_key=$2
+    local _regex="\"$_json_key\":\"([^\"]*)\",?"
 
-    echo $(get_first_capture_group $json $regex)
-}
-
-function get_json_array_value () {
-    local json=$1
-    local json_key=$2
-    local regex="\"$json_key\":\[([^]]*)\],?"
-
-    echo $(get_first_capture_group $json $regex) | tr -d '"'
+    echo $(get_first_capture_group $_json $_regex)
 }
 
 function send_message {
-    local message=$1
+    local _message=$1
     # Calculate the byte size of the string. This only works if the byte length
     # is identical to the string length - it would not work, if we sent multibyte
     # characters. TabFloater only sends ASCII characters, so this works fine. We
     # then convert the length to an integer in native byte order - this only works
     # for little endian systems, but the majority of modern desktops use that.
-    local messagelen=${#message}
-    local messagelen1=$(( ($messagelen      ) & 0xFF ))
-    local messagelen2=$(( ($messagelen >>  8) & 0xFF ))
-    local messagelen3=$(( ($messagelen >> 16) & 0xFF ))
-    local messagelen4=$(( ($messagelen >> 24) & 0xFF ))
+    local _messagelen=${#_message}
+    local _messagelen1=$(( ($_messagelen      ) & 0xFF ))
+    local _messagelen2=$(( ($_messagelen >>  8) & 0xFF ))
+    local _messagelen3=$(( ($_messagelen >> 16) & 0xFF ))
+    local _messagelen4=$(( ($_messagelen >> 24) & 0xFF ))
 
     # Print the message byte length followed by the actual message.
-    printf "$(printf '\\x%x\\x%x\\x%x\\x%x' $messagelen1 $messagelen2 $messagelen3 $messagelen4)%s" "$message"
+    printf "$(printf '\\x%x\\x%x\\x%x\\x%x' $_messagelen1 $_messagelen2 $_messagelen3 $_messagelen4)%s" "$_message"
 }
 
 function send_status {
-    local json="{\"status\":\"$1\"}"
-    send_message $json
-}
-
-function send_supported_operations {
-    local json="{\"operations\":[\"alwaysontop\",\"undecorate\",\"notaskbar\"]}"
-    send_message $json
+    local _json="{\"status\":\"$1\"}"
+    send_message $_json
 }
 
 function send_result {
-    local json="{\"result\":\"$1\"}"
-    send_message $json
+    local _json="{\"result\":\"$1\"}"
+    send_message $_json
 }
 
 function test_tools_availability {
-    if ! wmctrl --help > /dev/null ; then
-        return 1
-    fi
-
-    if ! xwininfo -version > /dev/null ; then
-        return 1
-    fi
+    # if ! wmctrl --help > /dev/null ; then
+    #     return 1
+    # fi
 
     return 0
 }
 
-input_json=$(get_json_input_strip_whitespace)
-action=$(get_json_single_value $input_json "action")
+_input_json=$(get_json_input_strip_whitespace)
+_action=$(get_json_single_value $_input_json "action")
+_title=$(get_json_single_value $_input_json "title")
 
-if [ "$action" == "ping" ]; then
+if [ "$_action" == "ping" ]; then
     if test_tools_availability; then
         send_status "ok"
     else
         send_status "inactive"
     fi
-elif [ "$action" == "operations" ]; then
-    send_supported_operations
-elif [ "$action" == "makepanel" ]; then
-    IFS=',' read -r -a requested_operations <<< $(get_json_array_value $input_json "operations")
-
-    for element in "${requested_operations[@]}"
-    do
-        echo "$element" >> /dev/null
-    done
-
+elif [ "$_action" == "makepanel" ]; then
     send_result "ok"
-
 else
     echo "something else"
 fi
