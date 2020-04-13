@@ -1,8 +1,0 @@
-{
-    "uuid": "mytest_ext@ba32107.github.io",
-    "name": "tabfloater",
-    "description": "my test ext description",
-    "version": 1,
-    "shell-version": [ "3.30", "3.32" ],
-    "url": "https://gitlab.gnome.org/World/ShellExtensions/gnome-shell-extension-example"
-}

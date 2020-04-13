@@ -1,8 +1,0 @@
-{
-    "action": "makepanel",
-    "operations" : [
-        "alwaysontop",
-        "undecorate",
-        "notaskbar"
-    ]
-}
