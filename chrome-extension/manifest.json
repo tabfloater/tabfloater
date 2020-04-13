@@ -13,7 +13,8 @@
     "scripts": [
       "companion.js",
       "floater.js",
-      "background.js"
+      "background.js",
+      "qq.js"
     ],
     "persistent": false
   },
@@ -28,29 +29,17 @@
     }
   },
   "commands": {
-    "key-down": {
+    "key-pageDown": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Down"
+        "default": "Alt+PageDown"
       },
-      "description": "Float tab / move tab down"
+      "description": "Float tab"
     },
-    "key-up": {
+    "key-pageUp": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Up"
+        "default": "Alt+PageUp"
       },
-      "description": "Unfloat tab / move tab up"
-    },
-    "key-left": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Left"
-      },
-      "description": "Move tab left"
-    },
-    "key-right": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Right"
-      },
-      "description": "Move tab right"
+      "description": "Unfloat tab"
     }
   },
   "icons": {

@@ -5,6 +5,7 @@ window.onload = function () {
 
 floatTabButton.onclick = function () {
     window.close();
+
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
         backgroundPage.floatTab();
     });
