@@ -2,63 +2,83 @@
 
 #include <iostream>
 #include <string>
+#include <regex>
 
-int main(int argc, char **argv)
+unsigned int readFirstFourBytesFromStdIn()
 {
-    std::string oneLine = "";
+    char buffer[4];
 
-    while (1){
-        unsigned int length = 0;
+    std::cin.read(buffer, 4);
+    if (std::cin.eof()) {
+        return 0;
+    }
 
-        //read the first four bytes (=> Length)
-        /*for (int i = 0; i < 4; i++)
-        {
-            int read_char = getchar();
-            length += read_char * (int) pow(2.0, i*8);
-            std::string s = std::to_string((long long)read_char) + "\n";
-            fwrite(s.c_str(), sizeof(char), s.size(), f);
-            fflush(f);
-        }*/
+    return *reinterpret_cast<unsigned int *>(buffer);
+}
 
-        //Neat way!
-        for (int i = 0; i < 4; i++)
-        {
-            unsigned int read_char = getchar();
-            length = length | (read_char << i*8);
-        }
+std::string readStringFromStdIn(unsigned int length) {
+    char *buffer = new char[length];
 
-        //read the json-message
-        std::string msg = "";
-        for (int i = 0; i < length; i++)
-        {
-            msg += getchar();
-        }
+    std::cin.read(buffer, length);
+    std::string json(buffer);
+    delete[] buffer;
 
-        std::string message = "{\"status\":\"ok\"}";
-        // Collect the length of the message
-        unsigned int len = message.length();
+    return json;
+}
 
-        // Now we can output our message
-        if (msg == "{\"action\":\"ping\"}"){
-            message = "{\"status\":\"ok\"}";
-            len = message.length();
+std::string getJsonValueByKey(std::string jsonContents, std::string key)
+{
+    // We are looking for the JSON value with a format like this: "key": "value"
+    // This regex also allows the '\"' character in the value. It looks for the 
+    // closing '"' character and allows a comma at the end. The full value is the
+    // first capture grop. This wouldn't work for nested JSONs, but TabFloater 
+    // only sends non-nested JSON.
+    std::regex jsonRegex(R"(\")" + key + R"(\"\s*:\s*\"(([^\"]?(\\\")*)*)\",?)");
+    std::smatch matches;
 
-            std::cout   << char(len>>0)
-                        << char(len>>8)
-                        << char(len>>16)
-                        << char(len>>24);
+    if (std::regex_search(jsonContents, matches, jsonRegex) && matches.size() >= 1) {
+        return matches[1].str();
+    }
 
-            std::cout << message;
+    return std::string();
+}
+
+void sendOkStatus() {
+    std::string okMessage = "{\"status\":\"ok\"}";
+    unsigned int len = okMessage.length();
+
+    std::cout << char(len>>0)
+         << char(len>>8)
+         << char(len>>16)
+         << char(len>>24);
+
+    std::cout << okMessage;
+}
+
+int main()
+{
+    while (1) {
+        // See https://developer.chrome.com/extensions/nativeMessaging
+        // As described in the Chrome native messaging protocol, the JSON message 
+        // is preceded with the message length in the first 4 bytes. We need to
+        // read that, and then read that many characters that will make up the message.
+        // If the message length is 0, Chrome has closed the message port and we can
+        // stop reading.
+
+        unsigned int messageLength = readFirstFourBytesFromStdIn();
+        if (!messageLength) {
             break;
         }
 
-        len = length;
-        std::cout   << char(len>>0)
-                    << char(len>>8)
-                    << char(len>>16)
-                    << char(len>>24);
+        std::string json = readStringFromStdIn(messageLength);
+        std::string action = getJsonValueByKey(json, "action");
 
-        std::cout << msg << std::flush;
+        if (action.compare("ping") == 0) {
+            sendOkStatus();
+        } else if (action.compare("makepanel") == 0) {
+            // TODO perform makepanel
+            sendOkStatus();
+        }
     }
 
     return 0;
