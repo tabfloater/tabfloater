@@ -1,12 +1,9 @@
-// compile with gcc wind.c -lX11
-
+#include "windowhandler.h"
 #include <X11/Xlib.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define _NET_WM_STATE_ADD 1
 
-char *getWindowName(Display *display, Window window) {
+std::string getWindowName(Display *display, Window window) {
     Atom actualType, filterAtom;
     int actualFormat, status;
     unsigned long itemCount, bytesAfter;
@@ -20,19 +17,24 @@ char *getWindowName(Display *display, Window window) {
         exit(EXIT_FAILURE);
     }
 
-    return prop;
+    if (prop == NULL || prop[0] == '\0') {
+        return std::string();
+    }
+
+    std::string windowName(reinterpret_cast<char*>(prop));
+    return windowName;
 }
 
-Window findWindowByName(Display *display, Window window, const char *name)
+Window findWindowByName(Display *display, Window window, std::string name)
 {
     Window *children, dummy;
     unsigned int nchildren;
     unsigned int i;
     Window w = 0;
-    char *windowName;
+    std::string windowName;
 
     windowName = getWindowName(display, window);
-    if (windowName != NULL && windowName[0] != '\0' && !strcmp(windowName, name)) {
+    if (windowName.compare(name) == 0) {
         return (window);
     }
 
@@ -74,7 +76,7 @@ Status sendXEventAboveAndSkipTaskbar(Display *display, Window window)
                       SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
-void setWindowAlwaysOnTopAndSkipTaskbar(const char *windowName) {
+void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName) {
     Display *display = XOpenDisplay(NULL);
     if (!display) {
         exit(EXIT_FAILURE);
@@ -96,14 +98,4 @@ void setWindowAlwaysOnTopAndSkipTaskbar(const char *windowName) {
 
     XFlush(display);
     XCloseDisplay(display);
-}
-
-
-int main(int argc, char **argv)
-{
-    if (argc < 2) {
-        exit(EXIT_FAILURE);
-    }
-
-    setWindowAlwaysOnTopAndSkipTaskbar(argv[1]);
 }

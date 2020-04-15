@@ -1,5 +1,4 @@
-// compile with gcc wind.c -lX11
-
+#include "windowhandler.h"
 #include <iostream>
 #include <string>
 #include <regex>
@@ -85,7 +84,8 @@ int main()
         }
         else if (action.compare("makepanel") == 0)
         {
-            // TODO perform makepanel
+            std::string title = getJsonValueByKey(json, "title");
+            setWindowAlwaysOnTopAndSkipTaskbar(title);
             sendOkStatus();
         }
     }
