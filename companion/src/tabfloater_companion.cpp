@@ -3,6 +3,31 @@
 #include <string>
 #include <regex>
 
+#ifdef _WIN32
+#include <fcntl.h>
+
+int setBinaryMode(FILE* file)
+{
+	int result;
+
+	result = _setmode(_fileno(file), _O_BINARY);
+	if (result == -1)
+	{
+		perror("Cannot set mode");
+		return result;
+	}
+	// set do not use buffer
+	result = setvbuf(file, NULL, _IONBF, 0);	
+	if (result != 0)
+	{
+		perror("Cannot set zero buffer");
+		return result;
+	}
+
+	return 0;
+}
+#endif
+
 unsigned int readFirstFourBytesFromStdIn()
 {
     char buffer[4];
@@ -60,6 +85,11 @@ void sendOkStatus()
 
 int main()
 {
+    #ifdef _WIN32
+    setBinaryMode(stdin);
+    setBinaryMode(stdout);
+    #endif
+
     while (1)
     {
         // See https://developer.chrome.com/extensions/nativeMessaging
