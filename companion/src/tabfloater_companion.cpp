@@ -1,4 +1,5 @@
 #include "windowhandler.h"
+#include "../libs/loguru/loguru.hpp"
 #include <iostream>
 #include <string>
 #include <regex>
@@ -83,8 +84,13 @@ void sendOkStatus()
     std::cout << okMessage;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    loguru::init(argc, argv);
+    loguru::add_file("everything.log", loguru::Append, loguru::Verbosity_MAX);
+    LOG_F(INFO, "Starting");
+
+
     #ifdef _WIN32
     setBinaryMode(stdin);
     setBinaryMode(stdout);
