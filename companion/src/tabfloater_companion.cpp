@@ -1,5 +1,5 @@
 #include "windowhandler.h"
-#include "../libs/loguru/loguru.hpp"
+#include "../libs/loguru/src/loguru.hpp"
 #include <iostream>
 #include <string>
 #include <regex>

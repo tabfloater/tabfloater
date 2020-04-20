@@ -1,21 +1,32 @@
 cmake_minimum_required(VERSION 3.13.4)
 
-project(Tabfloater_companion)
+project(tabfloater_companion)
 
-set (CMAKE_CXX_STANDARD 11)
-
+# variables
+set(CMAKE_CXX_STANDARD 11)
 set(TARGET "tabfloater_companion")
+set(SOURCE_LIST)
 
-# Enable pthread
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
+if(UNIX)
+    list(APPEND SOURCE_LIST "./src/windowhandler_linux.cpp")
+endif()
 
-include_directories( ./libs/loguru ./src )
-add_executable(${TARGET} ./libs/loguru/loguru.cpp ./src/windowhandler_linux.cpp ./src/tabfloater_companion.cpp)
+if(WIN32)
+    list(APPEND SOURCE_LIST "./src/windowhandler_windows.cpp")    
+endif()
 
-# Use -lX11
-target_link_libraries(${TARGET} X11)
+list(APPEND SOURCE_LIST "./src/tabfloater_companion.cpp")
 
-# Use -pthread and -ldl for loguru
-target_link_libraries(${TARGET} Threads::Threads)
-target_link_libraries(${TARGET} dl)
+# includes
+add_subdirectory(./libs/loguru)
+include_directories(./src)
+
+# targets
+add_executable(${TARGET} ${SOURCE_LIST})
+
+# libraries
+target_link_libraries(${TARGET} loguru)
+
+if(UNIX)
+    target_link_libraries(${TARGET} X11)    
+endif()
