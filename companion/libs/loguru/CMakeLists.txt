@@ -13,4 +13,7 @@ add_library(${TARGET} STATIC ./src/loguru.cpp)
 
 # libraries
 target_link_libraries(${TARGET} Threads::Threads)
-target_link_libraries(${TARGET} dl)
+
+if(UNIX)
+    target_link_libraries(${TARGET} dl)
+endif()

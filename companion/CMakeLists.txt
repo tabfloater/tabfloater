@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.13.4)
 
+if(WIN32)
+    set(CMAKE_C_COMPILER gcc)
+    set(CMAKE_CXX_COMPILER g++)
+endif()
+
 project(tabfloater_companion)
 
 # variables
@@ -25,6 +30,10 @@ include_directories(./src)
 add_executable(${TARGET} ${SOURCE_LIST})
 
 # libraries
+if(WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS " -static")
+endif()
+
 target_link_libraries(${TARGET} loguru)
 
 if(UNIX)
