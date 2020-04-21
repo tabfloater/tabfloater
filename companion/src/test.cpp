@@ -1,4 +1,4 @@
-#include "../libs/loguru/loguru.hpp"
+#include "../libs/loguru/src/loguru.hpp"
 
 int main(int argc, char* argv[]) 
 {
