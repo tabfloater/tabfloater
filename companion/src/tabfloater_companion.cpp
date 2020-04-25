@@ -8,25 +8,25 @@
 #ifdef _WIN32
 #include <fcntl.h>
 
-int setBinaryMode(FILE* file)
+int setBinaryMode(FILE *file)
 {
-	int result;
+    int result;
 
-	result = _setmode(_fileno(file), _O_BINARY);
-	if (result == -1)
-	{
-		perror("Cannot set mode");
-		return result;
-	}
-	// set do not use buffer
-	result = setvbuf(file, NULL, _IONBF, 0);	
-	if (result != 0)
-	{
-		perror("Cannot set zero buffer");
-		return result;
-	}
+    result = _setmode(_fileno(file), _O_BINARY);
+    if (result == -1)
+    {
+        perror("Cannot set mode");
+        return result;
+    }
+    // set do not use buffer
+    result = setvbuf(file, NULL, _IONBF, 0);
+    if (result != 0)
+    {
+        perror("Cannot set zero buffer");
+        return result;
+    }
 
-	return 0;
+    return 0;
 }
 #endif
 
@@ -72,29 +72,33 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
     return std::string();
 }
 
-void sendOkStatus()
+void sendStatus(std::string status)
 {
-    std::string okMessage = "{\"status\":\"ok\"}";
-    unsigned int len = okMessage.length();
+    LOG_F(INFO, "Sending status \"%s\"", status.c_str());
 
-    LOG_F(INFO, "okMessage: \"%s\", length: %d", okMessage.c_str(), len);
+    std::string statusJson = "{\"status\":\"" + status + "\"}";
+    unsigned int len = statusJson.length();
+
+    LOG_F(INFO, "statusJson: \"%s\", length: %d", statusJson.c_str(), len);
 
     std::cout << char(len >> 0)
               << char(len >> 8)
               << char(len >> 16)
               << char(len >> 24);
 
-    std::cout << okMessage;
+    std::cout << statusJson;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
 
-    #ifdef _WIN32
+#ifdef _WIN32
     setBinaryMode(stdin);
     setBinaryMode(stdout);
-    #endif
+#endif
+
+    int returnValue = 0;
 
     while (1)
     {
@@ -115,7 +119,8 @@ int main(int argc, char* argv[])
         std::string action = getJsonValueByKey(json, "action");
         std::string debug = getJsonValueByKey(json, "debug");
 
-        if (debug.compare("true") == 0) {
+        if (debug.compare("true") == 0)
+        {
             loguru::init(argc, argv);
             loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
             LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
@@ -124,17 +129,27 @@ int main(int argc, char* argv[])
         if (action.compare("ping") == 0)
         {
             LOG_F(INFO, "Action: \"ping\"");
-            sendOkStatus();
+            sendStatus("ok");
         }
         else if (action.compare("makepanel") == 0)
         {
             LOG_F(INFO, "Action: \"makepanel\"");
             std::string title = getJsonValueByKey(json, "title");
             LOG_F(INFO, "Title: \"%s\"", title.c_str());
-            setWindowAlwaysOnTopAndSkipTaskbar(title);
-            sendOkStatus();
+
+            try
+            {
+                setWindowAlwaysOnTopAndSkipTaskbar(title);
+                sendStatus("ok");
+            }
+            catch (std::exception &ex)
+            {
+                LOG_F(ERROR, "An error occurred while manipulating window: %s", ex.what());
+                sendStatus("error");
+                returnValue = 1;
+            }
         }
     }
 
-    return 0;
+    return returnValue;
 }

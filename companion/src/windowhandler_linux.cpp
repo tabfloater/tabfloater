@@ -1,5 +1,7 @@
 #include "windowhandler.h"
+#include "../libs/loguru/src/loguru.hpp"
 #include <X11/Xlib.h>
+#include <stdexcept>
 
 #define _NET_WM_STATE_ADD 1
 
@@ -14,7 +16,7 @@ std::string getWindowName(Display *display, Window window) {
                                 &actualType, &actualFormat, &itemCount, &bytesAfter, &prop);
 
     if (status != Success) {
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("Unable to get _NET_WM_NAME property of window. Status code: " + std::to_string(status));
     }
 
     if (prop == NULL || prop[0] == '\0') {
@@ -79,19 +81,23 @@ Status sendXEventAboveAndSkipTaskbar(Display *display, Window window)
 void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName) {
     Display *display = XOpenDisplay(NULL);
     if (!display) {
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("Unable to open display");
     }
 
-    Window window_root = DefaultRootWindow(display);
-    if (!window_root) {
-        exit(EXIT_FAILURE);
+    Window rootWindow = DefaultRootWindow(display);
+    if (!rootWindow) {
+        throw std::runtime_error("Unable to get root window");
     }
 
-    Window window = findWindowByName(display, window_root, windowName);
+    Window window = findWindowByName(display, rootWindow, windowName);
 
     if (!window)
     {
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("Unable to find window with name \"" + windowName + "\"");
+    }
+    else
+    {
+        LOG_F(INFO, "Window found: %p", &window);
     }
 
     sendXEventAboveAndSkipTaskbar(display, window);
