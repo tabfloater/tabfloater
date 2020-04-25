@@ -121,6 +121,7 @@
 		#define _WIN32_WINNT 0x0502
 	#endif
 	#define WIN32_LEAN_AND_MEAN
+	#undef NOMINMAX
 	#define NOMINMAX
 	#include <windows.h>
 #endif
@@ -930,7 +931,7 @@ namespace loguru
 #if LOGURU_WINTHREADS
 	char* get_thread_name_win32()
 	{
-		__declspec( thread ) static char thread_name[LOGURU_THREADNAME_WIDTH + 1] = {0};
+		static char thread_name[LOGURU_THREADNAME_WIDTH + 1] = {0};
 		return &thread_name[0];
 	}
 #endif // LOGURU_WINTHREADS
