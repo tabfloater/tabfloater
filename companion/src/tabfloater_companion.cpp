@@ -5,6 +5,10 @@
 #include <regex>
 #include <signal.h>
 
+#ifndef VERSION
+#define VERSION "unknown"
+#endif
+
 #ifdef _WIN32
 #include <fcntl.h>
 
@@ -72,11 +76,18 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
     return std::string();
 }
 
-void sendStatus(std::string status)
+void sendStatus(std::string status, bool appendVersion = false)
 {
     LOG_F(INFO, "Sending status \"%s\"", status.c_str());
 
-    std::string statusJson = "{\"status\":\"" + status + "\"}";
+    std::string statusJson = "{\"status\":\"" + status + "\"";
+
+    if (appendVersion)
+    {
+        statusJson += std::string(",\"version\":\"") + VERSION + "\"";
+    }
+
+    statusJson += "}";
     unsigned int len = statusJson.length();
 
     LOG_F(INFO, "statusJson: \"%s\", length: %d", statusJson.c_str(), len);
@@ -123,13 +134,14 @@ int main(int argc, char *argv[])
         {
             loguru::init(argc, argv);
             loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
+            LOG_F(INFO, "TabFloater Companion started. Version: %s", VERSION);
             LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
         }
 
         if (action.compare("ping") == 0)
         {
             LOG_F(INFO, "Action: \"ping\"");
-            sendStatus("ok");
+            sendStatus("ok", true);
         }
         else if (action.compare("makepanel") == 0)
         {

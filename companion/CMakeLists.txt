@@ -11,6 +11,7 @@ project(tabfloater_companion)
 set(CMAKE_CXX_STANDARD 11)
 set(TARGET "tabfloater_companion")
 set(SOURCE_LIST)
+set(VERSION "0.8")
 
 if(UNIX)
     list(APPEND SOURCE_LIST "./src/windowhandler_linux.cpp")
@@ -28,6 +29,7 @@ include_directories(./src)
 
 # targets
 add_executable(${TARGET} ${SOURCE_LIST})
+target_compile_definitions(${TARGET} PRIVATE VERSION=\"${VERSION}\")
 
 # libraries
 if(WIN32)
