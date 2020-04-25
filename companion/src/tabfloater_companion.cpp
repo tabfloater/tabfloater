@@ -18,16 +18,16 @@ void initLogging()
     loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
     std::string initMessage = std::string("TabFloater Companion started. Version: ") + VERSION + ", OS: ";
 
-    #ifdef _WIN32
+#ifdef _WIN32
     initMessage += "Windows";
-    #endif
-    #ifdef linux
-    initMessage += "Linux";;
-    #endif
+#endif
+#ifdef linux
+    initMessage += "Linux";
+    ;
+#endif
 
     LOG_F(INFO, initMessage.c_str());
 }
-
 
 void logStartUpError(std::string errorMessage)
 {
@@ -57,7 +57,6 @@ int setBinaryMode(FILE *file)
     return 0;
 }
 #endif
-
 
 unsigned int readFirstFourBytesFromStdIn()
 {
