@@ -11,7 +11,31 @@
 
 #ifdef _WIN32
 #include <fcntl.h>
+#endif
 
+void initLogging()
+{
+    loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
+    std::string initMessage = std::string("TabFloater Companion started. Version: ") + VERSION + ", OS: ";
+
+    #ifdef _WIN32
+    initMessage += "Windows";
+    #endif
+    #ifdef linux
+    initMessage += "Linux";;
+    #endif
+
+    LOG_F(INFO, initMessage.c_str());
+}
+
+
+void logStartUpError(std::string errorMessage)
+{
+    initLogging();
+    LOG_F(ERROR, errorMessage.c_str());
+}
+
+#ifdef _WIN32
 int setBinaryMode(FILE *file)
 {
     int result;
@@ -19,20 +43,21 @@ int setBinaryMode(FILE *file)
     result = _setmode(_fileno(file), _O_BINARY);
     if (result == -1)
     {
-        perror("Cannot set mode");
-        return result;
+        logStartUpError("Unable to set binary mode. Result: " + std::to_string(result));
+        abort();
     }
-    // set do not use buffer
+
     result = setvbuf(file, NULL, _IONBF, 0);
     if (result != 0)
     {
-        perror("Cannot set zero buffer");
-        return result;
+        logStartUpError("Unable to set buffer. Result: " + std::to_string(result));
+        abort();
     }
 
     return 0;
 }
 #endif
+
 
 unsigned int readFirstFourBytesFromStdIn()
 {
@@ -133,10 +158,10 @@ int main(int argc, char *argv[])
         if (debug.compare("true") == 0)
         {
             loguru::init(argc, argv);
-            loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
-            LOG_F(INFO, "TabFloater Companion started. Version: %s", VERSION);
-            LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
+            initLogging();
         }
+
+        LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
 
         if (action.compare("ping") == 0)
         {
