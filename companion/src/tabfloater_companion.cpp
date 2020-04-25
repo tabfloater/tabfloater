@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <signal.h>
 
 #ifdef _WIN32
 #include <fcntl.h>
@@ -76,6 +77,8 @@ void sendOkStatus()
     std::string okMessage = "{\"status\":\"ok\"}";
     unsigned int len = okMessage.length();
 
+    LOG_F(INFO, "okMessage: \"%s\", length: %d", okMessage.c_str(), len);
+
     std::cout << char(len >> 0)
               << char(len >> 8)
               << char(len >> 16)
@@ -86,10 +89,7 @@ void sendOkStatus()
 
 int main(int argc, char* argv[])
 {
-    loguru::init(argc, argv);
-    loguru::add_file("everything.log", loguru::Append, loguru::Verbosity_MAX);
-    LOG_F(INFO, "Starting");
-
+    loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
 
     #ifdef _WIN32
     setBinaryMode(stdin);
@@ -113,14 +113,24 @@ int main(int argc, char* argv[])
 
         std::string json = readStringFromStdIn(messageLength);
         std::string action = getJsonValueByKey(json, "action");
+        std::string debug = getJsonValueByKey(json, "debug");
+
+        if (debug.compare("true") == 0) {
+            loguru::init(argc, argv);
+            loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
+            LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
+        }
 
         if (action.compare("ping") == 0)
         {
+            LOG_F(INFO, "Action: \"ping\"");
             sendOkStatus();
         }
         else if (action.compare("makepanel") == 0)
         {
+            LOG_F(INFO, "Action: \"makepanel\"");
             std::string title = getJsonValueByKey(json, "title");
+            LOG_F(INFO, "Title: \"%s\"", title.c_str());
             setWindowAlwaysOnTopAndSkipTaskbar(title);
             sendOkStatus();
         }

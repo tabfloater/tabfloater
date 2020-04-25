@@ -2,7 +2,8 @@ const CompanionName = "io.github.ba32107.tabfloater"
 
 getCompanionStatus = function(callback) {
     chrome.runtime.sendNativeMessage(CompanionName, {
-        action: "ping"
+        action: "ping",
+        debug: "true"
     }, function (response) {
         if (chrome.runtime.lastError || !response) {
             callback("unavailable");
@@ -21,7 +22,8 @@ getCompanionStatus = function(callback) {
 sendMakePanelRequest = function(windowTitle) {
     chrome.runtime.sendNativeMessage(CompanionName, {
         action: "makepanel",
-        title: windowTitle
+        title: windowTitle,
+        debug: "true"
     }, function (response) {
         if (chrome.runtime.lastError || !response) {
             // TODO handle error
