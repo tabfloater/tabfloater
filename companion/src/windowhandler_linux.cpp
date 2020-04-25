@@ -5,7 +5,8 @@
 
 #define _NET_WM_STATE_ADD 1
 
-std::string getWindowName(Display *display, Window window) {
+std::string getWindowName(Display *display, Window window)
+{
     Atom actualType, filterAtom;
     int actualFormat, status;
     unsigned long itemCount, bytesAfter;
@@ -15,15 +16,17 @@ std::string getWindowName(Display *display, Window window) {
     status = XGetWindowProperty(display, window, filterAtom, 0, 1000, False, AnyPropertyType,
                                 &actualType, &actualFormat, &itemCount, &bytesAfter, &prop);
 
-    if (status != Success) {
+    if (status != Success)
+    {
         throw std::runtime_error("Unable to get _NET_WM_NAME property of window. Status code: " + std::to_string(status));
     }
 
-    if (prop == NULL || prop[0] == '\0') {
+    if (prop == NULL || prop[0] == '\0')
+    {
         return std::string();
     }
 
-    std::string windowName(reinterpret_cast<char*>(prop));
+    std::string windowName(reinterpret_cast<char *>(prop));
     return windowName;
 }
 
@@ -36,26 +39,29 @@ Window findWindowByName(Display *display, Window window, std::string name)
     std::string windowName;
 
     windowName = getWindowName(display, window);
-    if (windowName.compare(name) == 0) {
+    if (windowName.compare(name) == 0)
+    {
         return (window);
     }
 
-    if (!XQueryTree(display, window, &dummy, &dummy, &children, &nchildren)) {
+    if (!XQueryTree(display, window, &dummy, &dummy, &children, &nchildren))
+    {
         return (0);
     }
 
     for (i = 0; i < nchildren; i++)
     {
         w = findWindowByName(display, children[i], name);
-        if (w) {
+        if (w)
+        {
             break;
         }
-            
     }
-    if (children) {
+    if (children)
+    {
         XFree((char *)children);
     }
-        
+
     return (w);
 }
 
@@ -78,14 +84,17 @@ Status sendXEventAboveAndSkipTaskbar(Display *display, Window window)
                       SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
-void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName) {
+void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName)
+{
     Display *display = XOpenDisplay(NULL);
-    if (!display) {
+    if (!display)
+    {
         throw std::runtime_error("Unable to open display");
     }
 
     Window rootWindow = DefaultRootWindow(display);
-    if (!rootWindow) {
+    if (!rootWindow)
+    {
         throw std::runtime_error("Unable to get root window");
     }
 
