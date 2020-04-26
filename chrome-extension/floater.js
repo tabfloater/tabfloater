@@ -3,7 +3,7 @@ const DefaultPosition = "topRight";
 floatTab = function () {
     tryGetFloatingTab(function (floatingTab) {
         if (!floatingTab) {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
                 var currentTab = tabs[0];
                 if (currentTab) {
                     const tabProps = {
@@ -25,7 +25,7 @@ floatTab = function () {
                             "height": positionData.height,
                             // focused: false
                         }, function () {
-                            setFloatingTab(tabProps, function() {
+                            setFloatingTab(tabProps, function () {
                                 sendMakePanelRequest(currentTab.title);
                             });
                         });
