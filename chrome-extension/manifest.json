@@ -1,6 +1,6 @@
 {
   "name": "TabFloater",
-  "version": "0.2",
+  "version": "0.3",
   "description": "Extract your tabs to a floating panel",
   "permissions": [
     "activeTab",
