@@ -3,8 +3,8 @@ const DefaultPosition = "topRight";
 floatTab = function () {
     tryGetFloatingTab(function (floatingTab) {
         if (!floatingTab) {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                var currentTab = tabs[0];
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
+                const currentTab = tabs[0];
                 if (currentTab) {
                     const tabProps = {
                         tabId: currentTab.id,
@@ -14,7 +14,7 @@ floatTab = function () {
                     };
 
                     chrome.windows.get(currentTab.windowId, function (window) {
-                        var positionData = getPositionDataForFloatingTab(window, DefaultPosition);
+                        const positionData = getPositionDataForFloatingTab(window, DefaultPosition);
 
                         chrome.windows.create({
                             "tabId": currentTab.id,
@@ -25,7 +25,7 @@ floatTab = function () {
                             "height": positionData.height,
                             // focused: false
                         }, function () {
-                            setFloatingTab(tabProps, function() {
+                            setFloatingTab(tabProps, function () {
                                 sendMakePanelRequest(currentTab.title);
                             });
                         });
@@ -50,7 +50,7 @@ repositionFloatingTab = function (newPosition) {
     tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             chrome.windows.get(tabProps.parentWindowId, function (parentWindow) {
-                let newPositionData = getPositionDataForFloatingTab(parentWindow, newPosition);
+                const newPositionData = getPositionDataForFloatingTab(parentWindow, newPosition);
 
                 chrome.windows.update(floatingTab.windowId, newPositionData, function () {
                     tabProps.position = newPosition;
@@ -65,8 +65,8 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
     const padding = 50;
     const extraPaddingAtTop = 50;
 
-    let halfWidth = parseInt(parentWindow.width / 2);
-    let halfHeight = parseInt(parentWindow.height / 2);
+    const halfWidth = parseInt(parentWindow.width / 2);
+    const halfHeight = parseInt(parentWindow.height / 2);
     let newTop = parentWindow.top + padding;
     let newLeft = parentWindow.left + padding;
 
@@ -91,7 +91,7 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
 tryGetFloatingTab = function (callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {
-            let tabProps = data.floatingTabProperties;
+            const tabProps = data.floatingTabProperties;
             chrome.tabs.get(tabProps.tabId, function (floatingTab) {
                 if (!chrome.runtime.lastError) {
                     callback(floatingTab, tabProps);
