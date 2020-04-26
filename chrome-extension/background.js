@@ -12,8 +12,18 @@ function extensionStartup() {
 
 chrome.tabs.onRemoved.addListener(function (closingTabId) {
   tryGetFloatingTab(function (floatingTab) {
-    if (floatingTab && floatingTab.id == closingTabId) {
+    if (floatingTab && floatingTab.id === closingTabId) {
       clearFloatingTab();
+    }
+  });
+});
+
+chrome.windows.onRemoved.addListener(function (closingWindowId) {
+  tryGetFloatingTab(function (floatingTab, floatingTabProperties) {
+    if (floatingTab && floatingTabProperties.parentWindowId === closingWindowId) {
+      chrome.tabs.remove(floatingTab.id, function () {
+        clearFloatingTab();
+      });
     }
   });
 });
