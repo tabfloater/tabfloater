@@ -6,7 +6,7 @@ function markArea(rect, highlight) {
     div.style.position = "absolute";
     div.style.top = rect.top + window.scrollY + "px";
     div.style.left = rect.left + window.scrollX + "px";
-    
+
     div.style.borderWidth = highlight ? "thick" : "thin";
     div.style.borderStyle = "solid";
     div.style.borderColor = "red";
@@ -35,10 +35,10 @@ function isInViewport(rect) {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    return rect.top >= 0 
-            && rect.left >= 0
-            && rect.right <= viewportWidth
-            && rect.bottom <= viewportHeight
+    return rect.top >= 0
+        && rect.left >= 0
+        && rect.right <= viewportWidth
+        && rect.bottom <= viewportHeight
 }
 
 function shouldMark(node) {
@@ -57,7 +57,7 @@ function shouldMark(node) {
     }
 
     return ["iframe", "textarea", "input", "button", "img", "svg", "title", "h1", "h2", "h3"]
-            .includes(node.tagName.toString().toLowerCase());
+        .includes(node.tagName.toString().toLowerCase());
 }
 
 function forEachVisibleElement(node, callback) {
@@ -67,9 +67,9 @@ function forEachVisibleElement(node, callback) {
         for (let i = 0; i < childNodes.length; i++) {
             const child = childNodes[i];
             if (shouldMark(child)) {
-                const node = (isImage(child) || isInput(child)) && child.parentElement != document.body 
-                        ? child.parentElement 
-                        : child;
+                const node = (isImage(child) || isInput(child)) && child.parentElement != document.body
+                    ? child.parentElement
+                    : child;
                 const range = document.createRange();
                 range.selectNodeContents(node);
                 const clientRect = range.getBoundingClientRect();
@@ -80,13 +80,13 @@ function forEachVisibleElement(node, callback) {
                     }
                 }
 
-                
+
             }
 
             forEachVisibleElement(child, callback);
         }
     }
-    
+
 }
 
 function getViewPortMatrix(cellSize) {
@@ -98,7 +98,7 @@ function getViewPortMatrix(cellSize) {
 
     const matrix = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
 
-    forEachVisibleElement(document.body, function(elementRectangle) {
+    forEachVisibleElement(document.body, function (elementRectangle) {
 
         let rowStartIndex = Math.floor(elementRectangle.top / cellSize);
         let colStartIndex = Math.floor(elementRectangle.left / cellSize);
