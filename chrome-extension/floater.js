@@ -8,6 +8,7 @@ floatTab = function () {
                 if (currentTab) {
                     const tabProps = {
                         tabId: currentTab.id,
+                        title: currentTab.title,
                         parentWindowId: currentTab.windowId,
                         originalIndex: currentTab.index,
                         position: DefaultPosition

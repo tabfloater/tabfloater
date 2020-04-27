@@ -185,6 +185,12 @@ int main(int argc, char *argv[])
                 returnValue = 1;
             }
         }
+        else if (action.compare("removeAlwaysOnTop") == 0)
+        {
+            std::string title = getJsonValueByKey(json, "title");
+            setWindowAlwaysOnTopAndSkipTaskbar2(title);
+            sendStatus("ok");
+        }
     }
 
     return returnValue;

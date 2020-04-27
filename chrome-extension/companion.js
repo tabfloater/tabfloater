@@ -32,3 +32,18 @@ sendMakePanelRequest = function (windowTitle) {
         }
     });
 }
+
+qq = function (windowTitle, callback) {
+    chrome.runtime.sendNativeMessage(CompanionName, {
+        action: "removeAlwaysOnTop",
+        title: windowTitle,
+        debug: "true"
+    }, function (response) {
+        if (chrome.runtime.lastError || !response) {
+            // TODO handle error
+        } else {
+            callback();
+            // TODO do something
+        }
+    });
+}
