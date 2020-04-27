@@ -2,7 +2,6 @@
 #include "../libs/loguru/src/loguru.hpp"
 #include <X11/Xlib.h>
 #include <stdexcept>
-#include <X11/Xatom.h>
 
 #define _NET_WM_STATE_ADD 1
 
@@ -40,7 +39,7 @@ Window findWindowByName(Display *display, Window window, std::string name)
     std::string windowName;
 
     windowName = getWindowName(display, window);
-    if (windowName.compare(name) == 0)
+    if (windowName.rfind(name, 0) == 0) // if windowName.startsWith(name)
     {
         return (window);
     }
@@ -81,22 +80,22 @@ void sendXEventSkipTaskbar(Display *display, Window window)
     event.xclient.data.l[1] = XInternAtom(display, "_NET_WM_STATE_SKIP_TASKBAR", False);
 
     XSendEvent(display, DefaultRootWindow(display), False,
-                      SubstructureRedirectMask | SubstructureNotifyMask, &event);
+               SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
-void setDisallowMaximize(Display *display, Window window) {
-    //disable maximize
-    Atom type = XInternAtom(display, "_NET_WM_ALLOWED_ACTIONS", False);
-    // Atom value = XInternAtom(display, "_NET_WM_STATE_ABOVE", False);
-    // XChangeProperty(display, window, type, XA_ATOM, 32, PropModeReplace, reinterpret_cast<unsigned char*>(&value), 1);
-
-    // https://github.com/bbidulock/etwm/blob/master/ewmh.c
-    // https://tronche.com/gui/x/xlib/window-information/XGetWindowProperty.html
-    // https://specifications.freedesktop.org/wm-spec/wm-spec-latest.html
+void throwIfNotFoundOrLog(Window window, std::string windowName)
+{
+    if (!window)
+    {
+        throw std::runtime_error("Unable to find window with name \"" + windowName + "\"");
+    }
+    else
+    {
+        LOG_F(INFO, "Window found: %p", &window);
+    }
 }
 
-
-void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName, std::string parentWindowName)
+void setAsChildWindow(std::string windowName, std::string parentWindowName)
 {
     Display *display = XOpenDisplay(NULL);
     if (!display)
@@ -110,21 +109,14 @@ void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName, std::string pare
         throw std::runtime_error("Unable to get root window");
     }
 
-    LOG_F(INFO, "starting to find window");
-
     Window window = findWindowByName(display, rootWindow, windowName);
     Window parentWindow = findWindowByName(display, rootWindow, parentWindowName);
 
-
-    // how to identify parent window?? we can send down parent window title,
-    // but multiple windows can have the same title. can we temporarily
-    // set the parent window's title to something else, send it down, then restore the parent window's title?
-
+    throwIfNotFoundOrLog(window, windowName);
+    throwIfNotFoundOrLog(parentWindow, parentWindowName);
 
     XSetTransientForHint(display, window, parentWindow);
     sendXEventSkipTaskbar(display, window);
-      
-    setDisallowMaximize(display, window);
 
     XFlush(display);
     XCloseDisplay(display);

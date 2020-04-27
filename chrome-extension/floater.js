@@ -24,10 +24,13 @@ floatTab = function () {
                             "left": positionData.left,
                             "width": positionData.width,
                             "height": positionData.height,
-                            // focused: false
                         }, function () {
                             setFloatingTab(tabProps, function () {
-                                sendMakePanelRequest(currentTab.title);
+                                chrome.tabs.query({ active: true, windowId: tabProps.parentWindowId }, function (tabs) {
+                                    const activeTabOnParentWindow = tabs[0];
+                                    const parentWindowTitle = activeTabOnParentWindow.title;
+                                    sendMakePanelRequest(currentTab.title, parentWindowTitle);
+                                });
                             });
                         });
                     });

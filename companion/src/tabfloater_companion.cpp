@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <regex>
-#include <signal.h>
 
 #ifndef VERSION
 #define VERSION "unknown"
@@ -161,21 +160,25 @@ int main(int argc, char *argv[])
         }
 
         LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
+        LOG_F(INFO, "Action: \"%s\"", action.c_str());
 
         if (action.compare("ping") == 0)
         {
-            LOG_F(INFO, "Action: \"ping\"");
+            LOG_F(INFO, "Ping received");
             sendStatus("ok", true);
         }
-        else if (action.compare("makepanel") == 0)
+        else if (action.compare("setAsChildWindow") == 0)
         {
-            LOG_F(INFO, "Action: \"makepanel\"");
-            std::string title = getJsonValueByKey(json, "title");
-            LOG_F(INFO, "Title: \"%s\"", title.c_str());
+            LOG_F(INFO, "setAsChildWindow request received");
+
+            std::string windowTitle = getJsonValueByKey(json, "windowTitle");
+            std::string parentWindowTitle = getJsonValueByKey(json, "parentWindowTitle");
+            LOG_F(INFO, "Window title: \"%s\"", windowTitle.c_str());
+            LOG_F(INFO, "Parent window title: \"%s\"", parentWindowTitle.c_str());
 
             try
             {
-                setWindowAlwaysOnTopAndSkipTaskbar(title);
+                setAsChildWindow(windowTitle, parentWindowTitle);
                 sendStatus("ok");
             }
             catch (std::exception &ex)
@@ -184,12 +187,6 @@ int main(int argc, char *argv[])
                 sendStatus("error");
                 returnValue = 1;
             }
-        }
-        else if (action.compare("removeAlwaysOnTop") == 0)
-        {
-            std::string title = getJsonValueByKey(json, "title");
-            setWindowAlwaysOnTopAndSkipTaskbar2(title);
-            sendStatus("ok");
         }
     }
 

@@ -19,30 +19,16 @@ getCompanionStatus = function (callback) {
     });
 }
 
-sendMakePanelRequest = function (windowTitle) {
+sendMakePanelRequest = function (windowTitle, parentWindowTitle) {
     chrome.runtime.sendNativeMessage(CompanionName, {
-        action: "makepanel",
-        title: windowTitle,
+        action: "setAsChildWindow",
+        windowTitle: windowTitle,
+        parentWindowTitle: parentWindowTitle,
         debug: "true"
     }, function (response) {
         if (chrome.runtime.lastError || !response) {
             // TODO handle error
         } else {
-            // TODO do something
-        }
-    });
-}
-
-qq = function (windowTitle, callback) {
-    chrome.runtime.sendNativeMessage(CompanionName, {
-        action: "removeAlwaysOnTop",
-        title: windowTitle,
-        debug: "true"
-    }, function (response) {
-        if (chrome.runtime.lastError || !response) {
-            // TODO handle error
-        } else {
-            callback();
             // TODO do something
         }
     });
