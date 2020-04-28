@@ -5,7 +5,7 @@
 
 #define _NET_WM_STATE_ADD 1
 
-std::string getWindowName(Display *display, Window window)
+std::string getWindowTitle(Display *display, Window window)
 {
     Atom actualType, filterAtom;
     int actualFormat, status;
@@ -30,16 +30,16 @@ std::string getWindowName(Display *display, Window window)
     return windowName;
 }
 
-Window findWindowByName(Display *display, Window window, std::string name)
+Window findWindowByTitlePrefix(Display *display, Window window, std::string titlePrefix)
 {
     Window *children, dummy;
     unsigned int nchildren;
     unsigned int i;
     Window w = 0;
-    std::string windowName;
+    std::string windowTitle;
 
-    windowName = getWindowName(display, window);
-    if (windowName.rfind(name, 0) == 0) // if windowName.startsWith(name)
+    windowTitle = getWindowTitle(display, window);
+    if (windowTitle.rfind(titlePrefix, 0) == 0) // if windowName.startsWith(name)
     {
         return (window);
     }
@@ -51,7 +51,7 @@ Window findWindowByName(Display *display, Window window, std::string name)
 
     for (i = 0; i < nchildren; i++)
     {
-        w = findWindowByName(display, children[i], name);
+        w = findWindowByTitlePrefix(display, children[i], titlePrefix);
         if (w)
         {
             break;
@@ -83,11 +83,11 @@ void sendXEventSkipTaskbar(Display *display, Window window)
                SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
-void throwIfNotFoundOrLog(Window window, std::string windowName)
+void throwIfNotFoundOrLog(Window window, std::string windowTitlePrefix)
 {
     if (!window)
     {
-        throw std::runtime_error("Unable to find window with name \"" + windowName + "\"");
+        throw std::runtime_error("Unable to find window with title prefix \"" + windowTitlePrefix + "\"");
     }
     else
     {
@@ -95,7 +95,7 @@ void throwIfNotFoundOrLog(Window window, std::string windowName)
     }
 }
 
-void setAsChildWindow(std::string windowName, std::string parentWindowName)
+void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
 {
     Display *display = XOpenDisplay(NULL);
     if (!display)
@@ -109,13 +109,13 @@ void setAsChildWindow(std::string windowName, std::string parentWindowName)
         throw std::runtime_error("Unable to get root window");
     }
 
-    Window window = findWindowByName(display, rootWindow, windowName);
-    Window parentWindow = findWindowByName(display, rootWindow, parentWindowName);
+    Window window = findWindowByTitlePrefix(display, rootWindow, windowTitlePrefix);
+    Window ownerWindow = findWindowByTitlePrefix(display, rootWindow, ownerWindowTitlePrefix);
 
-    throwIfNotFoundOrLog(window, windowName);
-    throwIfNotFoundOrLog(parentWindow, parentWindowName);
+    throwIfNotFoundOrLog(window, windowTitlePrefix);
+    throwIfNotFoundOrLog(ownerWindow, ownerWindowTitlePrefix);
 
-    XSetTransientForHint(display, window, parentWindow);
+    XSetTransientForHint(display, window, ownerWindow);
     sendXEventSkipTaskbar(display, window);
 
     XFlush(display);
