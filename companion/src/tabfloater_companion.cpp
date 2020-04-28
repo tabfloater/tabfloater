@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 
             try
             {
-                setAsChildWindow(windowTitle, parentWindowTitle);
+                setAsModelessDialog(windowTitle, parentWindowTitle);
                 sendStatus("ok");
             }
             catch (std::exception &ex)

@@ -1,36 +1,61 @@
 #include "windowhandler.h"
+#include "../libs/loguru/src/loguru.hpp"
 #include <shobjidl.h>
 #include <stdexcept>
+#include <tchar.h>
 
-const GUID CLSID_TaskbarList = {0x56FDF344, 0xFD6D, 0x11D0, {0x95, 0x8A, 0x00, 0x60, 0x97, 0xC9, 0xA0, 0x90}};
-const GUID IID_ITaskbarList = {0x56FDF342, 0xFD6D, 0x11D0, {0x95, 0x8A, 0x00, 0x60, 0x97, 0xC9, 0xA0, 0x90}};
-
-void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowName)
+BOOL CALLBACK matchTitlePrefixProc(HWND hwnd, LPARAM lParam)
 {
-    HWND windowHandler = FindWindowA(NULL, windowName.c_str());
+    std::pair<std::string, HWND> *pair = reinterpret_cast<std::pair<std::string, HWND> *>(lParam);
+    std::string titlePrefix = (*pair).first;
 
-    SetWindowPos(windowHandler, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    int windowTitleLength = GetWindowTextLengthA(hwnd) + 10; // add some extra characters just in case
 
-    CoInitialize(NULL);
-
-    ITaskbarList *pTaskbarList = NULL;
-    if (FAILED(CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList, (void **)&pTaskbarList)))
+    if (windowTitleLength == 0)
     {
-        throw std::runtime_error("Failed to create ITaskbarList instance");
+        return TRUE;
+    }
+
+    TCHAR *buffer = new TCHAR[windowTitleLength];
+    GetWindowText(hwnd, buffer, windowTitleLength);
+
+    if (_tcsstr(buffer, titlePrefix.c_str()))
+    {
+        (*pair).second = hwnd;
+
+        delete[] buffer;
+        return FALSE;
+    }
+
+    delete[] buffer;
+    return TRUE;
+}
+
+HWND findWindowWithTitlePrefix(std::string windowTitlePrefix)
+{
+    std::pair<std::string, HWND> pair = std::make_pair(windowTitlePrefix, nullptr);
+    std::pair<std::string, HWND> *p = &pair;
+
+    EnumWindows(matchTitlePrefixProc, reinterpret_cast<LPARAM>(p));
+
+    HWND windowHandle = (*p).second;
+
+    if (!windowHandle)
+    {
+        throw std::runtime_error("Unable to find window with title prefix \"" + windowTitlePrefix + "\"");
     }
     else
     {
-        if (SUCCEEDED(pTaskbarList->HrInit()))
-        {
-            pTaskbarList->DeleteTab(windowHandler);
-        }
-        else
-        {
-            throw std::runtime_error("Failed to init ITaskbarList instance");
-        }
-
-        pTaskbarList->Release();
+        LOG_F(INFO, "Found window with title prefix \"%s\": %p", windowTitlePrefix, windowHandle);
     }
 
-    CoUninitialize();
+    return windowHandle;
+}
+
+void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
+{
+    HWND windowHandle = findWindowWithTitlePrefix(windowTitlePrefix);
+    HWND ownerWindowHandle = findWindowWithTitlePrefix(ownerWindowTitlePrefix);
+
+    SetWindowLongPtr(windowHandle, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(ownerWindowHandle));
 }
