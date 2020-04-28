@@ -81,6 +81,15 @@ std::string readStringFromStdIn(unsigned int length)
     return json;
 }
 
+std::string unescapeQuotes(std::string str)
+{
+    // We need to match the string '\"' and replace it with '"'
+    // The regex to match this string is '\\"', and we need to
+    // escape each character with an additional backslash.
+    // So it becomes '\\ \\ \"', which is '\\\\\"'.
+    return std::regex_replace(str, std::regex("\\\\\""), "\"");
+}
+
 std::string getJsonValueByKey(std::string jsonContents, std::string key)
 {
     // We are looking for the JSON value with a format like this: "key": "value"
@@ -93,7 +102,8 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
 
     if (std::regex_search(jsonContents, matches, jsonRegex) && matches.size() >= 1)
     {
-        return matches[1].str();
+        std::string value = matches[1].str();
+        return unescapeQuotes(value);
     }
 
     return std::string();
