@@ -167,9 +167,9 @@ int main(int argc, char *argv[])
             LOG_F(INFO, "Ping received");
             sendStatus("ok", true);
         }
-        else if (action.compare("setAsChildWindow") == 0)
+        else if (action.compare("setAsModelessDialog") == 0)
         {
-            LOG_F(INFO, "setAsChildWindow request received");
+            LOG_F(INFO, "setAsModelessDialog request received");
 
             std::string windowTitle = getJsonValueByKey(json, "windowTitle");
             std::string parentWindowTitle = getJsonValueByKey(json, "parentWindowTitle");

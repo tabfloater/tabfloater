@@ -21,7 +21,7 @@ getCompanionStatus = function (callback) {
 
 sendMakePanelRequest = function (windowTitle, parentWindowTitle) {
     chrome.runtime.sendNativeMessage(CompanionName, {
-        action: "setAsChildWindow",
+        action: "setAsModelessDialog",
         windowTitle: windowTitle,
         parentWindowTitle: parentWindowTitle,
         debug: "true"
