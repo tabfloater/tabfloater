@@ -7,13 +7,16 @@
     "nativeMessaging",
     "notifications",
     "storage",
-    "tabs"
+    "tabs",
+    "http://*/*",
+    "https://*/*"
   ],
   "background": {
     "scripts": [
       "companion.js",
       "floater.js",
       "background.js",
+      "utilities.js",
       "qq.js"
     ],
     "persistent": false

@@ -19,7 +19,7 @@ getCompanionStatus = function (callback) {
     });
 }
 
-sendMakePanelRequest = function (windowTitle, parentWindowTitle) {
+sendModelessDialogRequest = function (windowTitle, parentWindowTitle, callback) {
     chrome.runtime.sendNativeMessage(CompanionName, {
         action: "setAsModelessDialog",
         windowTitle: windowTitle,
@@ -29,7 +29,7 @@ sendMakePanelRequest = function (windowTitle, parentWindowTitle) {
         if (chrome.runtime.lastError || !response) {
             // TODO handle error
         } else {
-            // TODO do something
+            callback();
         }
     });
 }

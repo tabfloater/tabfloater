@@ -8,6 +8,7 @@ floatTab = function () {
                 if (currentTab) {
                     const tabProps = {
                         tabId: currentTab.id,
+                        title: currentTab.title,
                         parentWindowId: currentTab.windowId,
                         originalIndex: currentTab.index,
                         position: DefaultPosition
@@ -24,18 +25,35 @@ floatTab = function () {
                             "width": positionData.width,
                             "height": positionData.height,
                         }, function () {
-                            setFloatingTab(tabProps, function () {
-                                chrome.tabs.query({ active: true, windowId: tabProps.parentWindowId }, function (tabs) {
-                                    const activeTabOnParentWindow = tabs[0];
-                                    const parentWindowTitle = activeTabOnParentWindow.title;
-                                    sendMakePanelRequest(currentTab.title, parentWindowTitle);
-                                });
+                            saveFloatingTab(tabProps, function () {
+                                setFloatingTabAsModelessDialog(tabProps);
                             });
                         });
                     });
                 }
             });
         }
+    });
+}
+
+setFloatingTabAsModelessDialog = function (tabProps) {
+    chrome.tabs.query({ active: true, windowId: tabProps.parentWindowId }, function (tabs) {
+        const activeTabOnParentWindow = tabs[0];
+        const floatingTabOriginalTitle = tabProps.title;
+        const parentWindowOriginalTitle = activeTabOnParentWindow.title;
+        const floatingTabTempTitle = generateRandomToken();
+        const parentWindowTempTitle = generateRandomToken();
+
+        setTabTitle(tabProps.tabId, floatingTabTempTitle, function () {
+            setTabTitle(activeTabOnParentWindow.id, parentWindowTempTitle, function () {
+                setTimeout(function () {
+                    sendModelessDialogRequest(floatingTabTempTitle, parentWindowTempTitle, function () {
+                        setTabTitle(tabProps.tabId, floatingTabOriginalTitle);
+                        setTabTitle(activeTabOnParentWindow.id, parentWindowOriginalTitle);
+                    });
+                }, 200); // need a little delay, because the window title does not change quickly enough
+            });
+        });
     });
 }
 
@@ -57,7 +75,7 @@ repositionFloatingTab = function (newPosition) {
 
                 chrome.windows.update(floatingTab.windowId, newPositionData, function () {
                     tabProps.position = newPosition;
-                    setFloatingTab(tabProps);
+                    saveFloatingTab(tabProps);
                 });
             });
         }
@@ -91,6 +109,10 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
     };
 }
 
+setTabTitle = function (tabId, title, callback) {
+    chrome.tabs.executeScript(tabId, { code: "document.title = \"" + title + "\"" }, callback);
+}
+
 tryGetFloatingTab = function (callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {
@@ -109,7 +131,7 @@ tryGetFloatingTab = function (callback) {
     });
 }
 
-setFloatingTab = function (tabProps, callback) {
+saveFloatingTab = function (tabProps, callback) {
     chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
 }
 
