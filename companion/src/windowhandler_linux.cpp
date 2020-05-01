@@ -46,6 +46,11 @@ std::string getWindowTitle(Display *display, Window window)
 std::vector<Window> getWindowListInStackingOrderTopMostFirst(Display *display)
 {
     Window rootWindow = DefaultRootWindow(display);
+    if (!rootWindow)
+    {
+        throw std::runtime_error("Unable to get root window");
+    }
+
     Atom actualType, filterAtom;
     int actualFormat, status;
     unsigned long itemCount, bytesAfter;
@@ -95,7 +100,7 @@ std::pair<Window, Window> findWindowsInStackingOrder(Display *display, std::stri
             window = *w;
 
             // If we found the floating window, don't even try to check the owner
-            // window. Otherwise, if the two title prefixes are the same we will
+            // window. Otherwise, if the two title prefixes are the same, we would
             // match the same window as both the floating and the owner window.
             continue;
         }
@@ -106,6 +111,7 @@ std::pair<Window, Window> findWindowsInStackingOrder(Display *display, std::stri
 
         if (window && ownerWindow)
         {
+            // Found both windows
             break;
         }
     }
@@ -140,12 +146,6 @@ void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowT
     if (!display)
     {
         throw std::runtime_error("Unable to open display");
-    }
-
-    Window rootWindow = DefaultRootWindow(display);
-    if (!rootWindow)
-    {
-        throw std::runtime_error("Unable to get root window");
     }
 
     std::pair<Window, Window> windowPair = findWindowsInStackingOrder(display, windowTitlePrefix, ownerWindowTitlePrefix);
