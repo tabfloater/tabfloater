@@ -2,8 +2,21 @@
 #include "../libs/loguru/src/loguru.hpp"
 #include <X11/Xlib.h>
 #include <stdexcept>
+#include <vector>
 
 #define _NET_WM_STATE_ADD 1
+
+void throwIfNotFoundOrLog(Window window, std::string windowTitlePrefix)
+{
+    if (!window)
+    {
+        throw std::runtime_error("Unable to find window with title prefix \"" + windowTitlePrefix + "\"");
+    }
+    else
+    {
+        LOG_F(INFO, "Window found: %ld", window);
+    }
+}
 
 std::string getWindowTitle(Display *display, Window window)
 {
@@ -30,39 +43,83 @@ std::string getWindowTitle(Display *display, Window window)
     return windowName;
 }
 
-Window findWindowByTitlePrefix(Display *display, Window window, std::string titlePrefix)
+std::vector<Window> getWindowListInStackingOrderTopMostFirst(Display *display)
 {
-    Window *children, dummy;
-    unsigned int nchildren;
-    unsigned int i;
-    Window w = 0;
-    std::string windowTitle;
-
-    windowTitle = getWindowTitle(display, window);
-    if (windowTitle.rfind(titlePrefix, 0) == 0) // if windowName.startsWith(name)
+    Window rootWindow = DefaultRootWindow(display);
+    if (!rootWindow)
     {
-        return (window);
+        throw std::runtime_error("Unable to get root window");
     }
 
-    if (!XQueryTree(display, window, &dummy, &dummy, &children, &nchildren))
+    Atom actualType, filterAtom;
+    int actualFormat, status;
+    unsigned long itemCount, bytesAfter;
+    unsigned char *data;
+
+    filterAtom = XInternAtom(display, "_NET_CLIENT_LIST_STACKING", True);
+    status = XGetWindowProperty(display, rootWindow, filterAtom, 0L, 8192L, False, AnyPropertyType,
+                                &actualType, &actualFormat, &itemCount, &bytesAfter, &data);
+
+    if (status != Success)
     {
-        return (0);
+        throw std::runtime_error("Unable to get _NET_CLIENT_LIST_STACKING property of root window. Status code: " + std::to_string(status));
     }
 
-    for (i = 0; i < nchildren; i++)
+    Window *windowArray = reinterpret_cast<Window *>(data);
+    std::vector<Window> windowVector;
+
+    // _NET_CLIENT_LIST_STACKING returns windows in stacking order: bottom->top,
+    // so we need to iterate backwards to get the topmost window as the first item
+    for (int i = itemCount - 1; i >= 0; i--)
     {
-        w = findWindowByTitlePrefix(display, children[i], titlePrefix);
-        if (w)
+        Window w = windowArray[i];
+        windowVector.push_back(w);
+    }
+
+    XFree(data);
+
+    return windowVector;
+}
+
+bool windowTitleStartsWith(Display *display, Window window, std::string titlePrefix)
+{
+    std::string title = getWindowTitle(display, window);
+    return title.rfind(titlePrefix, 0) == 0;
+}
+
+std::pair<Window, Window> findWindowsInStackingOrder(Display *display, std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
+{
+    std::vector<Window> windows = getWindowListInStackingOrderTopMostFirst(display);
+    Window window = 0;
+    Window ownerWindow = 0;
+
+    for (auto w = windows.begin(); w != windows.end(); ++w)
+    {
+        if (!window && windowTitleStartsWith(display, *w, windowTitlePrefix))
         {
+            window = *w;
+
+            // If we found the floating window, don't even try to check the owner
+            // window. Otherwise, if the two title prefixes are the same, we would
+            // match the same window as both the floating and the owner window.
+            continue;
+        }
+        if (!ownerWindow && windowTitleStartsWith(display, *w, ownerWindowTitlePrefix))
+        {
+            ownerWindow = *w;
+        }
+
+        if (window && ownerWindow)
+        {
+            // Found both windows
             break;
         }
     }
-    if (children)
-    {
-        XFree((char *)children);
-    }
 
-    return (w);
+    throwIfNotFoundOrLog(window, windowTitlePrefix);
+    throwIfNotFoundOrLog(ownerWindow, ownerWindowTitlePrefix);
+
+    return std::make_pair(window, ownerWindow);
 }
 
 void sendXEventSkipTaskbar(Display *display, Window window)
@@ -83,18 +140,6 @@ void sendXEventSkipTaskbar(Display *display, Window window)
                SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
-void throwIfNotFoundOrLog(Window window, std::string windowTitlePrefix)
-{
-    if (!window)
-    {
-        throw std::runtime_error("Unable to find window with title prefix \"" + windowTitlePrefix + "\"");
-    }
-    else
-    {
-        LOG_F(INFO, "Window found: %p", &window);
-    }
-}
-
 void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
 {
     Display *display = XOpenDisplay(NULL);
@@ -103,17 +148,9 @@ void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowT
         throw std::runtime_error("Unable to open display");
     }
 
-    Window rootWindow = DefaultRootWindow(display);
-    if (!rootWindow)
-    {
-        throw std::runtime_error("Unable to get root window");
-    }
-
-    Window window = findWindowByTitlePrefix(display, rootWindow, windowTitlePrefix);
-    Window ownerWindow = findWindowByTitlePrefix(display, rootWindow, ownerWindowTitlePrefix);
-
-    throwIfNotFoundOrLog(window, windowTitlePrefix);
-    throwIfNotFoundOrLog(ownerWindow, ownerWindowTitlePrefix);
+    std::pair<Window, Window> windowPair = findWindowsInStackingOrder(display, windowTitlePrefix, ownerWindowTitlePrefix);
+    Window window = windowPair.first;
+    Window ownerWindow = windowPair.second;
 
     XSetTransientForHint(display, window, ownerWindow);
     sendXEventSkipTaskbar(display, window);
