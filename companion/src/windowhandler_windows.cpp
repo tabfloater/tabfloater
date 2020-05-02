@@ -1,8 +1,9 @@
 #include "windowhandler.h"
 #include "../libs/loguru/src/loguru.hpp"
-#include <shobjidl.h>
+#include <codecvt>
+#include <regex>
+#include <windows.h>
 #include <stdexcept>
-#include <tchar.h>
 #include <vector>
 
 void throwIfNotFoundOrLog(HWND window, std::string windowTitlePrefix)
@@ -15,6 +16,32 @@ void throwIfNotFoundOrLog(HWND window, std::string windowTitlePrefix)
     {
         LOG_F(INFO, "Window found: %ld", window);
     }
+}
+
+std::string wstringToUtf8String(const std::wstring &str)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+    return convert.to_bytes(str);
+}
+
+std::string getWindowTitle(HWND window)
+{
+    int length = GetWindowTextLengthW(window);
+
+    if (length == 0)
+    {
+        return std::string();
+    }
+
+    wchar_t *buffer = new wchar_t[length + 1];
+    GetWindowTextW(window, buffer, length + 1);
+    buffer[length] = 0;
+
+    std::wstring titleAsWString = std::wstring(buffer);
+    std::string title = wstringToUtf8String(titleAsWString);
+
+    delete[] buffer;
+    return title;
 }
 
 BOOL CALLBACK collectWindows(HWND hwnd, LPARAM lParam)
@@ -36,24 +63,8 @@ std::vector<HWND> getWindowListInStackingOrderTopMostFirst()
 
 bool windowTitleStartsWith(HWND window, std::string titlePrefix)
 {
-    int windowTitleLength = GetWindowTextLengthA(window) + 10; // add some extra characters just in case
-
-    if (windowTitleLength == 0)
-    {
-        return false;
-    }
-
-    TCHAR *buffer = new TCHAR[windowTitleLength];
-    GetWindowText(window, buffer, windowTitleLength);
-
-    if (_tcsstr(buffer, titlePrefix.c_str()))
-    {
-        delete[] buffer;
-        return true;
-    }
-
-    delete[] buffer;
-    return false;
+    std::string title = getWindowTitle(window);
+    return title.rfind(titlePrefix, 0) == 0;
 }
 
 std::pair<HWND, HWND> findWindowsInStackingOrder(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
