@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.13.4)
 if(WIN32)
     set(CMAKE_C_COMPILER gcc)
     set(CMAKE_CXX_COMPILER g++)
+    add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
 project(tabfloater_companion)
