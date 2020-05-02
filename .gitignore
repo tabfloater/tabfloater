@@ -3,3 +3,4 @@ build/
 obj/
 .sass-cache/
 .vscode/
+key.pem
