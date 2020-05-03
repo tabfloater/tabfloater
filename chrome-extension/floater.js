@@ -91,6 +91,13 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
     };
 }
 
+canFloatCurrentTab = function (callback) {
+    chrome.windows.getLastFocused({ populate: true }, function (window) {
+        const currentWindowHasOnlyOneTab = window.tabs.length == 1;
+        callback(!currentWindowHasOnlyOneTab);
+    });
+}
+
 tryGetFloatingTab = function (callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {

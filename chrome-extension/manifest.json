@@ -30,13 +30,13 @@
     }
   },
   "commands": {
-    "key-pageDown": {
+    "floatTab": {
       "suggested_key": {
         "default": "Alt+PageDown"
       },
       "description": "Float tab"
     },
-    "key-pageUp": {
+    "unfloatTab": {
       "suggested_key": {
         "default": "Alt+PageUp"
       },

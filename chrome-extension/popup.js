@@ -28,12 +28,9 @@ setButtonStates = function () {
                 unfloatTabButton.disabled = false;
             } else {
                 unfloatTabButton.disabled = true;
-
-                chrome.windows.getLastFocused({ populate: true }, function (window) {
-                    const currentWindowHasOnlyOneTab = window.tabs.length == 1;
-                    floatTabButton.disabled = currentWindowHasOnlyOneTab;
+                backgroundPage.canFloatCurrentTab(function (canFloat) {
+                    floatTabButton.disabled = !canFloat;
                 });
-
             }
         });
     });

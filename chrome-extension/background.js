@@ -29,12 +29,15 @@ chrome.windows.onRemoved.addListener(function (closingWindowId) {
 });
 
 chrome.commands.onCommand.addListener(function (command) {
-  console.log("comm rec: " + command);
-  tryGetFloatingTab(function (floatingTab, tabProps) {
-    if (!floatingTab && command === "key-pageDown") {
-      floatTab();
+  tryGetFloatingTab(function (floatingTab) {
+    if (!floatingTab && command === "floatTab") {
+      canFloatCurrentTab(function (canFloat) {
+        if (canFloat) {
+          floatTab();
+        }
+      });
     }
-    if (floatingTab && command === "key-pageUp") {
+    if (floatingTab && command === "unfloatTab") {
       unfloatTab();
     }
   });
