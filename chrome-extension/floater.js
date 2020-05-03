@@ -1,6 +1,6 @@
 const DefaultPosition = "topRight";
 
-floatTab = function () {
+function floatTab() {
     tryGetFloatingTab(function (floatingTab) {
         if (!floatingTab) {
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
@@ -39,7 +39,7 @@ floatTab = function () {
     });
 }
 
-unfloatTab = function () {
+function unfloatTab() {
     tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
@@ -49,7 +49,7 @@ unfloatTab = function () {
     });
 }
 
-repositionFloatingTab = function (newPosition) {
+function repositionFloatingTab(newPosition) {
     tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             chrome.windows.get(tabProps.parentWindowId, function (parentWindow) {
@@ -64,7 +64,7 @@ repositionFloatingTab = function (newPosition) {
     });
 }
 
-getPositionDataForFloatingTab = function (parentWindow, position) {
+function getPositionDataForFloatingTab(parentWindow, position) {
     const padding = 50;
     const extraPaddingAtTop = 50;
 
@@ -91,14 +91,14 @@ getPositionDataForFloatingTab = function (parentWindow, position) {
     };
 }
 
-canFloatCurrentTab = function (callback) {
+function canFloatCurrentTab(callback) {
     chrome.windows.getLastFocused({ populate: true }, function (window) {
         const currentWindowHasOnlyOneTab = window.tabs.length == 1;
         callback(!currentWindowHasOnlyOneTab);
     });
 }
 
-tryGetFloatingTab = function (callback) {
+function tryGetFloatingTab(callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {
             const tabProps = data.floatingTabProperties;
@@ -116,10 +116,10 @@ tryGetFloatingTab = function (callback) {
     });
 }
 
-setFloatingTab = function (tabProps, callback) {
+function setFloatingTab(tabProps, callback) {
     chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
 }
 
-clearFloatingTab = function (callback) {
+function clearFloatingTab(callback) {
     chrome.storage.local.remove(["floatingTabProperties"], callback);
 }

@@ -1,13 +1,4 @@
-chrome.runtime.onInstalled.addListener(function () {
-  extensionStartup();
-  setDefaultSettings();
-});
-
-chrome.runtime.onStartup.addListener(function () {
-  extensionStartup();
-});
-
-setDefaultSettings = function () {
+function setDefaultSettings() {
   chrome.storage.sync.set({ positioningStrategy: "fixed" });
   chrome.storage.sync.set({ fixedPosition: "bottomRight" });
   chrome.storage.sync.set({ smartPositioningFollowScrolling: false });
@@ -18,6 +9,15 @@ setDefaultSettings = function () {
 function extensionStartup() {
   clearFloatingTab();
 }
+
+chrome.runtime.onInstalled.addListener(function () {
+  extensionStartup();
+  setDefaultSettings();
+});
+
+chrome.runtime.onStartup.addListener(function () {
+  extensionStartup();
+});
 
 chrome.tabs.onRemoved.addListener(function (closingTabId) {
   tryGetFloatingTab(function (floatingTab) {
@@ -51,4 +51,3 @@ chrome.commands.onCommand.addListener(function (command) {
     }
   });
 });
-
