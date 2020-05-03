@@ -29,6 +29,10 @@
       "128": "images/icons/128.png"
     }
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
   "commands": {
     "floatTab": {
       "suggested_key": {
