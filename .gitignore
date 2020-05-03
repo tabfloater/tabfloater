@@ -1,6 +1,8 @@
+node_modules/
+.sass-cache/
+key.pem
+
 bin/
 build/
 obj/
-.sass-cache/
 .vscode/
-key.pem
