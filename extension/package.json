@@ -1,0 +1,29 @@
+{
+  "name": "tabfloater",
+  "version": "0.4.0",
+  "description": "Picture-in-Picture for ANY tab!",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tabfloater/tabfloater.git"
+  },
+  "keywords": [
+    "chrome-extension",
+    "firefox-addon",
+    "firefox-extension",
+    "picture-in-picture",
+    "floating-window"
+  ],
+  "author": "Balazs Gyurak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tabfloater/tabfloater/issues"
+  },
+  "homepage": "https://github.com/tabfloater/tabfloater#readme",
+  "dependencies": {
+    "webextension-polyfill": "^0.6.0"
+  }
+}
