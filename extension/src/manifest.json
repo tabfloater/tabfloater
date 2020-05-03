@@ -12,15 +12,15 @@
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlazRJmLWlYBPmSrgf5gEmXPtTk6JDnTYtcgB685fp0rjBDZm8BJRtQcsk8wWL1w59ULFYsWGjPa0OSXJfx0xATWM9nX1SlRrXjkmEfQtFokFFq/blVVOU5gsXETBbJh2fGcmXhHxma0qa6/N3JKAMsymyDmfz8igIGWxBK3ps5J+y0Eeqxo2rV1ocnAcX23ieDNSZmUezv4bfpOrB9WJ8jTptkeWHdBj7myNAKpPUJV0Q6oechq96koUG3Dwh4Ru2rdSzWKsTkGh8hVvi38tRgg1E11AFhPammYigjOoWrGL4Ov4PGoRyugrVywAudFywKoHWkvyTiBDRqrW6GJUOwIDAQAB",
   "background": {
     "scripts": [
-      "companion.js",
-      "floater.js",
-      "background.js",
-      "qq.js"
+      "js/companion.js",
+      "js/floater.js",
+      "js/background.js",
+      "js/qq.js"
     ],
     "persistent": false
   },
   "browser_action": {
-    "default_popup": "popup.html",
+    "default_popup": "html/popup.html",
     "default_title": "TabFloater",
     "default_icon": {
       "16": "images/icons/16.png",
@@ -30,7 +30,7 @@
     }
   },
   "options_ui": {
-    "page": "options.html",
+    "page": "html/options.html",
     "open_in_tab": false
   },
   "commands": {
