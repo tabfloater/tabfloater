@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div>
+        Floating tab positioning<br />
+        <input type="radio" id="fixedPositionRadioButton" name="positionRadioButton">
+        <label for="fixedPositionRadioButton">Fixed position</label><br />
+
+        &nbsp;&nbsp;&nbsp;<input type="radio" id="topLeftRadioButton" name="fixedPositionRadioButton">
+        &nbsp;&nbsp;&nbsp;<label for="topLeftRadioButton">Top left</label><br />
+        &nbsp;&nbsp;&nbsp;<input type="radio" id="topRightRadioButton" name="fixedPositionRadioButton">
+        &nbsp;&nbsp;&nbsp;<label for="topRightRadioButton">Top right</label><br />
+        &nbsp;&nbsp;&nbsp;<input type="radio" id="bottomLeftRadioButton" name="fixedPositionRadioButton">
+        &nbsp;&nbsp;&nbsp;<label for="bottomLeftRadioButton">Bottom left</label><br />
+        &nbsp;&nbsp;&nbsp;<input type="radio" id="bottomRightRadioButton" name="fixedPositionRadioButton">
+        &nbsp;&nbsp;&nbsp;<label for="bottomRightRadioButton">Bottom right</label><br />
+
+        <input type="radio" id="smartPositionRadioButton" name="positionRadioButton">
+        <label for="smartPositionRadioButton">Smart positioning</label><br />
+
+        &nbsp;&nbsp;&nbsp;<input type="checkbox" id="followScrollCheckbox" name="followScrollCheckbox">
+        &nbsp;&nbsp;&nbsp;<label for="followScrollCheckbox">Reposition floating tab while scrolling</label><br />
+        &nbsp;&nbsp;&nbsp;<input type="checkbox" id="followTabSwitchCheckbox" name="followTabSwitchCheckbox">
+        &nbsp;&nbsp;&nbsp;<label for="followTabSwitchCheckbox">Reposition floating tab while switching tabs</label>
+    </div>
+
+    <input type="checkbox" id="debugCheckbox" name="debugCheckbox">
+    <label for="debugCheckbox">Enable debugging</label>
+
+
+    <script src="options.js"></script>
+</body>
+
+</html>

@@ -18,6 +18,14 @@ unfloatTabButton.onclick = function () {
     });
 };
 
+optionsButton.onclick = function () {
+    if (chrome.runtime.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+    } else {
+        window.open(chrome.runtime.getURL('options.html'));
+    }
+}
+
 setButtonStates = function () {
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
         backgroundPage.tryGetFloatingTab(function (floatingTab) {
