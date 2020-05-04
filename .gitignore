@@ -1,6 +1,6 @@
 node_modules/
-src/js/libs/*
-!src/js/libs/.gitkeep
+extension/src/js/libs/*
+!extension/src/js/libs/.gitkeep
 key.pem
 
 bin/
