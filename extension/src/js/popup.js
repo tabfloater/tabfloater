@@ -1,3 +1,12 @@
+const floatTabButton = window.floatTabButton;
+const unfloatTabButton = window.unfloatTabButton;
+const optionsButton = window.optionsButton;
+const companionStatusConnecting = window.companionStatusConnecting;
+const companionStatusConnected = window.companionStatusConnected;
+const companionStatusInactive = window.companionStatusInactive;
+const companionStatusError = window.companionStatusError;
+const companionStatusUnavailable = window.companionStatusUnavailable;
+
 function setButtonStates() {
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
         backgroundPage.tryGetFloatingTab(function (floatingTab) {
@@ -37,7 +46,7 @@ function setCompanionStatusIndicator() {
 window.onload = function () {
     setButtonStates();
     setCompanionStatusIndicator();
-}
+};
 
 floatTabButton.onclick = function () {
     window.close();
@@ -58,6 +67,6 @@ optionsButton.onclick = function () {
     if (chrome.runtime.openOptionsPage) {
         chrome.runtime.openOptionsPage();
     } else {
-        window.open(chrome.runtime.getURL('options.html'));
+        window.open(chrome.runtime.getURL("options.html"));
     }
-}
+};

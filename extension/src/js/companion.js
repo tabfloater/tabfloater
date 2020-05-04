@@ -1,4 +1,4 @@
-const CompanionName = "io.github.ba32107.tabfloater"
+const CompanionName = "io.github.ba32107.tabfloater";
 
 function getCompanionStatus(callback) {
     chrome.runtime.sendNativeMessage(CompanionName, {
