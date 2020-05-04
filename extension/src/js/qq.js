@@ -1,4 +1,5 @@
 // for testing only
+// eslint-disable-next-line no-unused-vars
 function markArea(rect, highlight) {
     const div = document.createElement("div");
     div.style.width = rect.width + "px";
@@ -198,6 +199,7 @@ function getMaxRectangleInMatrix(matrix) {
     return maxRectangle;
 }
 
+// eslint-disable-next-line no-unused-vars
 function getMaxRectangleOnEmptySpace() {
     const cellSize = 30;
     const matrix = getViewPortMatrix(cellSize);
