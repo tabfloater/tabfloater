@@ -1,5 +1,6 @@
 node_modules/
-.sass-cache/
+src/js/libs/*
+!src/js/libs/.gitkeep
 key.pem
 
 bin/
