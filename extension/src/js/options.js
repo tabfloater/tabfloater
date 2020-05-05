@@ -1,3 +1,13 @@
+const fixedPositionRadioButton = window.fixedPositionRadioButton;
+const smartPositionRadioButton = window.smartPositionRadioButton;
+const topLeftRadioButton = window.topLeftRadioButton;
+const topRightRadioButton = window.topRightRadioButton;
+const bottomLeftRadioButton = window.bottomLeftRadioButton;
+const bottomRightRadioButton = window.bottomRightRadioButton;
+const followScrollCheckbox = window.followScrollCheckbox;
+const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
+const debugCheckbox = window.debugCheckbox;
+
 function setPositionButtonStates() {
     const positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
     chrome.storage.sync.set({ positioningStrategy: positioningStrategy });
@@ -39,10 +49,10 @@ window.onload = function () {
 
     chrome.storage.sync.get(["fixedPosition"], function (data) {
         switch (data.fixedPosition) {
-            case "topLeft": topLeftRadioButton.checked = true; break;
-            case "topRight": topRightRadioButton.checked = true; break;
-            case "bottomLeft": bottomLeftRadioButton.checked = true; break;
-            case "bottomRight": bottomRightRadioButton.checked = true; break;
+        case "topLeft": topLeftRadioButton.checked = true; break;
+        case "topRight": topRightRadioButton.checked = true; break;
+        case "bottomLeft": bottomLeftRadioButton.checked = true; break;
+        case "bottomRight": bottomRightRadioButton.checked = true; break;
         }
     });
 
@@ -57,7 +67,7 @@ window.onload = function () {
     chrome.storage.sync.get(["debugging"], function (data) {
         debugCheckbox.checked = data.debugging;
     });
-}
+};
 
 fixedPositionRadioButton.onchange = setPositionButtonStates;
 smartPositionRadioButton.onchange = setPositionButtonStates;
@@ -68,12 +78,12 @@ bottomRightRadioButton.onchange = fixedPositionRadioButtonChanged;
 
 followScrollCheckbox.onchange = function () {
     chrome.storage.sync.set({ smartPositioningFollowScrolling: followScrollCheckbox.checked });
-}
+};
 
 followTabSwitchCheckbox.onchange = function () {
     chrome.storage.sync.set({ smartPositioningFollowTabSwitches: followTabSwitchCheckbox.checked });
-}
+};
 
 debugCheckbox.onchange = function () {
     chrome.storage.sync.set({ debugging: debugCheckbox.checked });
-}
+};

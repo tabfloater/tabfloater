@@ -1,6 +1,7 @@
 // for testing only
+// eslint-disable-next-line no-unused-vars
 function markArea(rect, highlight) {
-    let div = document.createElement("div");
+    const div = document.createElement("div");
     div.style.width = rect.width + "px";
     div.style.height = rect.height + "px";
     div.style.position = "absolute";
@@ -38,7 +39,7 @@ function isInViewport(rect) {
     return rect.top >= 0
         && rect.left >= 0
         && rect.right <= viewportWidth
-        && rect.bottom <= viewportHeight
+        && rect.bottom <= viewportHeight;
 }
 
 function shouldMark(node) {
@@ -96,7 +97,7 @@ function getViewPortMatrix(cellSize) {
     const rowCount = Math.floor(viewportHeight / cellSize);
     const columnCount = Math.floor(viewportWidth / cellSize);
 
-    const matrix = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
+    var matrix = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
 
     forEachVisibleElement(document.body, function (elementRectangle) {
 
@@ -133,7 +134,7 @@ function getColumnHeight(matrix, row, column) {
 }
 
 function getMaxRectangleAreaForRow(matrix, row) {
-    let heights = [];
+    const heights = [];
 
     for (let column = 0; column < matrix[row].length; column++) {
         heights.push(getColumnHeight(matrix, row, column));
@@ -145,7 +146,7 @@ function getMaxRectangleAreaForRow(matrix, row) {
         width: 0,
         height: 0,
         area: 0
-    }
+    };
 
     for (let c1 = 0; c1 < matrix[row].length; c1++) {
         let currentMaxForC1 = heights[c1];
@@ -155,8 +156,8 @@ function getMaxRectangleAreaForRow(matrix, row) {
 
         for (let c2 = c1 + 1; c2 < matrix[row].length; c2++) {
             currentMinHeight = Math.min(currentMinHeight, heights[c2]);
-            let width = c2 - c1 + 1;
-            let currentMaxForC2 = currentMinHeight * width;
+            const width = c2 - c1 + 1;
+            const currentMaxForC2 = currentMinHeight * width;
 
             if (currentMaxForC2 > currentMaxForC1) {
                 currentMaxForC1 = currentMaxForC2;
@@ -186,7 +187,7 @@ function getMaxRectangleInMatrix(matrix) {
         width: 0,
         height: 0,
         area: 0
-    }
+    };
     for (let row = 0; row < matrix.length; row++) {
         const maxRectangleForRow = getMaxRectangleAreaForRow(matrix, row);
 
@@ -198,6 +199,7 @@ function getMaxRectangleInMatrix(matrix) {
     return maxRectangle;
 }
 
+// eslint-disable-next-line no-unused-vars
 function getMaxRectangleOnEmptySpace() {
     const cellSize = 30;
     const matrix = getViewPortMatrix(cellSize);

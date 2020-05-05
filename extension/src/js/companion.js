@@ -1,6 +1,6 @@
-const CompanionName = "io.github.ba32107.tabfloater"
+const CompanionName = "io.github.ba32107.tabfloater";
 
-function getCompanionStatus(callback) {
+export function getCompanionStatus(callback) {
     chrome.runtime.sendNativeMessage(CompanionName, {
         action: "ping",
         debug: "true"
@@ -19,7 +19,7 @@ function getCompanionStatus(callback) {
     });
 }
 
-function sendMakePanelRequest(windowTitle, parentWindowTitle) {
+export function sendMakePanelRequest(windowTitle, parentWindowTitle) {
     chrome.runtime.sendNativeMessage(CompanionName, {
         action: "setAsModelessDialog",
         windowTitle: windowTitle,

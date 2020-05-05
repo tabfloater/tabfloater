@@ -4,7 +4,8 @@
   "description": "Picture-in-Picture for ANY tab!",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "npx eslint src/js",
+    "postinstall": "mkdir src/js/libs/webextension-polyfill && cp node_modules/webextension-polyfill/dist/*.min.js* src/js/libs/webextension-polyfill; mkdir src/js/libs/fontawesome-free && cp node_modules/@fortawesome/fontawesome-free/js/all.min.js src/js/libs/fontawesome-free"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,10 @@
   },
   "homepage": "https://github.com/tabfloater/tabfloater#readme",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.0",
     "webextension-polyfill": "^0.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }
