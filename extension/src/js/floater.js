@@ -1,14 +1,8 @@
+import {sendMakePanelRequest} from './companion.js';
+
 const DefaultPosition = "topRight";
 
-function setFloatingTab(tabProps, callback) {
-    chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
-}
-
-function clearFloatingTab(callback) {
-    chrome.storage.local.remove(["floatingTabProperties"], callback);
-}
-
-function tryGetFloatingTab(callback) {
+export function tryGetFloatingTab(callback) {
     chrome.storage.local.get(["floatingTabProperties"], function (data) {
         if (data.floatingTabProperties) {
             const tabProps = data.floatingTabProperties;
@@ -26,34 +20,7 @@ function tryGetFloatingTab(callback) {
     });
 }
 
-function getPositionDataForFloatingTab(parentWindow, position) {
-    const padding = 50;
-    const extraPaddingAtTop = 50;
-
-    const halfWidth = parseInt(parentWindow.width / 2);
-    const halfHeight = parseInt(parentWindow.height / 2);
-    let newTop = parentWindow.top + padding;
-    let newLeft = parentWindow.left + padding;
-
-    if (position.startsWith("top")) {
-        newTop += extraPaddingAtTop;
-    }
-    if (position.startsWith("bottom")) {
-        newTop += halfHeight;
-    }
-    if (position.endsWith("Right")) {
-        newLeft += halfWidth;
-    }
-
-    return {
-        top: newTop,
-        left: newLeft,
-        width: halfWidth - padding * 2,
-        height: halfHeight - padding * 2
-    };
-}
-
-function floatTab() {
+export function floatTab() {
     tryGetFloatingTab(function (floatingTab) {
         if (!floatingTab) {
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
@@ -92,7 +59,7 @@ function floatTab() {
     });
 }
 
-function unfloatTab() {
+export function unfloatTab() {
     tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
             chrome.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex }, function () {
@@ -100,6 +67,22 @@ function unfloatTab() {
             });
         }
     });
+}
+
+export function clearFloatingTab(callback) {
+    chrome.storage.local.remove(["floatingTabProperties"], callback);
+}
+
+
+export function canFloatCurrentTab(callback) {
+    chrome.windows.getLastFocused({ populate: true }, function (window) {
+        const currentWindowHasOnlyOneTab = window.tabs.length == 1;
+        callback(!currentWindowHasOnlyOneTab);
+    });
+}
+
+function setFloatingTab(tabProps, callback) {
+    chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
 }
 
 function repositionFloatingTab(newPosition) {
@@ -117,11 +100,29 @@ function repositionFloatingTab(newPosition) {
     });
 }
 
+function getPositionDataForFloatingTab(parentWindow, position) {
+    const padding = 50;
+    const extraPaddingAtTop = 50;
 
-function canFloatCurrentTab(callback) {
-    chrome.windows.getLastFocused({ populate: true }, function (window) {
-        const currentWindowHasOnlyOneTab = window.tabs.length == 1;
-        callback(!currentWindowHasOnlyOneTab);
-    });
+    const halfWidth = parseInt(parentWindow.width / 2);
+    const halfHeight = parseInt(parentWindow.height / 2);
+    let newTop = parentWindow.top + padding;
+    let newLeft = parentWindow.left + padding;
+
+    if (position.startsWith("top")) {
+        newTop += extraPaddingAtTop;
+    }
+    if (position.startsWith("bottom")) {
+        newTop += halfHeight;
+    }
+    if (position.endsWith("Right")) {
+        newLeft += halfWidth;
+    }
+
+    return {
+        top: newTop,
+        left: newLeft,
+        width: halfWidth - padding * 2,
+        height: halfHeight - padding * 2
+    };
 }
-
