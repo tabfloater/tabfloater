@@ -1,5 +1,5 @@
-import * as floater from './floater.js';
-import {getCompanionStatus} from './companion.js';
+import * as floater from "./floater.js";
+import {getCompanionStatus} from "./companion.js";
 
 function setDefaultSettings() {
     chrome.storage.sync.set({ positioningStrategy: "fixed" });

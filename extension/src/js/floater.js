@@ -1,4 +1,4 @@
-import {sendMakePanelRequest} from './companion.js';
+import {sendMakePanelRequest} from "./companion.js";
 
 const DefaultPosition = "topRight";
 
@@ -85,6 +85,7 @@ function setFloatingTab(tabProps, callback) {
     chrome.storage.local.set({ floatingTabProperties: tabProps }, callback);
 }
 
+// eslint-disable-next-line no-unused-vars
 function repositionFloatingTab(newPosition) {
     tryGetFloatingTab(function (floatingTab, tabProps) {
         if (floatingTab) {
