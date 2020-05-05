@@ -1,9 +1,15 @@
+# Extension 
 node_modules/
 extension/src/js/libs/*
 !extension/src/js/libs/.gitkeep
+
+# Chrome Web Store key file
 key.pem
 
+# C++
 bin/
 build/
 obj/
+
+# VS Code
 .vscode/
