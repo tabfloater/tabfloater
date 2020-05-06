@@ -7,57 +7,54 @@ const companionStatusInactive = window.companionStatusInactive;
 const companionStatusError = window.companionStatusError;
 const companionStatusUnavailable = window.companionStatusUnavailable;
 
-function setButtonStates() {
-    chrome.runtime.sendMessage("getFloatingTab", function(floatingTab) {
-        const floatingTabAlreadyExists = floatingTab != undefined;
+async function setButtonStates() {
+    const floatingTab = await browser.runtime.sendMessage("getFloatingTab");
+    const floatingTabAlreadyExists = floatingTab != undefined;
 
-        if (floatingTabAlreadyExists) {
-            floatTabButton.disabled = true;
-            unfloatTabButton.disabled = false;
-        } else {
-            unfloatTabButton.disabled = true;
-            chrome.runtime.sendMessage("canFloatCurrentTab", function(canFloat) {
-                floatTabButton.disabled = !canFloat;
-            });
-        }
-    });
+    if (floatingTabAlreadyExists) {
+        floatTabButton.disabled = true;
+        unfloatTabButton.disabled = false;
+    } else {
+        unfloatTabButton.disabled = true;
+
+        const canFloatCurrentTab = await browser.runtime.sendMessage("canFloatCurrentTab");
+        floatTabButton.disabled = !canFloatCurrentTab;
+    }
 }
 
-function setCompanionStatusIndicator() {
-    chrome.runtime.sendMessage("getCompanionStatus", function (status) {
-        companionStatusConnecting.classList.add("is-hidden");
+async function setCompanionStatusIndicator() {
+    const status = await browser.runtime.sendMessage("getCompanionStatus");
 
-        if (status == "connected") {
-            companionStatusConnected.classList.remove("is-hidden");
-        } else if (status == "inactive") {
-            companionStatusInactive.classList.remove("is-hidden");
-        } else if (status == "error") {
-            companionStatusError.classList.remove("is-hidden");
-        } else {
-            companionStatusUnavailable.classList.remove("is-hidden");
-        }
-    });
+    companionStatusConnecting.classList.add("is-hidden");
+
+    if (status == "connected") {
+        companionStatusConnected.classList.remove("is-hidden");
+    } else if (status == "error") {
+        companionStatusError.classList.remove("is-hidden");
+    } else {
+        companionStatusUnavailable.classList.remove("is-hidden");
+    }
 }
 
-window.onload = function () {
-    setButtonStates();
-    setCompanionStatusIndicator();
+window.onload = async function () {
+    await setButtonStates();
+    await setCompanionStatusIndicator();
 };
 
 floatTabButton.onclick = function () {
     window.close();
-    chrome.runtime.sendMessage("floatTab");
+    browser.runtime.sendMessage("floatTab");
 };
 
 unfloatTabButton.onclick = function () {
     window.close();
-    chrome.runtime.sendMessage("unfloatTab");
+    browser.runtime.sendMessage("unfloatTab");
 };
 
 optionsButton.onclick = function () {
-    if (chrome.runtime.openOptionsPage) {
-        chrome.runtime.openOptionsPage();
+    if (browser.runtime.openOptionsPage) {
+        browser.runtime.openOptionsPage();
     } else {
-        window.open(chrome.runtime.getURL("options.html"));
+        window.open(browser.runtime.getURL("../html/options.html"));
     }
 };
