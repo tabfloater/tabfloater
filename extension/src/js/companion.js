@@ -14,7 +14,7 @@ export async function getCompanionStatus() {
             return "error";
         }
     }
-    catch {
+    catch (error) {
         return "unavailable";
     }
 }

@@ -3,7 +3,6 @@ const unfloatTabButton = window.unfloatTabButton;
 const optionsButton = window.optionsButton;
 const companionStatusConnecting = window.companionStatusConnecting;
 const companionStatusConnected = window.companionStatusConnected;
-const companionStatusInactive = window.companionStatusInactive;
 const companionStatusError = window.companionStatusError;
 const companionStatusUnavailable = window.companionStatusUnavailable;
 

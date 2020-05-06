@@ -6,7 +6,7 @@ export async function tryGetFloatingTab() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
     const tabProps = data.floatingTabProperties;
 
-    let result = {
+    const result = {
         floatingTab: undefined,
         floatingTabProperties: undefined
     };
@@ -16,7 +16,7 @@ export async function tryGetFloatingTab() {
             const floatingTab = await browser.tabs.get(tabProps.tabId);
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
-        } catch {
+        } catch (error) {
             clearFloatingTab();
         }
     }
@@ -65,7 +65,7 @@ export async function unfloatTab() {
     const {floatingTab, tabProps} = await tryGetFloatingTab();
 
     if (floatingTab) {
-        await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex })
+        await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
         clearFloatingTab();
     }
 }
