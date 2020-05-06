@@ -1,35 +1,33 @@
 const CompanionName = "io.github.ba32107.tabfloater";
 
-export function getCompanionStatus(callback) {
-    chrome.runtime.sendNativeMessage(CompanionName, {
-        action: "ping",
-        debug: "true"
-    }, function (response) {
-        if (chrome.runtime.lastError || !response) {
-            callback("unavailable");
+export async function getCompanionStatus() {
+    try {
+        const response = await browser.runtime.sendNativeMessage(CompanionName, {
+            action: "ping",
+            debug: "true"
+        });
+
+        if (response.status == "ok") {
+            return "connected";
         } else {
-            if (response.status == "ok") {
-                callback("connected");
-            } else if (response.status == "inactive") {
-                callback("inactive");
-            } else {
-                callback("error");
-            }
+            // TODO handle error somehow. show it in tooltip? extra status?
+            return "error";
         }
-    });
+    }
+    catch (error) {
+        return "unavailable";
+    }
 }
 
-export function sendMakePanelRequest(windowTitle, parentWindowTitle) {
-    chrome.runtime.sendNativeMessage(CompanionName, {
-        action: "setAsModelessDialog",
-        windowTitle: windowTitle,
-        parentWindowTitle: parentWindowTitle,
-        debug: "true"
-    }, function (response) {
-        if (chrome.runtime.lastError || !response) {
-            // TODO handle error
-        } else {
-            // TODO do something
-        }
-    });
+export async function sendMakePanelRequest(windowTitle, parentWindowTitle) {
+    try {
+        await browser.runtime.sendNativeMessage(CompanionName, {
+            action: "setAsModelessDialog",
+            windowTitle: windowTitle,
+            parentWindowTitle: parentWindowTitle,
+            debug: "true"
+        });
+    } catch (error) {
+        // TODO handle error
+    }
 }

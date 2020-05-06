@@ -2,80 +2,65 @@ import * as floater from "./floater.js";
 import {getCompanionStatus} from "./companion.js";
 
 function setDefaultSettings() {
-    chrome.storage.sync.set({ positioningStrategy: "fixed" });
-    chrome.storage.sync.set({ fixedPosition: "bottomRight" });
-    chrome.storage.sync.set({ smartPositioningFollowScrolling: false });
-    chrome.storage.sync.set({ smartPositioningFollowTabSwitches: false });
-    chrome.storage.sync.set({ debugging: false });
+    browser.storage.sync.set({ positioningStrategy: "fixed" });
+    browser.storage.sync.set({ fixedPosition: "bottomRight" });
+    browser.storage.sync.set({ smartPositioningFollowScrolling: false });
+    browser.storage.sync.set({ smartPositioningFollowTabSwitches: false });
+    browser.storage.sync.set({ debugging: false });
 }
 
-function extensionStartup() {
+function startup() {
     floater.clearFloatingTab();
 }
 
-chrome.runtime.onInstalled.addListener(function () {
-    extensionStartup();
+browser.runtime.onInstalled.addListener(function () {
+    startup();
     setDefaultSettings();
 });
 
-chrome.runtime.onStartup.addListener(function () {
-    extensionStartup();
+browser.runtime.onStartup.addListener(function () {
+    startup();
 });
 
-chrome.tabs.onRemoved.addListener(function (closingTabId) {
-    floater.tryGetFloatingTab(function (floatingTab) {
-        if (floatingTab && floatingTab.id === closingTabId) {
-            floater.clearFloatingTab();
-        }
-    });
+browser.tabs.onRemoved.addListener(async function (closingTabId) {
+    const {floatingTab} = await floater.tryGetFloatingTab();
+
+    if (floatingTab && floatingTab.id === closingTabId) {
+        floater.clearFloatingTab();
+    }
 });
 
-chrome.windows.onRemoved.addListener(function (closingWindowId) {
-    floater.tryGetFloatingTab(function (floatingTab, floatingTabProperties) {
-        if (floatingTab && floatingTabProperties.parentWindowId === closingWindowId) {
-            chrome.tabs.remove(floatingTab.id, function () {
-                floater.clearFloatingTab();
-            });
-        }
-    });
+browser.windows.onRemoved.addListener(async function (closingWindowId) {
+    const {floatingTab, tabProps} = await floater.tryGetFloatingTab();
+
+    if (floatingTab && tabProps.parentWindowId === closingWindowId) {
+        await browser.tabs.remove(floatingTab.id);
+        floater.clearFloatingTab();
+    }
 });
 
-chrome.commands.onCommand.addListener(function (command) {
-    floater.tryGetFloatingTab(function (floatingTab) {
-        if (!floatingTab && command === "floatTab") {
-            floater.canFloatCurrentTab(function (canFloat) {
-                if (canFloat) {
-                    floater.floatTab();
-                }
-            });
+browser.commands.onCommand.addListener(async function (command) {
+    const {floatingTab} = await floater.tryGetFloatingTab();
+
+    if (!floatingTab && command === "floatTab") {
+        if (await floater.canFloatCurrentTab()) {
+            await floater.floatTab();
         }
-        if (floatingTab && command === "unfloatTab") {
-            floater.unfloatTab();
-        }
-    });
+    }
+    if (floatingTab && command === "unfloatTab") {
+        await floater.unfloatTab();
+    }
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(async function(request) {
     switch (request) {
-    case "canFloatCurrentTab": {
-        floater.canFloatCurrentTab(function(canFloat) {
-            sendResponse(canFloat);
-        });
-        return true;
-    }
+    case "canFloatCurrentTab": return await floater.canFloatCurrentTab();
     case "getFloatingTab": {
-        floater.tryGetFloatingTab(function (floatingTab) {
-            sendResponse(floatingTab);
-        });
-        return true;
+        const {floatingTab} = await floater.tryGetFloatingTab();
+        return floatingTab;
     }
-    case "getCompanionStatus": {
-        getCompanionStatus(function(status) {
-            sendResponse(status);
-        });
-        return true;
-    }
-    case "floatTab": floater.floatTab(); break;
-    case "unfloatTab": floater.unfloatTab(); break;
+    case "getCompanionStatus": return await getCompanionStatus();
+    case "floatTab": await floater.floatTab(); break;
+    case "unfloatTab": await floater.unfloatTab(); break;
     }
 });
