@@ -1,52 +1,52 @@
 {
-  "name": "TabFloater",
-  "version": "0.4",
-  "description": "Picture-in-Picture for ANY tab!",
-  "permissions": [
-    "activeTab",
-    "nativeMessaging",
-    "notifications",
-    "storage",
-    "tabs"
-  ],
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlazRJmLWlYBPmSrgf5gEmXPtTk6JDnTYtcgB685fp0rjBDZm8BJRtQcsk8wWL1w59ULFYsWGjPa0OSXJfx0xATWM9nX1SlRrXjkmEfQtFokFFq/blVVOU5gsXETBbJh2fGcmXhHxma0qa6/N3JKAMsymyDmfz8igIGWxBK3ps5J+y0Eeqxo2rV1ocnAcX23ieDNSZmUezv4bfpOrB9WJ8jTptkeWHdBj7myNAKpPUJV0Q6oechq96koUG3Dwh4Ru2rdSzWKsTkGh8hVvi38tRgg1E11AFhPammYigjOoWrGL4Ov4PGoRyugrVywAudFywKoHWkvyTiBDRqrW6GJUOwIDAQAB",
-  "background": {
-    "page": "html/background.html",
-    "persistent": false
-  },
-  "browser_action": {
-    "default_popup": "html/popup.html",
-    "default_title": "TabFloater",
-    "default_icon": {
-      "16": "images/icons/16.png",
-      "32": "images/icons/32.png",
-      "48": "images/icons/48.png",
-      "128": "images/icons/128.png"
-    }
-  },
-  "options_ui": {
-    "page": "html/options.html",
-    "open_in_tab": false
-  },
-  "commands": {
-    "floatTab": {
-      "suggested_key": {
-        "default": "Alt+PageDown"
-      },
-      "description": "Float tab"
+    "name": "TabFloater",
+    "version": "0.4",
+    "description": "Picture-in-Picture for ANY tab!",
+    "permissions": [
+        "activeTab",
+        "nativeMessaging",
+        "notifications",
+        "storage",
+        "tabs"
+    ],
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlazRJmLWlYBPmSrgf5gEmXPtTk6JDnTYtcgB685fp0rjBDZm8BJRtQcsk8wWL1w59ULFYsWGjPa0OSXJfx0xATWM9nX1SlRrXjkmEfQtFokFFq/blVVOU5gsXETBbJh2fGcmXhHxma0qa6/N3JKAMsymyDmfz8igIGWxBK3ps5J+y0Eeqxo2rV1ocnAcX23ieDNSZmUezv4bfpOrB9WJ8jTptkeWHdBj7myNAKpPUJV0Q6oechq96koUG3Dwh4Ru2rdSzWKsTkGh8hVvi38tRgg1E11AFhPammYigjOoWrGL4Ov4PGoRyugrVywAudFywKoHWkvyTiBDRqrW6GJUOwIDAQAB",
+    "background": {
+        "page": "html/background.html",
+        "persistent": false
     },
-    "unfloatTab": {
-      "suggested_key": {
-        "default": "Alt+PageUp"
-      },
-      "description": "Unfloat tab"
-    }
-  },
-  "icons": {
-    "16": "images/icons/16.png",
-    "32": "images/icons/32.png",
-    "48": "images/icons/48.png",
-    "128": "images/icons/128.png"
-  },
-  "manifest_version": 2
+    "browser_action": {
+        "default_popup": "html/popup.html",
+        "default_title": "TabFloater",
+        "default_icon": {
+            "16": "images/icons/16.png",
+            "32": "images/icons/32.png",
+            "48": "images/icons/48.png",
+            "128": "images/icons/128.png"
+        }
+    },
+    "options_ui": {
+        "page": "html/options.html",
+        "open_in_tab": false
+    },
+    "commands": {
+        "floatTab": {
+            "suggested_key": {
+                "default": "Alt+PageDown"
+            },
+            "description": "Float tab"
+        },
+        "unfloatTab": {
+            "suggested_key": {
+                "default": "Alt+PageUp"
+            },
+            "description": "Unfloat tab"
+        }
+    },
+    "icons": {
+        "16": "images/icons/16.png",
+        "32": "images/icons/32.png",
+        "48": "images/icons/48.png",
+        "128": "images/icons/128.png"
+    },
+    "manifest_version": 2
 }
