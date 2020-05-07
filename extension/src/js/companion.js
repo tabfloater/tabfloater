@@ -7,7 +7,7 @@ export async function getCompanionStatus() {
             debug: "true"
         });
 
-        if (response.status == "ok") {
+        if (response.status === "ok") {
             return "connected";
         } else {
             // TODO handle error somehow. show it in tooltip? extra status?
