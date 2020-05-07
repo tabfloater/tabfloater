@@ -8,11 +8,6 @@ const followScrollCheckbox = window.followScrollCheckbox;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const debugCheckbox = window.debugCheckbox;
 
-async function loadOptions() {
-    const optionsData = await browser.storage.sync.get(["options"]);
-    return optionsData.options;
-}
-
 function saveOptions() {
     const options = {};
 
@@ -50,7 +45,7 @@ function positioningStrategyChanged() {
 }
 
 window.onload = async function () {
-    const options = await loadOptions();
+    const options = await browser.runtime.sendMessage("loadOptions");
 
     if (options.positioningStrategy === "fixed") {
         fixedPositionRadioButton.checked = true;

@@ -12,6 +12,11 @@ const CommandToPositionMapping = {
     "bottomRight,moveLeft": "bottomLeft",
 };
 
+export async function loadOptions() {
+    const optionsData = await browser.storage.sync.get(["options"]);
+    return optionsData.options;
+}
+
 function setDefaultOptions() {
     browser.storage.sync.set({
         options: {
@@ -56,18 +61,27 @@ browser.windows.onRemoved.addListener(async function (closingWindowId) {
 
 browser.commands.onCommand.addListener(async function (command) {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTab();
+    const options = await loadOptions();
 
     if (floatingTab) {
-        const currentPosition = tabProps.position;
-        const inUpperHalf = currentPosition == "topLeft" || currentPosition == "topRight";
-        if (inUpperHalf && command == "moveUp") {
-            await floater.unfloatTab();
-        } else {
-            const newPosition = CommandToPositionMapping[currentPosition + "," + command];
-            if (newPosition) {
-                await floater.repositionFloatingTab(newPosition);
+        if (options.positioningStrategy === "fixed") {
+            const currentPosition = tabProps.position;
+            const inUpperHalf = currentPosition == "topLeft" || currentPosition == "topRight";
+            if (inUpperHalf && command == "moveUp") {
+                await floater.unfloatTab();
+            } else {
+                const newPosition = CommandToPositionMapping[currentPosition + "," + command];
+                if (newPosition) {
+                    await floater.repositionFloatingTab(newPosition);
+                }
             }
+        } else if (options.positioningStrategy === "smart") {
+            if (command === "moveUp") {
+                await floater.unfloatTab();
+            }
+
         }
+
     } else if (command == "moveDown") {
         await floater.floatTab();
     }
@@ -83,5 +97,6 @@ browser.runtime.onMessage.addListener(async function (request) {
         case "getCompanionStatus": return await getCompanionStatus();
         case "floatTab": await floater.floatTab(); break;
         case "unfloatTab": await floater.unfloatTab(); break;
+        case "loadOptions": return await loadOptions();
     }
 });
