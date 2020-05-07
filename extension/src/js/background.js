@@ -1,12 +1,14 @@
 import * as floater from "./floater.js";
 import {getCompanionStatus} from "./companion.js";
 
-function setDefaultSettings() {
-    browser.storage.sync.set({ positioningStrategy: "fixed" });
-    browser.storage.sync.set({ fixedPosition: "bottomRight" });
-    browser.storage.sync.set({ smartPositioningFollowScrolling: false });
-    browser.storage.sync.set({ smartPositioningFollowTabSwitches: false });
-    browser.storage.sync.set({ debugging: false });
+function setDefaultOptions() {
+    browser.storage.sync.set({ options: {
+        positioningStrategy: "fixed",
+        fixedPosition: "bottomRight",
+        smartPositioningFollowScrolling: false,
+        smartPositioningFollowTabSwitches: false,
+        debugging: false
+    }});
 }
 
 function startup() {
@@ -15,7 +17,7 @@ function startup() {
 
 browser.runtime.onInstalled.addListener(function () {
     startup();
-    setDefaultSettings();
+    setDefaultOptions();
 });
 
 browser.runtime.onStartup.addListener(function () {

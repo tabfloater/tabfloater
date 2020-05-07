@@ -8,80 +8,76 @@ const followScrollCheckbox = window.followScrollCheckbox;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const debugCheckbox = window.debugCheckbox;
 
-// TODO rewrite this to use single object in settings
+async function loadOptions() {
+    const optionsData = await browser.storage.sync.get(["options"]);
+    return optionsData.options;
+}
+
+function saveOptions() {
+    const options = {};
+
+    options.positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
+
+    if (topLeftRadioButton.checked) {
+        options.fixedPosition = "topLeft";
+    } else if (topRightRadioButton.checked) {
+        options.fixedPosition = "topRight";
+    } else if (bottomLeftRadioButton.checked) {
+        options.fixedPosition = "bottomLeft";
+    } else if (bottomRightRadioButton.checked) {
+        options.fixedPosition = "bottomRight";
+    }
+
+    options.smartPositioningFollowScrolling = followScrollCheckbox.checked;
+    options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
+    options.debugging = debugCheckbox.checked;
+
+    browser.storage.sync.set({ options: options });
+}
 
 function setPositionButtonStates() {
-    const positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
-    browser.storage.sync.set({ positioningStrategy: positioningStrategy });
-
     topLeftRadioButton.disabled = smartPositionRadioButton.checked;
     topRightRadioButton.disabled = smartPositionRadioButton.checked;
     bottomLeftRadioButton.disabled = smartPositionRadioButton.checked;
     bottomRightRadioButton.disabled = smartPositionRadioButton.checked;
-
     followScrollCheckbox.disabled = fixedPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
 }
 
-function fixedPositionRadioButtonChanged() {
-    let fixedPosition;
-    if (topLeftRadioButton.checked) {
-        fixedPosition = "topLeft";
-    } else if (topRightRadioButton.checked) {
-        fixedPosition = "topRight";
-    } else if (bottomLeftRadioButton.checked) {
-        fixedPosition = "bottomLeft";
-    } else if (bottomRightRadioButton.checked) {
-        fixedPosition = "bottomRight";
-    }
-
-    browser.storage.sync.set({ fixedPosition: fixedPosition });
+function positioningStrategyChanged() {
+    setPositionButtonStates();
+    saveOptions();
 }
 
 window.onload = async function () {
-    const positioningStrategyData = await browser.storage.sync.get(["positioningStrategy"]);
+    const options = await loadOptions();
 
-    if (positioningStrategyData.positioningStrategy === "fixed") {
+    if (options.positioningStrategy === "fixed") {
         fixedPositionRadioButton.checked = true;
-    } else if (positioningStrategyData.positioningStrategy === "smart") {
+    } else if (options.positioningStrategy === "smart") {
         smartPositionRadioButton.checked = true;
     }
 
     setPositionButtonStates();
 
-    const fixedPositionData = await browser.storage.sync.get(["fixedPosition"]);
-    switch (fixedPositionData.fixedPosition) {
+    switch (options.fixedPosition) {
     case "topLeft": topLeftRadioButton.checked = true; break;
     case "topRight": topRightRadioButton.checked = true; break;
     case "bottomLeft": bottomLeftRadioButton.checked = true; break;
     case "bottomRight": bottomRightRadioButton.checked = true; break;
     }
 
-    const smartPositioningFollowScrollingData = await browser.storage.sync.get(["smartPositioningFollowScrolling"]);
-    followScrollCheckbox.checked = smartPositioningFollowScrollingData.smartPositioningFollowScrolling;
-
-    const smartPositioningFollowTabSwitchesData = await browser.storage.sync.get(["smartPositioningFollowTabSwitches"]);
-    followTabSwitchCheckbox.checked = smartPositioningFollowTabSwitchesData.smartPositioningFollowTabSwitches;
-
-    const debuggingData = await browser.storage.sync.get(["debugging"]);
-    debugCheckbox.checked = debuggingData.debugging;
+    followScrollCheckbox.checked = options.smartPositioningFollowScrolling;
+    followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
+    debugCheckbox.checked = options.debugging;
 };
 
-fixedPositionRadioButton.onchange = setPositionButtonStates;
-smartPositionRadioButton.onchange = setPositionButtonStates;
-topLeftRadioButton.onchange = fixedPositionRadioButtonChanged;
-topRightRadioButton.onchange = fixedPositionRadioButtonChanged;
-bottomLeftRadioButton.onchange = fixedPositionRadioButtonChanged;
-bottomRightRadioButton.onchange = fixedPositionRadioButtonChanged;
-
-followScrollCheckbox.onchange = function () {
-    browser.storage.sync.set({ smartPositioningFollowScrolling: followScrollCheckbox.checked });
-};
-
-followTabSwitchCheckbox.onchange = function () {
-    browser.storage.sync.set({ smartPositioningFollowTabSwitches: followTabSwitchCheckbox.checked });
-};
-
-debugCheckbox.onchange = function () {
-    browser.storage.sync.set({ debugging: debugCheckbox.checked });
-};
+fixedPositionRadioButton.onchange = positioningStrategyChanged;
+smartPositionRadioButton.onchange = positioningStrategyChanged;
+topLeftRadioButton.onchange = saveOptions;
+topRightRadioButton.onchange = saveOptions;
+bottomLeftRadioButton.onchange = saveOptions;
+bottomRightRadioButton.onchange = saveOptions;
+followScrollCheckbox.onchange = saveOptions;
+followTabSwitchCheckbox.onchange = saveOptions;
+debugCheckbox.onchange = saveOptions;
