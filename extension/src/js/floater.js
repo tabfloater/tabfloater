@@ -1,4 +1,4 @@
-import {sendMakeDialogRequest} from "./companion.js";
+import { sendMakeDialogRequest } from "./companion.js";
 
 const DefaultPosition = "topRight";
 
@@ -25,7 +25,7 @@ export async function tryGetFloatingTab() {
 }
 
 export async function floatTab() {
-    const {floatingTab} = await tryGetFloatingTab();
+    const { floatingTab } = await tryGetFloatingTab();
 
     if (!floatingTab) {
         const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
@@ -62,7 +62,7 @@ export async function floatTab() {
 }
 
 export async function unfloatTab() {
-    const {floatingTab, tabProps} = await tryGetFloatingTab();
+    const { floatingTab, tabProps } = await tryGetFloatingTab();
 
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
@@ -80,13 +80,8 @@ export async function canFloatCurrentTab() {
     return parentWindow.tabs.length > 1;
 }
 
-async function setFloatingTab(tabProps) {
-    await browser.storage.local.set({ floatingTabProperties: tabProps });
-}
-
-// eslint-disable-next-line no-unused-vars
-async function repositionFloatingTab(newPosition) {
-    const {floatingTab, tabProps} = await tryGetFloatingTab();
+export async function repositionFloatingTab(newPosition) {
+    const { floatingTab, tabProps } = await tryGetFloatingTab();
 
     if (floatingTab) {
         const parentWindow = await browser.windows.get(tabProps.parentWindowId);
@@ -97,6 +92,10 @@ async function repositionFloatingTab(newPosition) {
         tabProps.position = newPosition;
         await setFloatingTab(tabProps);
     }
+}
+
+async function setFloatingTab(tabProps) {
+    await browser.storage.local.set({ floatingTabProperties: tabProps });
 }
 
 function getPositionDataForFloatingTab(parentWindow, position) {

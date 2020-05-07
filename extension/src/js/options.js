@@ -61,10 +61,10 @@ window.onload = async function () {
     setPositionButtonStates();
 
     switch (options.fixedPosition) {
-    case "topLeft": topLeftRadioButton.checked = true; break;
-    case "topRight": topRightRadioButton.checked = true; break;
-    case "bottomLeft": bottomLeftRadioButton.checked = true; break;
-    case "bottomRight": bottomRightRadioButton.checked = true; break;
+        case "topLeft": topLeftRadioButton.checked = true; break;
+        case "topRight": topRightRadioButton.checked = true; break;
+        case "bottomLeft": bottomLeftRadioButton.checked = true; break;
+        case "bottomRight": bottomRightRadioButton.checked = true; break;
     }
 
     followScrollCheckbox.checked = options.smartPositioningFollowScrolling;

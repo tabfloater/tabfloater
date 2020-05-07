@@ -29,17 +29,29 @@
         "open_in_tab": false
     },
     "commands": {
-        "floatTab": {
+        "moveDown": {
             "suggested_key": {
-                "default": "Alt+PageDown"
+                "default": "Alt+K"
             },
-            "description": "Float tab"
+            "description": "Float tab / move window down"
         },
-        "unfloatTab": {
+        "moveUp": {
             "suggested_key": {
-                "default": "Alt+PageUp"
+                "default": "Alt+I"
             },
-            "description": "Unfloat tab"
+            "description": "Unfloat tab / move window up"
+        },
+        "moveLeft": {
+            "suggested_key": {
+                "default": "Alt+J"
+            },
+            "description": "Move window left"
+        },
+        "moveRight": {
+            "suggested_key": {
+                "default": "Alt+L"
+            },
+            "description": "Move window right"
         }
     },
     "icons": {
