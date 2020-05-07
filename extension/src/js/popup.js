@@ -8,9 +8,8 @@ const companionStatusUnavailable = window.companionStatusUnavailable;
 
 async function setButtonStates() {
     const floatingTab = await browser.runtime.sendMessage("getFloatingTab");
-    const floatingTabAlreadyExists = floatingTab !== undefined;
 
-    if (floatingTabAlreadyExists) {
+    if (floatingTab) {
         floatTabButton.disabled = true;
         unfloatTabButton.disabled = false;
     } else {
