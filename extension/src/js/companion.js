@@ -19,7 +19,7 @@ export async function getCompanionStatus() {
     }
 }
 
-export async function sendMakePanelRequest(windowTitle, parentWindowTitle) {
+export async function sendMakeDialogRequest(windowTitle, parentWindowTitle) {
     try {
         await browser.runtime.sendNativeMessage(CompanionName, {
             action: "setAsModelessDialog",
