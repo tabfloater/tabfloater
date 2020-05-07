@@ -1,4 +1,4 @@
-import {sendMakePanelRequest} from "./companion.js";
+import {sendMakeDialogRequest} from "./companion.js";
 
 const DefaultPosition = "topRight";
 
@@ -56,7 +56,7 @@ export async function floatTab() {
             const parentWindowActiveTabs = await browser.tabs.query({ active: true, windowId: tabProps.parentWindowId });
             const parentWindowTitle = parentWindowActiveTabs[0].title;
 
-            await sendMakePanelRequest(currentTab.title, parentWindowTitle);
+            await sendMakeDialogRequest(currentTab.title, parentWindowTitle);
         }
     }
 }
