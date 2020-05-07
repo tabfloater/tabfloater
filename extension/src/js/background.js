@@ -66,8 +66,8 @@ browser.commands.onCommand.addListener(async function (command) {
     if (floatingTab) {
         if (options.positioningStrategy === "fixed") {
             const currentPosition = tabProps.position;
-            const inUpperHalf = currentPosition == "topLeft" || currentPosition == "topRight";
-            if (inUpperHalf && command == "moveUp") {
+            const inUpperHalf = currentPosition === "topLeft" || currentPosition === "topRight";
+            if (inUpperHalf && command === "moveUp") {
                 await floater.unfloatTab();
             } else {
                 const newPosition = CommandToPositionMapping[currentPosition + "," + command];
@@ -82,7 +82,7 @@ browser.commands.onCommand.addListener(async function (command) {
 
         }
 
-    } else if (command == "moveDown") {
+    } else if (command === "moveDown") {
         await floater.floatTab();
     }
 });

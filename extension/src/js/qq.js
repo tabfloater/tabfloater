@@ -68,7 +68,7 @@ function forEachVisibleElement(node, callback) {
         for (let i = 0; i < childNodes.length; i++) {
             const child = childNodes[i];
             if (shouldMark(child)) {
-                const node = (isImage(child) || isInput(child)) && child.parentElement != document.body
+                const node = (isImage(child) || isInput(child)) && child.parentElement !== document.body
                     ? child.parentElement
                     : child;
                 const range = document.createRange();

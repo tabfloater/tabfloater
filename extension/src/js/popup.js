@@ -8,7 +8,7 @@ const companionStatusUnavailable = window.companionStatusUnavailable;
 
 async function setButtonStates() {
     const floatingTab = await browser.runtime.sendMessage("getFloatingTab");
-    const floatingTabAlreadyExists = floatingTab != undefined;
+    const floatingTabAlreadyExists = floatingTab !== undefined;
 
     if (floatingTabAlreadyExists) {
         floatTabButton.disabled = true;
@@ -26,9 +26,9 @@ async function setCompanionStatusIndicator() {
 
     companionStatusConnecting.classList.add("is-hidden");
 
-    if (status == "connected") {
+    if (status === "connected") {
         companionStatusConnected.classList.remove("is-hidden");
-    } else if (status == "error") {
+    } else if (status === "error") {
         companionStatusError.classList.remove("is-hidden");
     } else {
         companionStatusUnavailable.classList.remove("is-hidden");
