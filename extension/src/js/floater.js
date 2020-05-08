@@ -1,5 +1,5 @@
 import { sendMakeDialogRequest } from "./companion.js";
-import { getPositionData } from "./positioning.js";
+import { getPositionData } from "./positioning/positioner.js";
 
 export async function tryGetFloatingTab() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
