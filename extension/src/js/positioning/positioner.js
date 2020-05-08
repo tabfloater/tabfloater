@@ -1,4 +1,4 @@
-import { loadOptions } from "./background.js";
+import { loadOptions } from "../background.js";
 
 export async function getPositionData(parentWindow, requestedFixedPosition) {
     const result = {
