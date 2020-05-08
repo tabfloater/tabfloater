@@ -42,10 +42,8 @@ function isInViewport(rect) {
         && rect.bottom <= viewportHeight;
 }
 
-function shouldMark(node) {
-    const isHidden = node.style && (node.style.display === "none" || node.style.visibility === "hidden");
-
-    if (isHidden) {
+function isVisibleElement(node) {
+    if (node.style && (node.style.display === "none" || node.style.visibility === "hidden")) {
         return false;
     }
 
@@ -67,7 +65,7 @@ function forEachVisibleElement(node, callback) {
     if (childNodes) {
         for (let i = 0; i < childNodes.length; i++) {
             const child = childNodes[i];
-            if (shouldMark(child)) {
+            if (isVisibleElement(child)) {
                 const node = (isImage(child) || isInput(child)) && child.parentElement !== document.body
                     ? child.parentElement
                     : child;
@@ -80,26 +78,23 @@ function forEachVisibleElement(node, callback) {
                         callback(clientRect);
                     }
                 }
-
-
             }
 
             forEachVisibleElement(child, callback);
         }
     }
-
 }
 
-function getViewPortMatrix(cellSize) {
+function mapViewportToMatrixWithEmptyMarkers(cellSize) {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
     const rowCount = Math.floor(viewportHeight / cellSize);
     const columnCount = Math.floor(viewportWidth / cellSize);
 
-    var matrix = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
+    var emptyMarkers = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
 
-    forEachVisibleElement(document.body, function (elementRectangle) {
+    forEachVisibleElement(document.body, (elementRectangle) => {
 
         let rowStartIndex = Math.floor(elementRectangle.top / cellSize);
         let colStartIndex = Math.floor(elementRectangle.left / cellSize);
@@ -114,12 +109,12 @@ function getViewPortMatrix(cellSize) {
 
         for (let r = rowStartIndex; r < rowEndIndex; r++) {
             for (let c = colStartIndex; c < columnEndIndex; c++) {
-                matrix[r][c] = false;
+                emptyMarkers[r][c] = false;
             }
         }
     });
 
-    return matrix;
+    return emptyMarkers;
 }
 
 function getColumnHeight(matrix, row, column) {
@@ -188,6 +183,7 @@ function getMaxRectangleInMatrix(matrix) {
         height: 0,
         area: 0
     };
+
     for (let row = 0; row < matrix.length; row++) {
         const maxRectangleForRow = getMaxRectangleAreaForRow(matrix, row);
 
@@ -197,18 +193,33 @@ function getMaxRectangleInMatrix(matrix) {
     }
 
     return maxRectangle;
+
 }
 
 // eslint-disable-next-line no-unused-vars
-function getMaxRectangleOnEmptySpace() {
+function calculateMaxEmptyArea() {
+    if (!window.screenLeft) {
+        window.screenLeft = window.screenX;
+        window.screenTop = window.screenY;
+    }
+
     const cellSize = 30;
-    const matrix = getViewPortMatrix(cellSize);
+    const matrix = mapViewportToMatrixWithEmptyMarkers(cellSize);
     const maxRect = getMaxRectangleInMatrix(matrix);
 
     return {
-        top: maxRect.row * cellSize + window.screenY,  //TODO window.screenY not tested yet
-        left: maxRect.column * cellSize + window.screenX,
+        top: maxRect.row * cellSize + window.screenTop,  //TODO window.screenY not tested yet
+        left: maxRect.column * cellSize + window.screenLeft,
         width: maxRect.width * cellSize,
         height: maxRect.height * cellSize
     };
 }
+
+
+browser.runtime.onMessage.addListener(async function (request) {
+    if (request === "calculateMaxEmptyArea") {
+        var qq = calculateMaxEmptyArea();
+        markArea(qq);
+        return qq;
+    }
+});

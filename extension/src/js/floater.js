@@ -1,5 +1,5 @@
 import { sendMakeDialogRequest } from "./companion.js";
-import { getPositionData } from "./positioning/positioner.js";
+import * as positioner from "./positioning/positioner.js";
 
 export async function tryGetFloatingTab() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
@@ -31,8 +31,8 @@ export async function floatTab() {
         const currentTab = allActiveTabs[0];
 
         if (currentTab) {
-            const window = await browser.windows.get(currentTab.windowId);
-            const { position, coordinates } = await getPositionData(window);
+            const position = await positioner.getStartingPosition();
+            const coordinates = await positioner.getCoordinates();
 
             const tabProps = {
                 tabId: currentTab.id,
@@ -69,31 +69,24 @@ export async function unfloatTab() {
     }
 }
 
-export function clearFloatingTab() {
-    browser.storage.local.remove(["floatingTabProperties"]);
-}
+export async function repositionFloatingTab() {
+    const { floatingTab } = await tryGetFloatingTab();
 
+    if (floatingTab) {
+        const coordinates = await positioner.getCoordinates();
+        await browser.windows.update(floatingTab.windowId, coordinates);
+    }
+}
 
 export async function canFloatCurrentTab() {
     const parentWindow = await browser.windows.getLastFocused({ populate: true });
     return parentWindow.tabs.length > 1;
 }
 
-export async function repositionFloatingTab(requestedPosition) {
-    const { floatingTab, tabProps } = await tryGetFloatingTab();
-
-    if (floatingTab) {
-        const parentWindow = await browser.windows.get(tabProps.parentWindowId);
-        const { position, coordinates } = await getPositionData(parentWindow, requestedPosition);
-
-
-        await browser.windows.update(floatingTab.windowId, coordinates);
-
-        tabProps.position = position;
-        await setFloatingTab(tabProps);
-    }
+export async function setFloatingTab(tabProps) {
+    await browser.storage.local.set({ floatingTabProperties: tabProps });
 }
 
-async function setFloatingTab(tabProps) {
-    await browser.storage.local.set({ floatingTabProperties: tabProps });
+export function clearFloatingTab() {
+    browser.storage.local.remove(["floatingTabProperties"]);
 }
