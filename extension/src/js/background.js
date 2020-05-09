@@ -97,6 +97,6 @@ browser.runtime.onMessage.addListener(async function (request) {
         case "getCompanionStatus": return await getCompanionStatusAsync();
         case "floatTab": await floater.floatTabAsync(); break;
         case "unfloatTab": await floater.unfloatTabAsync(); break;
-        case "loadOptionsAsync": return await loadOptionsAsync();
+        case "loadOptions": return await loadOptionsAsync();
     }
 });
