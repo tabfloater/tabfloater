@@ -92,7 +92,7 @@ function mapViewportToMatrixWithEmptyMarkers(cellSize) {
 
     var emptyMarkers = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
 
-    forEachVisibleElement(document.body, (elementRectangle) => {
+    forEachVisibleElement(document.body, elementRectangle => {
 
         // TODO debugging?
         // markArea(elementRectangle);

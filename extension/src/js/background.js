@@ -33,16 +33,18 @@ function startup() {
     floater.clearFloatingTab();
 }
 
-browser.runtime.onInstalled.addListener(function () {
+browser.runtime.onInstalled.addListener(() => {
     startup();
     setDefaultOptions();
 });
 
-browser.runtime.onStartup.addListener(function () {
+browser.runtime.onStartup.addListener(() => {
     startup();
 });
 
-browser.tabs.onRemoved.addListener(async function (closingTabId) {
+
+
+browser.tabs.onRemoved.addListener(async closingTabId => {
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && floatingTab.id === closingTabId) {
@@ -50,7 +52,7 @@ browser.tabs.onRemoved.addListener(async function (closingTabId) {
     }
 });
 
-browser.windows.onRemoved.addListener(async function (closingWindowId) {
+browser.windows.onRemoved.addListener(async closingWindowId => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && tabProps.parentWindowId === closingWindowId) {
@@ -59,7 +61,7 @@ browser.windows.onRemoved.addListener(async function (closingWindowId) {
     }
 });
 
-browser.commands.onCommand.addListener(async function (command) {
+browser.commands.onCommand.addListener(async command => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     const options = await loadOptionsAsync();
 
@@ -87,7 +89,7 @@ browser.commands.onCommand.addListener(async function (command) {
     }
 });
 
-browser.runtime.onMessage.addListener(async function (request) {
+browser.runtime.onMessage.addListener(async request => {
     switch (request) {
         case "canFloatCurrentTab": return await floater.canFloatCurrentTabAsync();
         case "getFloatingTab": {
