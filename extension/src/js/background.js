@@ -12,6 +12,13 @@ const CommandToPositionMapping = {
     "bottomRight,moveLeft": "bottomLeft",
 };
 
+const activeTabChangedListenerAsync = async activeInfo => {
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
+    if (floatingTab && tabProps.position === "smart" && tabProps.parentWindowId === activeInfo.windowId) {
+        await floater.repositionFloatingTabAsync();
+    }
+};
+
 export async function loadOptionsAsync() {
     const optionsData = await browser.storage.sync.get(["options"]);
     return optionsData.options;
@@ -41,8 +48,6 @@ browser.runtime.onInstalled.addListener(() => {
 browser.runtime.onStartup.addListener(() => {
     startup();
 });
-
-
 
 browser.tabs.onRemoved.addListener(async closingTabId => {
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
@@ -100,5 +105,17 @@ browser.runtime.onMessage.addListener(async request => {
         case "floatTab": await floater.floatTabAsync(); break;
         case "unfloatTab": await floater.unfloatTabAsync(); break;
         case "loadOptions": return await loadOptionsAsync();
+    }
+});
+
+browser.storage.onChanged.addListener(async (changes, areaName) => {
+    if (areaName === "sync") {
+        const newOptions = changes.options.newValue;
+
+        if (newOptions.smartPositioningFollowTabSwitches) {
+            browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
+        } else {
+            browser.tabs.onActivated.removeListener(activeTabChangedListenerAsync);
+        }
     }
 });
