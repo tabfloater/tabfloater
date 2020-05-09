@@ -12,6 +12,13 @@ const CommandToPositionMapping = {
     "bottomRight,moveLeft": "bottomLeft",
 };
 
+const DefaultOptions = {
+    positioningStrategy: "smart",
+    fixedPosition: "bottomRight",
+    smartPositioningFollowTabSwitches: true,
+    debugging: false
+};
+
 const activeTabChangedListenerAsync = async activeInfo => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     if (floatingTab && tabProps.position === "smart" && tabProps.parentWindowId === activeInfo.windowId) {
@@ -25,15 +32,11 @@ export async function loadOptionsAsync() {
 }
 
 function setDefaultOptions() {
-    browser.storage.sync.set({
-        options: {
-            positioningStrategy: "smart",
-            fixedPosition: "bottomRight",
-            smartPositioningFollowScrolling: false,
-            smartPositioningFollowTabSwitches: false,
-            debugging: false
-        }
-    });
+    browser.storage.sync.set({ options: DefaultOptions });
+
+    if (DefaultOptions.smartPositioningFollowTabSwitches) {
+        browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
+    }
 }
 
 function startup() {

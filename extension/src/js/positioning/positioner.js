@@ -91,7 +91,7 @@ function getFixedPositionCoordinates(parentWindow, position) {
 async function getSmartPositionCoordinatesAsync(parentWindowActiveTab) {
     try {
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/libs/webextension-polyfill/browser-polyfill.min.js" });
-        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/areaCalculator.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/contentScripts/areaCalculator.js" });
 
         return await browser.tabs.sendMessage(parentWindowActiveTab.id, {
             action: "calculateMaxEmptyArea",

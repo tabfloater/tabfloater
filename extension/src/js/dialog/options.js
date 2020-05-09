@@ -4,7 +4,6 @@ const topLeftRadioButton = window.topLeftRadioButton;
 const topRightRadioButton = window.topRightRadioButton;
 const bottomLeftRadioButton = window.bottomLeftRadioButton;
 const bottomRightRadioButton = window.bottomRightRadioButton;
-const followScrollCheckbox = window.followScrollCheckbox;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const debugCheckbox = window.debugCheckbox;
 
@@ -23,7 +22,6 @@ function saveOptions() {
         options.fixedPosition = "bottomRight";
     }
 
-    options.smartPositioningFollowScrolling = followScrollCheckbox.checked;
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
     options.debugging = debugCheckbox.checked;
 
@@ -35,7 +33,6 @@ function setPositionButtonStates() {
     topRightRadioButton.disabled = smartPositionRadioButton.checked;
     bottomLeftRadioButton.disabled = smartPositionRadioButton.checked;
     bottomRightRadioButton.disabled = smartPositionRadioButton.checked;
-    followScrollCheckbox.disabled = fixedPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
 }
 
@@ -62,7 +59,6 @@ window.onload = async function () {
         case "bottomRight": bottomRightRadioButton.checked = true; break;
     }
 
-    followScrollCheckbox.checked = options.smartPositioningFollowScrolling;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     debugCheckbox.checked = options.debugging;
 };
@@ -73,6 +69,5 @@ topLeftRadioButton.onchange = saveOptions;
 topRightRadioButton.onchange = saveOptions;
 bottomLeftRadioButton.onchange = saveOptions;
 bottomRightRadioButton.onchange = saveOptions;
-followScrollCheckbox.onchange = saveOptions;
 followTabSwitchCheckbox.onchange = saveOptions;
 debugCheckbox.onchange = saveOptions;
