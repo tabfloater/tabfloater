@@ -4,7 +4,7 @@ export async function getCompanionStatus() {
     try {
         const response = await browser.runtime.sendNativeMessage(CompanionName, {
             action: "ping",
-            debug: "true"
+            debug: "true" // TODO wire debugging option
         });
 
         if (response.status === "ok") {
@@ -25,7 +25,7 @@ export async function sendMakeDialogRequest(windowTitle, parentWindowTitle) {
             action: "setAsModelessDialog",
             windowTitle: windowTitle,
             parentWindowTitle: parentWindowTitle,
-            debug: "true"
+            debug: "true" // TODO wire debugging option
         });
     } catch (error) {
         // TODO handle error

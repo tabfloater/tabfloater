@@ -31,15 +31,17 @@ export async function floatTab() {
         const currentTab = allActiveTabs[0];
 
         if (currentTab) {
-            const position = await positioner.getStartingPosition();
-            const coordinates = await positioner.getCoordinates();
-
             const tabProps = {
                 tabId: currentTab.id,
                 parentWindowId: currentTab.windowId,
                 originalIndex: currentTab.index,
-                position: position
+                position: await positioner.getStartingPosition()
             };
+
+            const succeedingActiveTab = await getSucceedingActiveTab();
+            await browser.tabs.update(succeedingActiveTab.id, { active: true });
+
+            const coordinates = await positioner.calculateCoordinates();
 
             await browser.windows.create({
                 "tabId": currentTab.id,
@@ -52,9 +54,7 @@ export async function floatTab() {
 
             await setFloatingTab(tabProps);
 
-            const parentWindowActiveTabs = await browser.tabs.query({ active: true, windowId: tabProps.parentWindowId });
-            const parentWindowTitle = parentWindowActiveTabs[0].title;
-
+            const parentWindowTitle = succeedingActiveTab.title;
             await sendMakeDialogRequest(currentTab.title, parentWindowTitle);
         }
     }
@@ -73,7 +73,7 @@ export async function repositionFloatingTab() {
     const { floatingTab } = await tryGetFloatingTab();
 
     if (floatingTab) {
-        const coordinates = await positioner.getCoordinates();
+        const coordinates = await positioner.calculateCoordinates();
         await browser.windows.update(floatingTab.windowId, coordinates);
     }
 }
@@ -89,4 +89,21 @@ export async function setFloatingTab(tabProps) {
 
 export function clearFloatingTab() {
     browser.storage.local.remove(["floatingTabProperties"]);
+}
+
+/**
+ * Returns the tab that is going to be active after the float action happens.
+ * This is always the tab right to the active tab, except when the active
+ * tab is the last one, in which case it's the one to the left.
+ */
+async function getSucceedingActiveTab() {
+    const allTabsOnCurrentWindow = await browser.tabs.query({ lastFocusedWindow: true });
+    allTabsOnCurrentWindow.sort((tab1, tab2) => tab1.index < tab2.index);
+
+    const currentTab = allTabsOnCurrentWindow.find(tab => tab.active);
+    const currentTabIsLast = currentTab.index === allTabsOnCurrentWindow.length - 1;
+
+    return currentTabIsLast
+        ? allTabsOnCurrentWindow[currentTab.index - 1]
+        : allTabsOnCurrentWindow[currentTab.index + 1];
 }

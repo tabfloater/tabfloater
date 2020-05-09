@@ -20,7 +20,7 @@ export async function loadOptions() {
 function setDefaultOptions() {
     browser.storage.sync.set({
         options: {
-            positioningStrategy: "fixed",
+            positioningStrategy: "smart",
             fixedPosition: "bottomRight",
             smartPositioningFollowScrolling: false,
             smartPositioningFollowTabSwitches: false,

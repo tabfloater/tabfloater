@@ -1,6 +1,9 @@
 import { loadOptions } from "../background.js";
 import { tryGetFloatingTab } from "../floater.js";
 
+/**
+ * Returns the textual representation of the position that a new floating tab should have.
+ */
 export async function getStartingPosition() {
     const options = await loadOptions();
 
@@ -15,27 +18,44 @@ export async function getStartingPosition() {
     return startingPosition;
 }
 
-export async function getCoordinates() {
+/**
+ * Calculates the coordinates (top, left, width, height) of the floating tab, regardless of
+ * whether it exists. If the floating tab already exists, this method calculates the position
+ * against the active tab of the parent window.
+ *
+ * If there is no floating tab yet, the result is calculated against the active tab of the
+ * current window, so the caller must set the active tab to the desired parent window tab
+ * before calling this method.
+ */
+export async function calculateCoordinates() {
     const options = await loadOptions();
     const { floatingTab, tabProps } = await tryGetFloatingTab();
-
     let coordinates;
+
     if (options.positioningStrategy === "fixed") {
-        let window;
+        let parentWindow;
         let fixedPosition;
+
         if (floatingTab) {
-            window = await browser.windows.get(tabProps.parentWindowId);
+            parentWindow = await browser.windows.get(tabProps.parentWindowId);
             fixedPosition = tabProps.position;
         } else {
-            const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
-            const currentTab = allActiveTabs[0];
-            window = await browser.windows.get(currentTab.windowId);
+            parentWindow = await browser.windows.getLastFocused({ populate: true });
             fixedPosition = options.fixedPosition;
         }
 
-        coordinates = getFixedPositionCoordinates(window, fixedPosition);
+        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition);
     } else if (options.positioningStrategy === "smart") {
-        coordinates = getSmartPositionCoordinates();
+        let allActiveTabsOnParentWindow;
+
+        if (floatingTab) {
+            allActiveTabsOnParentWindow = await browser.tabs.query({ active: true, windowId: tabProps.parentWindowId });
+        } else {
+            allActiveTabsOnParentWindow = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+        }
+
+        const parentWindowActiveTab = allActiveTabsOnParentWindow[0];
+        coordinates = await getSmartPositionCoordinates(parentWindowActiveTab);
     }
 
     return coordinates;
@@ -68,28 +88,24 @@ function getFixedPositionCoordinates(parentWindow, position) {
     };
 }
 
-function getSmartPositionCoordinates() {
-    // TODO implement smart positioning
+async function getSmartPositionCoordinates(parentWindowActiveTab) {
+    try {
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/libs/webextension-polyfill/browser-polyfill.min.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/areaCalculator.js" });
 
-    // const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
-    // const currentTab = allActiveTabs[0];
+        return await browser.tabs.sendMessage(parentWindowActiveTab.id, {
+            action: "calculateMaxEmptyArea",
+            debug: true // TODO implement debugging with marking & wire in debugging option
+        });
+    } catch (error) {
+        // TODO notify the user that smart positioning failed
 
-    // try {
-    //     await browser.tabs.executeScript(currentTab.id, {
-    //         file: "js/libs/webextension-polyfill/browser-polyfill.min.js"});
-    //     await browser.tabs.executeScript(currentTab.id, {
-    //         file: "js/positioning/areaCalculator.js"
-    //     });
-    //     var res = await browser.tabs.sendMessage(currentTab.id, "calculateMaxEmptyArea");
-    //     alert("top: " + res.top + ", left: " + res.left + ", width: " + res.width + ", height: " + res.height);
-    // } catch (error) {
-    //     alert(error.message);
-    // }
+        // The content script can fail sometimes, for example if we want to inject
+        // it into a chrome:// page. In this case, we fall back to fixed positioning.
 
-    return {
-        top: 100,
-        left: 100,
-        width: 500,
-        height: 500
-    };
+        const parentWindow = await browser.windows.get(parentWindowActiveTab.windowId);
+        const options = await loadOptions();
+
+        return getFixedPositionCoordinates(parentWindow, options.fixedPosition);
+    }
 }
