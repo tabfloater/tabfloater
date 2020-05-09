@@ -1,5 +1,5 @@
 import * as floater from "./floater.js";
-import { getCompanionStatus } from "./companion.js";
+import { getCompanionStatusAsync } from "./companion.js";
 
 const CommandToPositionMapping = {
     "topLeft,moveDown": "bottomLeft",
@@ -12,7 +12,7 @@ const CommandToPositionMapping = {
     "bottomRight,moveLeft": "bottomLeft",
 };
 
-export async function loadOptions() {
+export async function loadOptionsAsync() {
     const optionsData = await browser.storage.sync.get(["options"]);
     return optionsData.options;
 }
@@ -43,7 +43,7 @@ browser.runtime.onStartup.addListener(function () {
 });
 
 browser.tabs.onRemoved.addListener(async function (closingTabId) {
-    const { floatingTab } = await floater.tryGetFloatingTab();
+    const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && floatingTab.id === closingTabId) {
         floater.clearFloatingTab();
@@ -51,7 +51,7 @@ browser.tabs.onRemoved.addListener(async function (closingTabId) {
 });
 
 browser.windows.onRemoved.addListener(async function (closingWindowId) {
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTab();
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && tabProps.parentWindowId === closingWindowId) {
         await browser.tabs.remove(floatingTab.id);
@@ -60,43 +60,43 @@ browser.windows.onRemoved.addListener(async function (closingWindowId) {
 });
 
 browser.commands.onCommand.addListener(async function (command) {
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTab();
-    const options = await loadOptions();
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
+    const options = await loadOptionsAsync();
 
     if (floatingTab) {
         if (options.positioningStrategy === "smart" || tabProps.position === "smart") {
             if (command === "moveUp") {
-                await floater.unfloatTab();
+                await floater.unfloatTabAsync();
             }
         } else if (options.positioningStrategy === "fixed") {
             const currentPosition = tabProps.position;
             const inUpperHalf = currentPosition === "topLeft" || currentPosition === "topRight";
             if (inUpperHalf && command === "moveUp") {
-                await floater.unfloatTab();
+                await floater.unfloatTabAsync();
             } else {
                 const newPosition = CommandToPositionMapping[currentPosition + "," + command];
                 if (newPosition) {
                     tabProps.position = newPosition;
-                    await floater.setFloatingTab(tabProps);
-                    await floater.repositionFloatingTab();
+                    await floater.setFloatingTabAsync(tabProps);
+                    await floater.repositionFloatingTabAsync();
                 }
             }
         }
     } else if (command === "moveDown") {
-        await floater.floatTab();
+        await floater.floatTabAsync();
     }
 });
 
 browser.runtime.onMessage.addListener(async function (request) {
     switch (request) {
-        case "canFloatCurrentTab": return await floater.canFloatCurrentTab();
+        case "canFloatCurrentTab": return await floater.canFloatCurrentTabAsync();
         case "getFloatingTab": {
-            const { floatingTab } = await floater.tryGetFloatingTab();
+            const { floatingTab } = await floater.tryGetFloatingTabAsync();
             return floatingTab;
         }
-        case "getCompanionStatus": return await getCompanionStatus();
-        case "floatTab": await floater.floatTab(); break;
-        case "unfloatTab": await floater.unfloatTab(); break;
-        case "loadOptions": return await loadOptions();
+        case "getCompanionStatus": return await getCompanionStatusAsync();
+        case "floatTab": await floater.floatTabAsync(); break;
+        case "unfloatTab": await floater.unfloatTabAsync(); break;
+        case "loadOptionsAsync": return await loadOptionsAsync();
     }
 });

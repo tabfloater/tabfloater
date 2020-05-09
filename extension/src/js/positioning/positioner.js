@@ -1,11 +1,11 @@
-import { loadOptions } from "../background.js";
-import { tryGetFloatingTab } from "../floater.js";
+import { loadOptionsAsync } from "../background.js";
+import { tryGetFloatingTabAsync } from "../floater.js";
 
 /**
  * Returns the textual representation of the position that a new floating tab should have.
  */
-export async function getStartingPosition() {
-    const options = await loadOptions();
+export async function getStartingPositionAsync() {
+    const options = await loadOptionsAsync();
 
     let startingPosition;
 
@@ -27,9 +27,9 @@ export async function getStartingPosition() {
  * current window, so the caller must set the active tab to the desired parent window tab
  * before calling this method.
  */
-export async function calculateCoordinates() {
-    const options = await loadOptions();
-    const { floatingTab, tabProps } = await tryGetFloatingTab();
+export async function calculateCoordinatesAsync() {
+    const options = await loadOptionsAsync();
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
     let coordinates;
 
     if (options.positioningStrategy === "fixed") {
@@ -55,7 +55,7 @@ export async function calculateCoordinates() {
         }
 
         const parentWindowActiveTab = allActiveTabsOnParentWindow[0];
-        coordinates = await getSmartPositionCoordinates(parentWindowActiveTab);
+        coordinates = await getSmartPositionCoordinatesAsync(parentWindowActiveTab);
     }
 
     return coordinates;
@@ -88,7 +88,7 @@ function getFixedPositionCoordinates(parentWindow, position) {
     };
 }
 
-async function getSmartPositionCoordinates(parentWindowActiveTab) {
+async function getSmartPositionCoordinatesAsync(parentWindowActiveTab) {
     try {
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/libs/webextension-polyfill/browser-polyfill.min.js" });
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/areaCalculator.js" });
@@ -104,7 +104,7 @@ async function getSmartPositionCoordinates(parentWindowActiveTab) {
         // it into a chrome:// page. In this case, we fall back to fixed positioning.
 
         const parentWindow = await browser.windows.get(parentWindowActiveTab.windowId);
-        const options = await loadOptions();
+        const options = await loadOptionsAsync();
 
         return getFixedPositionCoordinates(parentWindow, options.fixedPosition);
     }

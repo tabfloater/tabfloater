@@ -1,6 +1,6 @@
 const CompanionName = "io.github.ba32107.tabfloater";
 
-export async function getCompanionStatus() {
+export async function getCompanionStatusAsync() {
     try {
         const response = await browser.runtime.sendNativeMessage(CompanionName, {
             action: "ping",
@@ -19,7 +19,7 @@ export async function getCompanionStatus() {
     }
 }
 
-export async function sendMakeDialogRequest(windowTitle, parentWindowTitle) {
+export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle) {
     try {
         await browser.runtime.sendNativeMessage(CompanionName, {
             action: "setAsModelessDialog",
