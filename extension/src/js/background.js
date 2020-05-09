@@ -20,7 +20,7 @@ export async function loadOptions() {
 function setDefaultOptions() {
     browser.storage.sync.set({
         options: {
-            positioningStrategy: "fixed",
+            positioningStrategy: "smart",
             fixedPosition: "bottomRight",
             smartPositioningFollowScrolling: false,
             smartPositioningFollowTabSwitches: false,
@@ -64,7 +64,11 @@ browser.commands.onCommand.addListener(async function (command) {
     const options = await loadOptions();
 
     if (floatingTab) {
-        if (options.positioningStrategy === "fixed") {
+        if (options.positioningStrategy === "smart" || tabProps.position === "smart") {
+            if (command === "moveUp") {
+                await floater.unfloatTab();
+            }
+        } else if (options.positioningStrategy === "fixed") {
             const currentPosition = tabProps.position;
             const inUpperHalf = currentPosition === "topLeft" || currentPosition === "topRight";
             if (inUpperHalf && command === "moveUp") {
@@ -72,16 +76,12 @@ browser.commands.onCommand.addListener(async function (command) {
             } else {
                 const newPosition = CommandToPositionMapping[currentPosition + "," + command];
                 if (newPosition) {
-                    await floater.repositionFloatingTab(newPosition);
+                    tabProps.position = newPosition;
+                    await floater.setFloatingTab(tabProps);
+                    await floater.repositionFloatingTab();
                 }
             }
-        } else if (options.positioningStrategy === "smart") {
-            if (command === "moveUp") {
-                await floater.unfloatTab();
-            }
-
         }
-
     } else if (command === "moveDown") {
         await floater.floatTab();
     }

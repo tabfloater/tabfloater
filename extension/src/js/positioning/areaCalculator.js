@@ -1,20 +1,18 @@
 // for testing only
 // eslint-disable-next-line no-unused-vars
-function markArea(rect, highlight) {
+function markArea(rectangle, highlight) {
     const div = document.createElement("div");
-    div.style.width = rect.width + "px";
-    div.style.height = rect.height + "px";
+    div.style.width = rectangle.width + "px";
+    div.style.height = rectangle.height + "px";
+    div.style.top = rectangle.top + window.scrollY + "px";
+    div.style.left = rectangle.left + window.scrollX + "px";
     div.style.position = "absolute";
-    div.style.top = rect.top + window.scrollY + "px";
-    div.style.left = rect.left + window.scrollX + "px";
-
     div.style.borderWidth = highlight ? "thick" : "thin";
     div.style.borderStyle = "solid";
-    div.style.borderColor = "red";
+    div.style.borderColor = highlight ? "lightgreen" : "red";
 
     document.body.appendChild(div);
 }
-
 
 function isTextNode(node) {
     return node.nodeType === 3;
@@ -42,10 +40,8 @@ function isInViewport(rect) {
         && rect.bottom <= viewportHeight;
 }
 
-function shouldMark(node) {
-    const isHidden = node.style && (node.style.display === "none" || node.style.visibility === "hidden");
-
-    if (isHidden) {
+function isVisibleElement(node) {
+    if (node.style && (node.style.display === "none" || node.style.visibility === "hidden")) {
         return false;
     }
 
@@ -67,7 +63,7 @@ function forEachVisibleElement(node, callback) {
     if (childNodes) {
         for (let i = 0; i < childNodes.length; i++) {
             const child = childNodes[i];
-            if (shouldMark(child)) {
+            if (isVisibleElement(child)) {
                 const node = (isImage(child) || isInput(child)) && child.parentElement !== document.body
                     ? child.parentElement
                     : child;
@@ -80,26 +76,26 @@ function forEachVisibleElement(node, callback) {
                         callback(clientRect);
                     }
                 }
-
-
             }
 
             forEachVisibleElement(child, callback);
         }
     }
-
 }
 
-function getViewPortMatrix(cellSize) {
+function mapViewportToMatrixWithEmptyMarkers(cellSize) {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
     const rowCount = Math.floor(viewportHeight / cellSize);
     const columnCount = Math.floor(viewportWidth / cellSize);
 
-    var matrix = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
+    var emptyMarkers = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
 
-    forEachVisibleElement(document.body, function (elementRectangle) {
+    forEachVisibleElement(document.body, (elementRectangle) => {
+
+        // TODO debugging?
+        // markArea(elementRectangle);
 
         let rowStartIndex = Math.floor(elementRectangle.top / cellSize);
         let colStartIndex = Math.floor(elementRectangle.left / cellSize);
@@ -114,12 +110,12 @@ function getViewPortMatrix(cellSize) {
 
         for (let r = rowStartIndex; r < rowEndIndex; r++) {
             for (let c = colStartIndex; c < columnEndIndex; c++) {
-                matrix[r][c] = false;
+                emptyMarkers[r][c] = false;
             }
         }
     });
 
-    return matrix;
+    return emptyMarkers;
 }
 
 function getColumnHeight(matrix, row, column) {
@@ -188,6 +184,7 @@ function getMaxRectangleInMatrix(matrix) {
         height: 0,
         area: 0
     };
+
     for (let row = 0; row < matrix.length; row++) {
         const maxRectangleForRow = getMaxRectangleAreaForRow(matrix, row);
 
@@ -199,16 +196,52 @@ function getMaxRectangleInMatrix(matrix) {
     return maxRectangle;
 }
 
-// eslint-disable-next-line no-unused-vars
-function getMaxRectangleOnEmptySpace() {
+function calculateMaxEmptyArea() {
     const cellSize = 30;
-    const matrix = getViewPortMatrix(cellSize);
+    const matrix = mapViewportToMatrixWithEmptyMarkers(cellSize);
     const maxRect = getMaxRectangleInMatrix(matrix);
 
     return {
-        top: maxRect.row * cellSize + window.screenY,  //TODO window.screenY not tested yet
-        left: maxRect.column * cellSize + window.screenX,
+        top: maxRect.row * cellSize,
+        left: maxRect.column * cellSize,
         width: maxRect.width * cellSize,
         height: maxRect.height * cellSize
     };
 }
+
+function getScreenCoordinatesOfViewport() {
+    if (!window.screenTop) {
+        window.screenTop = window.screenY;
+        window.screenLeft = window.screenX;
+    }
+
+    const viewportWidthOffsetRelativeToWindow = window.outerWidth - window.innerWidth;
+    const viewportHeightOffsetRelativeToWindow = window.outerHeight - window.innerHeight;
+    // TODO log these variables when debugging?
+
+    return {
+        top: window.screenTop + viewportHeightOffsetRelativeToWindow,
+        left: window.screenLeft + viewportWidthOffsetRelativeToWindow
+    };
+}
+
+browser.runtime.onMessage.addListener(async function (request) {
+    if (request.action === "calculateMaxEmptyArea") {
+        if (request.debug) {
+            // TODO implement debugging
+        }
+
+        const viewportCoordinates = getScreenCoordinatesOfViewport();
+        const maxEmptyAreaInViewport = calculateMaxEmptyArea();
+
+        // TODO debugging
+        //markArea(maxEmptyAreaInViewport, true);
+
+        return {
+            top: viewportCoordinates.top + maxEmptyAreaInViewport.top,
+            left: viewportCoordinates.left + maxEmptyAreaInViewport.left,
+            width: maxEmptyAreaInViewport.width,
+            height: maxEmptyAreaInViewport.height
+        };
+    }
+});

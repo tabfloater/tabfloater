@@ -1,26 +1,67 @@
 import { loadOptions } from "../background.js";
+import { tryGetFloatingTab } from "../floater.js";
 
-export async function getPositionData(parentWindow, requestedFixedPosition) {
-    const result = {
-        position: undefined,
-        coordinates: undefined
-    };
-
+/**
+ * Returns the textual representation of the position that a new floating tab should have.
+ */
+export async function getStartingPosition() {
     const options = await loadOptions();
 
+    let startingPosition;
+
     if (options.positioningStrategy === "fixed") {
-        const fixedPosition = requestedFixedPosition || options.fixedPosition;
-        result.position = fixedPosition;
-        result.coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition);
+        startingPosition = options.fixedPosition;
     } else if (options.positioningStrategy === "smart") {
-        result.position = "smart";
-        result.coordinates = getSmartPositionCoordinates(parentWindow);
+        startingPosition = "smart";
     }
 
-    return result;
+    return startingPosition;
 }
 
-function getFixedPositionCoordinates(parentWindow, requestedFixedPosition) {
+/**
+ * Calculates the coordinates (top, left, width, height) of the floating tab, regardless of
+ * whether it exists. If the floating tab already exists, this method calculates the position
+ * against the active tab of the parent window.
+ *
+ * If there is no floating tab yet, the result is calculated against the active tab of the
+ * current window, so the caller must set the active tab to the desired parent window tab
+ * before calling this method.
+ */
+export async function calculateCoordinates() {
+    const options = await loadOptions();
+    const { floatingTab, tabProps } = await tryGetFloatingTab();
+    let coordinates;
+
+    if (options.positioningStrategy === "fixed") {
+        let parentWindow;
+        let fixedPosition;
+
+        if (floatingTab) {
+            parentWindow = await browser.windows.get(tabProps.parentWindowId);
+            fixedPosition = tabProps.position;
+        } else {
+            parentWindow = await browser.windows.getLastFocused({ populate: true });
+            fixedPosition = options.fixedPosition;
+        }
+
+        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition);
+    } else if (options.positioningStrategy === "smart") {
+        let allActiveTabsOnParentWindow;
+
+        if (floatingTab) {
+            allActiveTabsOnParentWindow = await browser.tabs.query({ active: true, windowId: tabProps.parentWindowId });
+        } else {
+            allActiveTabsOnParentWindow = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+        }
+
+        const parentWindowActiveTab = allActiveTabsOnParentWindow[0];
+        coordinates = await getSmartPositionCoordinates(parentWindowActiveTab);
+    }
+
+    return coordinates;
+}
+
+function getFixedPositionCoordinates(parentWindow, position) {
     const padding = 50;
     const extraPaddingAtTop = 50;
 
@@ -29,13 +70,13 @@ function getFixedPositionCoordinates(parentWindow, requestedFixedPosition) {
     let newTop = parentWindow.top + padding;
     let newLeft = parentWindow.left + padding;
 
-    if (requestedFixedPosition.startsWith("top")) {
+    if (position.startsWith("top")) {
         newTop += extraPaddingAtTop;
     }
-    if (requestedFixedPosition.startsWith("bottom")) {
+    if (position.startsWith("bottom")) {
         newTop += halfHeight;
     }
-    if (requestedFixedPosition.endsWith("Right")) {
+    if (position.endsWith("Right")) {
         newLeft += halfWidth;
     }
 
@@ -47,13 +88,24 @@ function getFixedPositionCoordinates(parentWindow, requestedFixedPosition) {
     };
 }
 
-function getSmartPositionCoordinates(parentWindow) {
-    // TODO implement smart positioning
+async function getSmartPositionCoordinates(parentWindowActiveTab) {
+    try {
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/libs/webextension-polyfill/browser-polyfill.min.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/areaCalculator.js" });
 
-    return {
-        top: parentWindow.top + 200,
-        left: parentWindow.left + 200,
-        width: parentWindow.width - 500,
-        height: parentWindow.height - 500
-    };
+        return await browser.tabs.sendMessage(parentWindowActiveTab.id, {
+            action: "calculateMaxEmptyArea",
+            debug: true // TODO implement debugging with marking & wire in debugging option
+        });
+    } catch (error) {
+        // TODO notify the user that smart positioning failed
+
+        // The content script can fail sometimes, for example if we want to inject
+        // it into a chrome:// page. In this case, we fall back to fixed positioning.
+
+        const parentWindow = await browser.windows.get(parentWindowActiveTab.windowId);
+        const options = await loadOptions();
+
+        return getFixedPositionCoordinates(parentWindow, options.fixedPosition);
+    }
 }
