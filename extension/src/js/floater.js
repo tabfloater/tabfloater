@@ -39,7 +39,12 @@ export async function floatTabAsync() {
             };
 
             const succeedingActiveTab = await getSucceedingActiveTabAsync();
-            await browser.tabs.update(succeedingActiveTab.id, { active: true });
+            try {
+                // TODO this is a sporadic error - sometimes succedingActiveTab is undefined here
+                await browser.tabs.update(succeedingActiveTab.id, { active: true });
+            } catch (error) {
+                alert(error);
+            }
 
             const coordinates = await positioner.calculateCoordinatesAsync();
 

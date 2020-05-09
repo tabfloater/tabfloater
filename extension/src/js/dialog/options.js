@@ -5,6 +5,7 @@ const topRightRadioButton = window.topRightRadioButton;
 const bottomLeftRadioButton = window.bottomLeftRadioButton;
 const bottomRightRadioButton = window.bottomRightRadioButton;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
+const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
 const debugCheckbox = window.debugCheckbox;
 
 function saveOptions() {
@@ -23,6 +24,7 @@ function saveOptions() {
     }
 
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
+    options.smartPositioningRestrictMaxFloatingTabSize = restrictMaxFloatingTabSizeCheckbox.checked;
     options.debugging = debugCheckbox.checked;
 
     browser.storage.sync.set({ options: options });
@@ -34,6 +36,7 @@ function setPositionButtonStates() {
     bottomLeftRadioButton.disabled = smartPositionRadioButton.checked;
     bottomRightRadioButton.disabled = smartPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
+    restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
 }
 
 function positioningStrategyChanged() {
@@ -60,6 +63,7 @@ window.onload = async function () {
     }
 
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
+    restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
     debugCheckbox.checked = options.debugging;
 };
 
@@ -70,4 +74,5 @@ topRightRadioButton.onchange = saveOptions;
 bottomLeftRadioButton.onchange = saveOptions;
 bottomRightRadioButton.onchange = saveOptions;
 followTabSwitchCheckbox.onchange = saveOptions;
+restrictMaxFloatingTabSizeCheckbox.onchange = saveOptions;
 debugCheckbox.onchange = saveOptions;

@@ -16,6 +16,7 @@ const DefaultOptions = {
     positioningStrategy: "smart",
     fixedPosition: "bottomRight",
     smartPositioningFollowTabSwitches: true,
+    smartPositioningRestrictMaxFloatingTabSize: true,
     debugging: false
 };
 

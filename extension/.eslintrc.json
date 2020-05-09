@@ -39,6 +39,10 @@
             "error",
             "smart"
         ],
+        "eol-last": [
+            "warn",
+            "always"
+        ],
         "no-restricted-syntax": [
             "error",
             {
