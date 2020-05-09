@@ -69,7 +69,7 @@ export async function unfloatTabAsync() {
     }
 }
 
-export async function repositionFloatingTabAsync() {
+export async function repositionFloatingTabIfExistsAsync() {
     const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {

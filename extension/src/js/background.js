@@ -12,37 +12,47 @@ const CommandToPositionMapping = {
     "bottomRight,moveLeft": "bottomLeft",
 };
 
+const DefaultOptions = {
+    positioningStrategy: "smart",
+    fixedPosition: "bottomRight",
+    smartPositioningFollowTabSwitches: true,
+    debugging: false
+};
+
+const activeTabChangedListenerAsync = async activeInfo => {
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
+    if (floatingTab && tabProps.position === "smart" && tabProps.parentWindowId === activeInfo.windowId) {
+        await floater.repositionFloatingTabIfExistsAsync();
+    }
+};
+
 export async function loadOptionsAsync() {
     const optionsData = await browser.storage.sync.get(["options"]);
     return optionsData.options;
 }
 
 function setDefaultOptions() {
-    browser.storage.sync.set({
-        options: {
-            positioningStrategy: "smart",
-            fixedPosition: "bottomRight",
-            smartPositioningFollowScrolling: false,
-            smartPositioningFollowTabSwitches: false,
-            debugging: false
-        }
-    });
+    browser.storage.sync.set({ options: DefaultOptions });
+
+    if (DefaultOptions.smartPositioningFollowTabSwitches) {
+        browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
+    }
 }
 
 function startup() {
     floater.clearFloatingTab();
 }
 
-browser.runtime.onInstalled.addListener(function () {
+browser.runtime.onInstalled.addListener(() => {
     startup();
     setDefaultOptions();
 });
 
-browser.runtime.onStartup.addListener(function () {
+browser.runtime.onStartup.addListener(() => {
     startup();
 });
 
-browser.tabs.onRemoved.addListener(async function (closingTabId) {
+browser.tabs.onRemoved.addListener(async closingTabId => {
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && floatingTab.id === closingTabId) {
@@ -50,7 +60,7 @@ browser.tabs.onRemoved.addListener(async function (closingTabId) {
     }
 });
 
-browser.windows.onRemoved.addListener(async function (closingWindowId) {
+browser.windows.onRemoved.addListener(async closingWindowId => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && tabProps.parentWindowId === closingWindowId) {
@@ -59,7 +69,7 @@ browser.windows.onRemoved.addListener(async function (closingWindowId) {
     }
 });
 
-browser.commands.onCommand.addListener(async function (command) {
+browser.commands.onCommand.addListener(async command => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     const options = await loadOptionsAsync();
 
@@ -78,7 +88,7 @@ browser.commands.onCommand.addListener(async function (command) {
                 if (newPosition) {
                     tabProps.position = newPosition;
                     await floater.setFloatingTabAsync(tabProps);
-                    await floater.repositionFloatingTabAsync();
+                    await floater.repositionFloatingTabIfExistsAsync();
                 }
             }
         }
@@ -87,7 +97,7 @@ browser.commands.onCommand.addListener(async function (command) {
     }
 });
 
-browser.runtime.onMessage.addListener(async function (request) {
+browser.runtime.onMessage.addListener(async request => {
     switch (request) {
         case "canFloatCurrentTab": return await floater.canFloatCurrentTabAsync();
         case "getFloatingTab": {
@@ -98,5 +108,17 @@ browser.runtime.onMessage.addListener(async function (request) {
         case "floatTab": await floater.floatTabAsync(); break;
         case "unfloatTab": await floater.unfloatTabAsync(); break;
         case "loadOptions": return await loadOptionsAsync();
+    }
+});
+
+browser.storage.onChanged.addListener(async (changes, areaName) => {
+    if (areaName === "sync") {
+        const newOptions = changes.options.newValue;
+
+        if (newOptions.smartPositioningFollowTabSwitches) {
+            browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
+        } else {
+            browser.tabs.onActivated.removeListener(activeTabChangedListenerAsync);
+        }
     }
 });
