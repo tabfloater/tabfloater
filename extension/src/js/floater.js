@@ -1,7 +1,7 @@
-import { sendMakeDialogRequest } from "./companion.js";
+import { sendMakeDialogRequestAsync } from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 
-export async function tryGetFloatingTab() {
+export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
     const tabProps = data.floatingTabProperties;
 
@@ -23,8 +23,8 @@ export async function tryGetFloatingTab() {
     return result;
 }
 
-export async function floatTab() {
-    const { floatingTab } = await tryGetFloatingTab();
+export async function floatTabAsync() {
+    const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (!floatingTab) {
         const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
@@ -35,13 +35,13 @@ export async function floatTab() {
                 tabId: currentTab.id,
                 parentWindowId: currentTab.windowId,
                 originalIndex: currentTab.index,
-                position: await positioner.getStartingPosition()
+                position: await positioner.getStartingPositionAsync()
             };
 
-            const succeedingActiveTab = await getSucceedingActiveTab();
+            const succeedingActiveTab = await getSucceedingActiveTabAsync();
             await browser.tabs.update(succeedingActiveTab.id, { active: true });
 
-            const coordinates = await positioner.calculateCoordinates();
+            const coordinates = await positioner.calculateCoordinatesAsync();
 
             await browser.windows.create({
                 "tabId": currentTab.id,
@@ -52,16 +52,16 @@ export async function floatTab() {
                 "height": coordinates.height,
             });
 
-            await setFloatingTab(tabProps);
+            await setFloatingTabAsync(tabProps);
 
             const parentWindowTitle = succeedingActiveTab.title;
-            await sendMakeDialogRequest(currentTab.title, parentWindowTitle);
+            await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle);
         }
     }
 }
 
-export async function unfloatTab() {
-    const { floatingTab, tabProps } = await tryGetFloatingTab();
+export async function unfloatTabAsync() {
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
@@ -69,21 +69,21 @@ export async function unfloatTab() {
     }
 }
 
-export async function repositionFloatingTab() {
-    const { floatingTab } = await tryGetFloatingTab();
+export async function repositionFloatingTabAsync() {
+    const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
-        const coordinates = await positioner.calculateCoordinates();
+        const coordinates = await positioner.calculateCoordinatesAsync();
         await browser.windows.update(floatingTab.windowId, coordinates);
     }
 }
 
-export async function canFloatCurrentTab() {
+export async function canFloatCurrentTabAsync() {
     const parentWindow = await browser.windows.getLastFocused({ populate: true });
     return parentWindow.tabs.length > 1;
 }
 
-export async function setFloatingTab(tabProps) {
+export async function setFloatingTabAsync(tabProps) {
     await browser.storage.local.set({ floatingTabProperties: tabProps });
 }
 
@@ -96,7 +96,7 @@ export function clearFloatingTab() {
  * This is always the tab right to the active tab, except when the active
  * tab is the last one, in which case it's the one to the left.
  */
-async function getSucceedingActiveTab() {
+async function getSucceedingActiveTabAsync() {
     const allTabsOnCurrentWindow = await browser.tabs.query({ lastFocusedWindow: true });
     allTabsOnCurrentWindow.sort((tab1, tab2) => tab1.index < tab2.index);
 

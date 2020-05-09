@@ -6,7 +6,7 @@ const companionStatusConnected = window.companionStatusConnected;
 const companionStatusError = window.companionStatusError;
 const companionStatusUnavailable = window.companionStatusUnavailable;
 
-async function setButtonStates() {
+async function setButtonStatesAsync() {
     const floatingTab = await browser.runtime.sendMessage("getFloatingTab");
 
     if (floatingTab) {
@@ -20,7 +20,7 @@ async function setButtonStates() {
     }
 }
 
-async function setCompanionStatusIndicator() {
+async function setCompanionStatusIndicatorAsync() {
     const status = await browser.runtime.sendMessage("getCompanionStatus");
 
     companionStatusConnecting.classList.add("is-hidden");
@@ -35,8 +35,8 @@ async function setCompanionStatusIndicator() {
 }
 
 window.onload = async function () {
-    await setButtonStates();
-    await setCompanionStatusIndicator();
+    await setButtonStatesAsync();
+    await setCompanionStatusIndicatorAsync();
 };
 
 floatTabButton.onclick = function () {
