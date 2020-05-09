@@ -1,4 +1,4 @@
-import { loadOptionsAsync } from "../background.js";
+import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
 
 const FloatingTabPadding = 50;
