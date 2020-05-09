@@ -15,7 +15,7 @@ const CommandToPositionMapping = {
 const activeTabChangedListenerAsync = async activeInfo => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     if (floatingTab && tabProps.position === "smart" && tabProps.parentWindowId === activeInfo.windowId) {
-        await floater.repositionFloatingTabAsync();
+        await floater.repositionFloatingTabIfExistsAsync();
     }
 };
 
@@ -85,7 +85,7 @@ browser.commands.onCommand.addListener(async command => {
                 if (newPosition) {
                     tabProps.position = newPosition;
                     await floater.setFloatingTabAsync(tabProps);
-                    await floater.repositionFloatingTabAsync();
+                    await floater.repositionFloatingTabIfExistsAsync();
                 }
             }
         }
