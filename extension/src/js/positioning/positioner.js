@@ -1,7 +1,6 @@
+import { FloatingTabPadding, ViewportTopOffset } from "../constants.js";
 import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
-
-const FloatingTabPadding = 50;
 
 /**
  * Returns the textual representation of the position that a new floating tab should have.
@@ -54,24 +53,20 @@ export async function calculateCoordinatesAsync() {
 }
 
 function getFixedPositionCoordinates(parentWindow, position) {
-    const extraPaddingAtTop = 50;
     const dimensions = getFixedFloatingTabDimensions(parentWindow);
 
-    let newTop = parentWindow.top + FloatingTabPadding;
-    let newLeft = parentWindow.left + FloatingTabPadding;
+    let top = parentWindow.top + ViewportTopOffset + FloatingTabPadding;
+    let left = parentWindow.left + FloatingTabPadding;
 
-    if (position.startsWith("top")) {
-        newTop += extraPaddingAtTop;
-    }
     if (position.startsWith("bottom")) {
-        newTop += FloatingTabPadding + dimensions.height + FloatingTabPadding;
+        top += FloatingTabPadding + dimensions.height + FloatingTabPadding;
     }
     if (position.endsWith("Right")) {
-        newLeft += FloatingTabPadding + dimensions.width + FloatingTabPadding;
+        left += FloatingTabPadding + dimensions.width + FloatingTabPadding;
     }
 
-    dimensions.top = newTop;
-    dimensions.left = newLeft;
+    dimensions.top = top;
+    dimensions.left = left;
 
     return dimensions;
 }
@@ -81,12 +76,16 @@ async function getSmartPositionCoordinatesAsync(parentWindow, restrictMaxSize) {
 
     try {
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "libs/webextension-polyfill/browser-polyfill.min.js" });
-        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/contentScripts/areaCalculator.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/areaCalculator.js" });
 
         const coordinates = await browser.tabs.sendMessage(parentWindowActiveTab.id, {
             action: "calculateMaxEmptyArea",
             debug: true // TODO implement debugging with marking & wire in debugging option
         });
+
+        if (!coordinates) {
+            throw "Unable to calculate coordinates";
+        }
 
         if (restrictMaxSize) {
             const maxDimensions = getFixedFloatingTabDimensions(parentWindow);
@@ -108,12 +107,12 @@ async function getSmartPositionCoordinatesAsync(parentWindow, restrictMaxSize) {
 
 /**
  * Returns the dimensions of a fixed floating tab. Both the width and
- * the height are going to be half of the screen's, minus the padding
- * on each sides.
+ * the height are going to be half of the browser window's (taking the
+ * extra top padding into account), minus the padding on each sides.
  */
 function getFixedFloatingTabDimensions(parentWindow) {
     const halfWidth = parseInt(parentWindow.width / 2);
-    const halfHeight = parseInt(parentWindow.height / 2);
+    const halfHeight = parseInt((parentWindow.height - ViewportTopOffset) / 2);
 
     return {
         width: halfWidth - FloatingTabPadding * 2,

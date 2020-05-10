@@ -23,3 +23,6 @@ export const DefaultOptions = {
     smartPositioningRestrictMaxFloatingTabSize: true,
     debugging: false
 };
+
+export const FloatingTabPadding = 50;
+export const ViewportTopOffset = 100;
