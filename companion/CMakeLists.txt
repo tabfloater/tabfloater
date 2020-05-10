@@ -12,14 +12,14 @@ project(tabfloater_companion)
 set(CMAKE_CXX_STANDARD 11)
 set(TARGET "tabfloater_companion")
 set(SOURCE_LIST)
-set(VERSION "0.4")
+set(VERSION "0.4.0")
 
 if(UNIX)
     list(APPEND SOURCE_LIST "./src/windowhandler_linux.cpp")
 endif()
 
 if(WIN32)
-    list(APPEND SOURCE_LIST "./src/windowhandler_windows.cpp")    
+    list(APPEND SOURCE_LIST "./src/windowhandler_windows.cpp")
 endif()
 
 list(APPEND SOURCE_LIST "./src/tabfloater_companion.cpp")
@@ -40,5 +40,5 @@ endif()
 target_link_libraries(${TARGET} loguru)
 
 if(UNIX)
-    target_link_libraries(${TARGET} X11)    
+    target_link_libraries(${TARGET} X11)
 endif()

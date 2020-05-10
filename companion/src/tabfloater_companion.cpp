@@ -22,7 +22,6 @@ void initLogging()
 #endif
 #ifdef linux
     initMessage += "Linux";
-    ;
 #endif
 
     LOG_F(INFO, initMessage.c_str());
@@ -109,15 +108,23 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
     return std::string();
 }
 
-void sendStatus(std::string status, bool appendVersion = false)
+void sendStatus(std::string status, bool appendVersionAndOs = false)
 {
     LOG_F(INFO, "Sending status \"%s\"", status.c_str());
 
     std::string statusJson = "{\"status\":\"" + status + "\"";
 
-    if (appendVersion)
+    if (appendVersionAndOs)
     {
         statusJson += std::string(",\"version\":\"") + VERSION + "\"";
+        statusJson += std::string(",\"os\":\"");
+#ifdef _WIN32
+        statusJson += "Windows";
+#endif
+#ifdef linux
+        statusJson += "Linux";
+#endif
+        statusJson += "\"";
     }
 
     statusJson += "}";

@@ -2,10 +2,10 @@
 // eslint-disable-next-line no-unused-vars
 function markArea(rectangle, highlight) {
     const div = document.createElement("div");
-    div.style.width = rectangle.width + "px";
-    div.style.height = rectangle.height + "px";
-    div.style.top = rectangle.top + window.scrollY + "px";
-    div.style.left = rectangle.left + window.scrollX + "px";
+    div.style.width = `${rectangle.width}px`;
+    div.style.height = `${rectangle.height}px`;
+    div.style.top = `${rectangle.top + window.scrollY}px`;
+    div.style.left = `${rectangle.left + window.scrollX}px`;
     div.style.position = "absolute";
     div.style.borderWidth = highlight ? "thick" : "thin";
     div.style.borderStyle = "solid";

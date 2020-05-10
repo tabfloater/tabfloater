@@ -1,6 +1,6 @@
 import * as constants from "./constants.js";
 import * as floater from "./floater.js";
-import { getCompanionStatusAsync } from "./companion.js";
+import { getCompanionInfoAsync } from "./companion.js";
 
 const activeTabChangedListenerAsync = async activeInfo => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
@@ -67,7 +67,7 @@ browser.commands.onCommand.addListener(async command => {
             if (inUpperHalf && command === "moveUp") {
                 await floater.unfloatTabAsync();
             } else {
-                const newPosition = constants.CommandToPositionMapping[currentPosition + "," + command];
+                const newPosition = constants.CommandToPositionMapping[`${currentPosition},${command}`];
                 if (newPosition) {
                     tabProps.position = newPosition;
                     await floater.setFloatingTabAsync(tabProps);
@@ -87,7 +87,7 @@ browser.runtime.onMessage.addListener(async request => {
             const { floatingTab } = await floater.tryGetFloatingTabAsync();
             return floatingTab;
         }
-        case "getCompanionStatus": return await getCompanionStatusAsync();
+        case "getCompanionInfo": return await getCompanionInfoAsync();
         case "floatTab": await floater.floatTabAsync(); break;
         case "unfloatTab": await floater.unfloatTabAsync(); break;
         case "loadOptions": return await loadOptionsAsync();
