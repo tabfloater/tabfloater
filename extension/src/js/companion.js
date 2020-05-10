@@ -20,11 +20,15 @@ export async function getCompanionInfoAsync() {
             };
         } else {
             // TODO handle error somehow. show it in tooltip? extra status?
-            return "error";
+            return {
+                status: "error"
+            };
         }
     }
     catch (error) {
-        return "unavailable";
+        return {
+            status: "unavailable"
+        };
     }
 }
 
