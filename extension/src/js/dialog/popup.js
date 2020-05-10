@@ -5,6 +5,17 @@ const companionStatusConnecting = window.companionStatusConnecting;
 const companionStatusConnected = window.companionStatusConnected;
 const companionStatusError = window.companionStatusError;
 const companionStatusUnavailable = window.companionStatusUnavailable;
+const outDatedVersionWarning = window.outDatedVersionWarning;
+const companionVersionLabel = window.companionVersionLabel;
+const outDatedVersionBreakingChangesWarning = window.outDatedVersionBreakingChangesWarning;
+
+function hide(element) {
+    element.classList.add("is-hidden");
+}
+
+function unhide(element) {
+    element.classList.remove("is-hidden");
+}
 
 async function setButtonStatesAsync() {
     const floatingTab = await browser.runtime.sendMessage("getFloatingTab");
@@ -20,23 +31,35 @@ async function setButtonStatesAsync() {
     }
 }
 
-async function setCompanionStatusIndicatorAsync() {
-    const status = await browser.runtime.sendMessage("getCompanionStatus");
-
-    companionStatusConnecting.classList.add("is-hidden");
+function setCompanionStatusIndicator(status) {
+    hide(companionStatusConnecting);
 
     if (status === "connected") {
-        companionStatusConnected.classList.remove("is-hidden");
+        unhide(companionStatusConnected);
     } else if (status === "error") {
-        companionStatusError.classList.remove("is-hidden");
+        unhide(companionStatusError);
     } else {
-        companionStatusUnavailable.classList.remove("is-hidden");
+        unhide(companionStatusUnavailable);
+    }
+}
+
+function setCompanionVersionWarningsIfOutdated(companionInfo) {
+    if (companionInfo.isOutdated) {
+        unhide(outDatedVersionWarning);
+        companionVersionLabel.textContent = `Current version: ${companionInfo.version} New version: ${companionInfo.latestVersion}`;
+
+
+        if (companionInfo.latestVersionHasBreakingChanges) {
+            unhide(outDatedVersionBreakingChangesWarning);
+        }
     }
 }
 
 window.onload = async function () {
+    const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
     await setButtonStatesAsync();
-    await setCompanionStatusIndicatorAsync();
+    setCompanionStatusIndicator(companionInfo.status);
+    setCompanionVersionWarningsIfOutdated(companionInfo);
 };
 
 floatTabButton.onclick = function () {
