@@ -17,12 +17,12 @@ export const CommandToPositionMapping = {
 };
 
 export const DefaultOptions = {
-    positioningStrategy: "smart",
-    fixedPosition: "bottomRight",
+    positioningStrategy: "fixed",
+    fixedPosition: "topRight",
+    viewportTopOffset: 150,
     smartPositioningFollowTabSwitches: true,
     smartPositioningRestrictMaxFloatingTabSize: true,
     debugging: false
 };
 
 export const FloatingTabPadding = 50;
-export const ViewportTopOffset = 100;
