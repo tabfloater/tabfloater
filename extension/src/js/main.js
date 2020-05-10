@@ -1,24 +1,6 @@
+import * as constants from "./constants.js";
 import * as floater from "./floater.js";
 import { getCompanionStatusAsync } from "./companion.js";
-
-const CommandToPositionMapping = {
-    "topLeft,moveDown": "bottomLeft",
-    "topLeft,moveRight": "topRight",
-    "bottomLeft,moveUp": "topLeft",
-    "bottomLeft,moveRight": "bottomRight",
-    "topRight,moveLeft": "topLeft",
-    "topRight,moveDown": "bottomRight",
-    "bottomRight,moveUp": "topRight",
-    "bottomRight,moveLeft": "bottomLeft",
-};
-
-const DefaultOptions = {
-    positioningStrategy: "smart",
-    fixedPosition: "bottomRight",
-    smartPositioningFollowTabSwitches: true,
-    smartPositioningRestrictMaxFloatingTabSize: true,
-    debugging: false
-};
 
 const activeTabChangedListenerAsync = async activeInfo => {
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
@@ -33,9 +15,9 @@ export async function loadOptionsAsync() {
 }
 
 function setDefaultOptions() {
-    browser.storage.sync.set({ options: DefaultOptions });
+    browser.storage.sync.set({ options: constants.DefaultOptions });
 
-    if (DefaultOptions.smartPositioningFollowTabSwitches) {
+    if (constants.DefaultOptions.smartPositioningFollowTabSwitches) {
         browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
     }
 }
@@ -85,7 +67,7 @@ browser.commands.onCommand.addListener(async command => {
             if (inUpperHalf && command === "moveUp") {
                 await floater.unfloatTabAsync();
             } else {
-                const newPosition = CommandToPositionMapping[currentPosition + "," + command];
+                const newPosition = constants.CommandToPositionMapping[currentPosition + "," + command];
                 if (newPosition) {
                     tabProps.position = newPosition;
                     await floater.setFloatingTabAsync(tabProps);

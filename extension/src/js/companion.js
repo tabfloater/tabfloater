@@ -1,4 +1,4 @@
-const CompanionName = "io.github.tabfloater.companion";
+import { CompanionName } from "./constants.js";
 
 export async function getCompanionStatusAsync() {
     try {
