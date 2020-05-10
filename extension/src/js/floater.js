@@ -16,7 +16,7 @@ export async function tryGetFloatingTabAsync() {
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
         } catch (error) {
-            clearFloatingTab();
+            await clearFloatingTabAsync();
         }
     }
 
@@ -57,10 +57,9 @@ export async function floatTabAsync() {
                 "height": coordinates.height,
             });
 
-            await setFloatingTabAsync(tabProps);
-
             const parentWindowTitle = succeedingActiveTab.title;
             await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle);
+            await setFloatingTabAsync(tabProps);
         }
     }
 }
@@ -70,7 +69,7 @@ export async function unfloatTabAsync() {
 
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
-        clearFloatingTab();
+        await clearFloatingTabAsync();
     }
 }
 
@@ -92,8 +91,8 @@ export async function setFloatingTabAsync(tabProps) {
     await browser.storage.local.set({ floatingTabProperties: tabProps });
 }
 
-export function clearFloatingTab() {
-    browser.storage.local.remove(["floatingTabProperties"]);
+export async function clearFloatingTabAsync() {
+    await browser.storage.local.remove(["floatingTabProperties"]);
 }
 
 /**
