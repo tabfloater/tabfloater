@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "lint": "npx eslint src/js",
-    "postinstall": "mkdir src/libs/webextension-polyfill && cp node_modules/webextension-polyfill/dist/*.min.js* src/libs/webextension-polyfill; mkdir src/libs/fontawesome-free && cp node_modules/@fortawesome/fontawesome-free/js/all.min.js src/libs/fontawesome-free"
+    "postinstall": "run-script-os",
+    "postinstall:nix": "mkdir src/libs/webextension-polyfill && cp node_modules/webextension-polyfill/dist/*.min.js* src/libs/webextension-polyfill; mkdir src/libs/fontawesome-free && cp node_modules/@fortawesome/fontawesome-free/js/all.min.js src/libs/fontawesome-free",
+    "postinstall:windows": "mkdir src\\libs\\webextension-polyfill && copy node_modules\\webextension-polyfill\\dist\\*.min.js* src\\libs\\webextension-polyfill & mkdir src\\libs\\fontawesome-free && copy node_modules\\@fortawesome\\fontawesome-free\\js\\all.min.js src\\libs\\fontawesome-free"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
     "webextension-polyfill": "^0.6.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "eslint": "^6.8.0",
+    "run-script-os": "^1.1.1"
   }
 }
