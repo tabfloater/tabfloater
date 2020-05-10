@@ -80,7 +80,7 @@ async function getSmartPositionCoordinatesAsync(parentWindow, restrictMaxSize) {
     const parentWindowActiveTab = parentWindow.tabs.find(tab => tab.active);
 
     try {
-        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/libs/webextension-polyfill/browser-polyfill.min.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "libs/webextension-polyfill/browser-polyfill.min.js" });
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/contentScripts/areaCalculator.js" });
 
         const coordinates = await browser.tabs.sendMessage(parentWindowActiveTab.id, {

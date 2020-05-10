@@ -1,7 +1,7 @@
-# Extension 
+# Extension
 node_modules/
-extension/src/js/libs/*
-!extension/src/js/libs/.gitkeep
+extension/src/libs/*
+!extension/src/libs/.gitkeep
 
 # Chrome Web Store key file
 key.pem
