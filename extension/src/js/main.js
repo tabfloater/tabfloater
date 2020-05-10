@@ -14,32 +14,32 @@ export async function loadOptionsAsync() {
     return optionsData.options;
 }
 
-function setDefaultOptions() {
-    browser.storage.sync.set({ options: constants.DefaultOptions });
+async function setDefaultOptionsAsync() {
+    await browser.storage.sync.set({ options: constants.DefaultOptions });
 
     if (constants.DefaultOptions.smartPositioningFollowTabSwitches) {
         browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
     }
 }
 
-function startup() {
-    floater.clearFloatingTab();
+async function startupAsync() {
+    await floater.clearFloatingTabAsync();
 }
 
-browser.runtime.onInstalled.addListener(() => {
-    startup();
-    setDefaultOptions();
+browser.runtime.onInstalled.addListener(async () => {
+    await startupAsync();
+    await setDefaultOptionsAsync();
 });
 
-browser.runtime.onStartup.addListener(() => {
-    startup();
+browser.runtime.onStartup.addListener(async () => {
+    await startupAsync();
 });
 
 browser.tabs.onRemoved.addListener(async closingTabId => {
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && floatingTab.id === closingTabId) {
-        floater.clearFloatingTab();
+        await floater.clearFloatingTabAsync();
     }
 });
 
@@ -48,7 +48,7 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
 
     if (floatingTab && tabProps.parentWindowId === closingWindowId) {
         await browser.tabs.remove(floatingTab.id);
-        floater.clearFloatingTab();
+        await floater.clearFloatingTabAsync();
     }
 });
 
