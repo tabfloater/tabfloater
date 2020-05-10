@@ -1,4 +1,4 @@
-import { FloatingTabPadding, ViewportTopOffset } from "../constants.js";
+import { FloatingTabPadding } from "../constants.js";
 import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
 
@@ -44,18 +44,18 @@ export async function calculateCoordinatesAsync() {
     }
 
     if (options.positioningStrategy === "fixed") {
-        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition);
+        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options);
     } else if (options.positioningStrategy === "smart") {
-        coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options.smartPositioningRestrictMaxFloatingTabSize);
+        coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options);
     }
 
     return coordinates;
 }
 
-function getFixedPositionCoordinates(parentWindow, position) {
-    const dimensions = getFixedFloatingTabDimensions(parentWindow);
+function getFixedPositionCoordinates(parentWindow, position, options) {
+    const dimensions = getFixedFloatingTabDimensions(parentWindow, options);
 
-    let top = parentWindow.top + ViewportTopOffset + FloatingTabPadding;
+    let top = parentWindow.top + options.viewportTopOffset;
     let left = parentWindow.left + FloatingTabPadding;
 
     if (position.startsWith("bottom")) {
@@ -71,7 +71,7 @@ function getFixedPositionCoordinates(parentWindow, position) {
     return dimensions;
 }
 
-async function getSmartPositionCoordinatesAsync(parentWindow, restrictMaxSize) {
+async function getSmartPositionCoordinatesAsync(parentWindow, options) {
     const parentWindowActiveTab = parentWindow.tabs.find(tab => tab.active);
 
     try {
@@ -87,8 +87,8 @@ async function getSmartPositionCoordinatesAsync(parentWindow, restrictMaxSize) {
             throw "Unable to calculate coordinates";
         }
 
-        if (restrictMaxSize) {
-            const maxDimensions = getFixedFloatingTabDimensions(parentWindow);
+        if (options.smartPositioningRestrictMaxFloatingTabSize) {
+            const maxDimensions = getFixedFloatingTabDimensions(parentWindow, options);
             coordinates.width = Math.min(coordinates.width, maxDimensions.width);
             coordinates.height = Math.min(coordinates.height, maxDimensions.height);
         }
@@ -108,14 +108,17 @@ async function getSmartPositionCoordinatesAsync(parentWindow, restrictMaxSize) {
 /**
  * Returns the dimensions of a fixed floating tab. Both the width and
  * the height are going to be half of the browser window's (taking the
- * extra top padding into account), minus the padding on each sides.
+ * viewport top offset into account), minus the padding on each sides.
  */
-function getFixedFloatingTabDimensions(parentWindow) {
+function getFixedFloatingTabDimensions(parentWindow, options) {
+    const minSideLength = 200;
+
+    const topOffset = Math.min(Math.max(options.viewportTopOffset, 0), parentWindow.height / 2);
     const halfWidth = parseInt(parentWindow.width / 2);
-    const halfHeight = parseInt((parentWindow.height - ViewportTopOffset) / 2);
+    const halfHeight = parseInt((parentWindow.height - topOffset) / 2);
 
     return {
-        width: halfWidth - FloatingTabPadding * 2,
-        height: halfHeight - FloatingTabPadding * 2
+        width: Math.max(halfWidth - FloatingTabPadding * 2, minSideLength),
+        height: Math.max(halfHeight - FloatingTabPadding * 2, minSideLength)
     };
 }

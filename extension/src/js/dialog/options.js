@@ -3,6 +3,7 @@ const smartPositionRadioButton = window.smartPositionRadioButton;
 const topLeftRadioButton = window.topLeftRadioButton;
 const topRightRadioButton = window.topRightRadioButton;
 const bottomLeftRadioButton = window.bottomLeftRadioButton;
+const viewportTopOffsetInput = window.viewportTopOffsetInput;
 const bottomRightRadioButton = window.bottomRightRadioButton;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
@@ -23,6 +24,8 @@ function saveOptions() {
         options.fixedPosition = "bottomRight";
     }
 
+    // TODO validation (as part of UI rework). negative numbers allowed
+    options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
     options.smartPositioningRestrictMaxFloatingTabSize = restrictMaxFloatingTabSizeCheckbox.checked;
     options.debugging = debugCheckbox.checked;
@@ -35,6 +38,7 @@ function setPositionButtonStates() {
     topRightRadioButton.disabled = smartPositionRadioButton.checked;
     bottomLeftRadioButton.disabled = smartPositionRadioButton.checked;
     bottomRightRadioButton.disabled = smartPositionRadioButton.checked;
+    viewportTopOffsetInput.disabled = smartPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
 }
@@ -62,6 +66,7 @@ window.onload = async function () {
         case "bottomRight": bottomRightRadioButton.checked = true; break;
     }
 
+    viewportTopOffsetInput.value = options.viewportTopOffset;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
     debugCheckbox.checked = options.debugging;
@@ -73,6 +78,7 @@ topLeftRadioButton.onchange = saveOptions;
 topRightRadioButton.onchange = saveOptions;
 bottomLeftRadioButton.onchange = saveOptions;
 bottomRightRadioButton.onchange = saveOptions;
+viewportTopOffsetInput.onblur = saveOptions;
 followTabSwitchCheckbox.onchange = saveOptions;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptions;
 debugCheckbox.onchange = saveOptions;
