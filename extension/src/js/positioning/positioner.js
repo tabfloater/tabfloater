@@ -55,18 +55,13 @@ export async function calculateCoordinatesAsync() {
 function getFixedPositionCoordinates(parentWindow, position, options) {
     const dimensions = getFixedFloatingTabDimensions(parentWindow, options);
 
-    let top = parentWindow.top + options.viewportTopOffset;
-    let left = parentWindow.left + FloatingTabPadding;
+    dimensions.top = position.startsWith("top")
+        ? parentWindow.top + options.viewportTopOffset
+        : parentWindow.top + parentWindow.height - FloatingTabPadding - dimensions.height;
 
-    if (position.startsWith("bottom")) {
-        top += FloatingTabPadding + dimensions.height + FloatingTabPadding;
-    }
-    if (position.endsWith("Right")) {
-        left += FloatingTabPadding + dimensions.width + FloatingTabPadding;
-    }
-
-    dimensions.top = top;
-    dimensions.left = left;
+    dimensions.left = position.endsWith("Left")
+        ? parentWindow.left + FloatingTabPadding
+        : parentWindow.left + parentWindow.width - FloatingTabPadding - dimensions.width;
 
     return dimensions;
 }
@@ -105,20 +100,22 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options) {
     }
 }
 
-/**
- * Returns the dimensions of a fixed floating tab. Both the width and
- * the height are going to be half of the browser window's (taking the
- * viewport top offset into account), minus the padding on each sides.
- */
 function getFixedFloatingTabDimensions(parentWindow, options) {
     const minSideLength = 200;
+    let divisor;
 
-    const topOffset = Math.min(Math.max(options.viewportTopOffset, 0), parentWindow.height / 2);
-    const halfWidth = parseInt(parentWindow.width / 2);
-    const halfHeight = parseInt((parentWindow.height - topOffset) / 2);
+    switch (options.fixedTabSize) {
+        case "small": divisor = 2.5; break;
+        case "standard":
+        default: divisor = 2; break;
+    }
+
+    const topOffset = Math.min(Math.max(options.viewportTopOffset, 0), parentWindow.height / divisor);
+    const rawWidth = parseInt(parentWindow.width / divisor);
+    const rawHeight = parseInt((parentWindow.height - topOffset) / divisor);
 
     return {
-        width: Math.max(halfWidth - FloatingTabPadding * 2, minSideLength),
-        height: Math.max(halfHeight - FloatingTabPadding * 2, minSideLength)
+        width: Math.max(rawWidth - FloatingTabPadding * 2, minSideLength),
+        height: Math.max(rawHeight - FloatingTabPadding * 2, minSideLength)
     };
 }
