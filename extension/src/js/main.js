@@ -76,7 +76,9 @@ browser.commands.onCommand.addListener(async command => {
             }
         }
     } else if (command === "moveDown") {
-        await floater.floatTabAsync();
+        if (await floater.canFloatCurrentTabAsync()) {
+            await floater.floatTabAsync();
+        }
     }
 });
 
