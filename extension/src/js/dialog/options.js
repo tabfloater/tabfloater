@@ -3,8 +3,10 @@ const smartPositionRadioButton = window.smartPositionRadioButton;
 const topLeftRadioButton = window.topLeftRadioButton;
 const topRightRadioButton = window.topRightRadioButton;
 const bottomLeftRadioButton = window.bottomLeftRadioButton;
-const viewportTopOffsetInput = window.viewportTopOffsetInput;
 const bottomRightRadioButton = window.bottomRightRadioButton;
+const smallSizeRadioButton = window.smallSizeRadioButton;
+const standardSizeRadioButton = window.normalSizeRadioButton;
+const viewportTopOffsetInput = window.viewportTopOffsetInput;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
 const debugCheckbox = window.debugCheckbox;
@@ -24,6 +26,12 @@ function saveOptions() {
         options.fixedPosition = "bottomRight";
     }
 
+    if (smallSizeRadioButton.checked) {
+        options.fixedTabSize = "small";
+    } else if (standardSizeRadioButton.checked) {
+        options.fixedTabSize = "standard";
+    }
+
     // TODO validation (as part of UI rework). negative numbers allowed
     options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
@@ -38,6 +46,8 @@ function setPositionButtonStates() {
     topRightRadioButton.disabled = smartPositionRadioButton.checked;
     bottomLeftRadioButton.disabled = smartPositionRadioButton.checked;
     bottomRightRadioButton.disabled = smartPositionRadioButton.checked;
+    smallSizeRadioButton.disabled = smartPositionRadioButton.checked;
+    standardSizeRadioButton.disabled = smartPositionRadioButton.checked;
     viewportTopOffsetInput.disabled = smartPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
@@ -66,6 +76,11 @@ window.onload = async function () {
         case "bottomRight": bottomRightRadioButton.checked = true; break;
     }
 
+    switch (options.fixedTabSize) {
+        case "small": smallSizeRadioButton.checked = true; break;
+        case "standard": standardSizeRadioButton.checked = true; break;
+    }
+
     viewportTopOffsetInput.value = options.viewportTopOffset;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
@@ -78,6 +93,8 @@ topLeftRadioButton.onchange = saveOptions;
 topRightRadioButton.onchange = saveOptions;
 bottomLeftRadioButton.onchange = saveOptions;
 bottomRightRadioButton.onchange = saveOptions;
+smallSizeRadioButton.onchange = saveOptions;
+standardSizeRadioButton.onchange = saveOptions;
 viewportTopOffsetInput.onblur = saveOptions;
 followTabSwitchCheckbox.onchange = saveOptions;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptions;
