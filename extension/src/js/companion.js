@@ -1,12 +1,16 @@
 import { CompanionName } from "./constants.js";
 import { CompanionLatestVersions } from "./constants.js";
+import { loadOptionsAsync } from "./main.js";
 
-export async function getCompanionInfoAsync() {
+export async function getCompanionInfoAsync(logger) {
     try {
+        const debug = await isDebuggingEnabledAsync();
         const companionInfo = await browser.runtime.sendNativeMessage(CompanionName, {
             action: "ping",
-            debug: "true" // TODO wire debugging option
+            debug: debug.toString()
         });
+
+        logger.info(`Companion responded to ping request. Status: '${companionInfo.status}', Version: ${companionInfo.version} (${companionInfo.os})`);
 
         if (companionInfo.status === "ok") {
             const isOutdated = isOutdatedVersion(companionInfo);
@@ -26,22 +30,27 @@ export async function getCompanionInfoAsync() {
         }
     }
     catch (error) {
+        logger.warn(`Unable to contact companion for Ping request: ${error.message}`);
+
         return {
             status: "unavailable"
         };
     }
 }
 
-export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle) {
+export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle, logger) {
+    logger.info(`MakeDialog request received. Window title: '${windowTitle}', parent window title: '${parentWindowTitle}'`);
+
     try {
+        const debug = await isDebuggingEnabledAsync();
         await browser.runtime.sendNativeMessage(CompanionName, {
             action: "setAsModelessDialog",
             windowTitle: windowTitle,
             parentWindowTitle: parentWindowTitle,
-            debug: "true" // TODO wire debugging option
+            debug: debug.toString()
         });
     } catch (error) {
-        // TODO handle error
+        logger.error(`ERROR: unable to contact companion for MakeDialog request: ${error.message}`);
     }
 }
 
@@ -63,4 +72,9 @@ function getLatestCompanionVersion(companionInfo) {
 
 function getMajorVersion(version) {
     return parseInt(version.substring(0, version.indexOf(".")));
+}
+
+async function isDebuggingEnabledAsync() {
+    const options = await loadOptionsAsync();
+    return options.debug;
 }

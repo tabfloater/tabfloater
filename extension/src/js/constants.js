@@ -16,6 +16,7 @@ export const CommandToPositionMapping = {
     "bottomRight,moveLeft": "bottomLeft",
 };
 
+// TODO finalise these options
 export const DefaultOptions = {
     positioningStrategy: "fixed",
     fixedPosition: "topRight",
@@ -23,7 +24,7 @@ export const DefaultOptions = {
     viewportTopOffset: 150,
     smartPositioningFollowTabSwitches: true,
     smartPositioningRestrictMaxFloatingTabSize: true,
-    debugging: false
+    debug: true
 };
 
 export const FloatingTabPadding = 50;

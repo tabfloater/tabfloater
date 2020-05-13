@@ -36,7 +36,7 @@ function saveOptions() {
     options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
     options.smartPositioningRestrictMaxFloatingTabSize = restrictMaxFloatingTabSizeCheckbox.checked;
-    options.debugging = debugCheckbox.checked;
+    options.debug = debugCheckbox.checked;
 
     browser.storage.sync.set({ options: options });
 }
@@ -84,7 +84,7 @@ window.onload = async function () {
     viewportTopOffsetInput.value = options.viewportTopOffset;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
-    debugCheckbox.checked = options.debugging;
+    debugCheckbox.checked = options.debug;
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
