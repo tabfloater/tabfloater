@@ -16,7 +16,7 @@ export async function tryGetFloatingTabAsync(logger) {
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
         } catch (error) {
-            logger.error(`Unable to fetch floating tab. Error: '${error}'`);
+            logger.error(`Unable to fetch floating tab, will clear saved value. Error: '${error}'`);
             await clearFloatingTabAsync();
         }
     }
@@ -39,6 +39,8 @@ export async function floatTabAsync(logger) {
                 position: await positioner.getStartingPositionAsync()
             };
 
+            logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
+
             const succeedingActiveTab = await getSucceedingActiveTabAsync();
             try {
                 await browser.tabs.update(succeedingActiveTab.id, { active: true });
@@ -60,6 +62,8 @@ export async function floatTabAsync(logger) {
             const parentWindowTitle = succeedingActiveTab.title;
             await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
             await setFloatingTabAsync(tabProps);
+        } else {
+            logger.warn("Tried to float current tab, but no active tab found - this should not happen");
         }
     }
 }

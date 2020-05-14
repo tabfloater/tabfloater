@@ -64,17 +64,16 @@ async function setCompanionLogFileLabelAndButton() {
     if (debugCheckbox.checked) {
         companionLogFilePathLabel.disabled = false;
         copyCompanionLogFilePathButton.disabled = false;
+        // TODO unhide companion log label and button instead of enabling
 
         if (companionLogFilePathLabel.textContent === "") {
             const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
             companionLogFilePathLabel.textContent = companionInfo.logFilePath;
         }
-
-        // TODO unhide companion log label and button
     } else {
         companionLogFilePathLabel.disabled = true;
         copyCompanionLogFilePathButton.disabled = true;
-        // TODO hide companion log label and button
+        // TODO hide companion log label and button instead of disabling
     }
 };
 

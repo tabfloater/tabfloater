@@ -31,7 +31,7 @@ export async function getCompanionInfoAsync(logger) {
         }
     }
     catch (error) {
-        logger.warn(`Unable to contact companion for Ping request: ${error.message}`);
+        logger.warn(`Unable to contact companion for ping request: ${error}`);
 
         return {
             status: "unavailable"
@@ -51,7 +51,7 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle,
             debug: debug.toString()
         });
     } catch (error) {
-        logger.error(`ERROR: unable to contact companion for MakeDialog request: ${error.message}`);
+        logger.error(`Unable to contact companion for MakeDialog request. Error: ${error}`);
     }
 }
 

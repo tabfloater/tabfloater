@@ -22,7 +22,7 @@ export async function loadOptionsAsync() {
 async function setDefaultOptionsAsync() {
     await browser.storage.sync.set({ options: constants.DefaultOptions });
 
-    if (constants.DefaultOptions.smartPositioningFollowTabSwitches) {
+    if (constants.DefaultOptions.positioningStrategy === "smart" && constants.DefaultOptions.smartPositioningFollowTabSwitches) {
         browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
     }
 }
@@ -94,7 +94,7 @@ browser.commands.onCommand.addListener(async command => {
         if (await floater.canFloatCurrentTabAsync()) {
             await floater.floatTabAsync(logger);
         } else {
-            logger.info("Parent window has only one tab, ignoring float request");
+            logger.info("Parent window only has one tab, ignoring float request");
         }
     }
 });
@@ -126,7 +126,7 @@ browser.storage.onChanged.addListener(async (changes, areaName) => {
     if (areaName === "sync") {
         const newOptions = changes.options.newValue;
 
-        if (newOptions.smartPositioningFollowTabSwitches) {
+        if (newOptions.positioningStrategy === "smart" && newOptions.smartPositioningFollowTabSwitches) {
             browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
         } else {
             browser.tabs.onActivated.removeListener(activeTabChangedListenerAsync);

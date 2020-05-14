@@ -31,7 +31,6 @@ export async function getStartingPositionAsync() {
 export async function calculateCoordinatesAsync(logger) {
     const options = await loadOptionsAsync();
     const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
-    let coordinates;
     let parentWindow;
     let fixedPosition;
 
@@ -42,6 +41,8 @@ export async function calculateCoordinatesAsync(logger) {
         parentWindow = await browser.windows.getLastFocused({ populate: true });
         fixedPosition = options.fixedPosition;
     }
+
+    let coordinates;
 
     if (options.positioningStrategy === "fixed") {
         coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options, logger);
@@ -57,8 +58,8 @@ export async function calculateCoordinatesAsync(logger) {
 function getFixedPositionCoordinates(parentWindow, position, options, logger) {
     const dimensions = getFixedFloatingTabDimensions(parentWindow, options, logger);
 
-    logger.info(`Parent window top: ${parentWindow.top}, left: ${parentWindow.left}, ` +
-                `width: ${parentWindow.width}, height: ${parentWindow.height}`);
+    logger.info(`Position: ${position}, parent window top: ${parentWindow.top}, left: ${parentWindow.left}, ` +
+        `width: ${parentWindow.width}, height: ${parentWindow.height}`);
 
     dimensions.top = position.startsWith("top")
         ? parentWindow.top + options.viewportTopOffset
@@ -87,9 +88,9 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
             throw "Unable to calculate coordinates";
         }
 
-        logger.info(`smartPositioningRestrictMaxFloatingTabSize: ${options.smartPositioningRestrictMaxFloatingTabSize}`);
-
         if (options.smartPositioningRestrictMaxFloatingTabSize) {
+            logger.info(`Restricting max size of smart positioned floating window. Original coordinates: ${JSON.stringify(coordinates)}`);
+
             const maxDimensions = getFixedFloatingTabDimensions(parentWindow, options, logger);
             coordinates.width = Math.min(coordinates.width, maxDimensions.width);
             coordinates.height = Math.min(coordinates.height, maxDimensions.height);
@@ -101,7 +102,7 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
         // it into a chrome:// page. In this case, we fall back to fixed positioning.
         // TODO notify the user that smart positioning failed
 
-        logger.error(`Unable to calculate smart positioning coordinates. Error: '${error}'`);
+        logger.warn(`Unable to calculate smart positioning coordinates. Error: '${error}'`);
 
         const options = await loadOptionsAsync();
         return getFixedPositionCoordinates(parentWindow, options.fixedPosition, options, logger);

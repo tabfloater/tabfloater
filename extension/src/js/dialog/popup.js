@@ -48,7 +48,6 @@ function setCompanionVersionWarningsIfOutdated(companionInfo) {
         unhide(outDatedVersionWarning);
         companionVersionLabel.textContent = `Current version: ${companionInfo.version} New version: ${companionInfo.latestVersion}`;
 
-
         if (companionInfo.latestVersionHasBreakingChanges) {
             unhide(outDatedVersionBreakingChangesWarning);
         }
