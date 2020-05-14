@@ -20,7 +20,8 @@ export async function getCompanionInfoAsync(logger) {
                 version: companionInfo.version,
                 latestVersion: getLatestCompanionVersion(companionInfo),
                 isOutdated: isOutdated,
-                latestVersionHasBreakingChanges: isOutdated ? latestVersionHasBreakingChanges(companionInfo) : false
+                latestVersionHasBreakingChanges: isOutdated ? latestVersionHasBreakingChanges(companionInfo) : false,
+                logFilePath: companionInfo.logfile
             };
         } else {
             // TODO handle error somehow. show it in tooltip? extra status?

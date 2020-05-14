@@ -41,8 +41,10 @@
     </div>
 
     <input type="checkbox" id="debugCheckbox" name="debugCheckbox">
-    <label for="debugCheckbox">Enable debugging (warning: logs information such as browser title, but info never leaves the extension)</label>
-
+    <label for="debugCheckbox">Enable debugging (warning: logs information such as browser title, but info never leaves the extension)</label><br/>
+    &nbsp;&nbsp;&nbsp;Companion log file (may not exist if no operations were performed with debugging):
+    &nbsp;&nbsp;&nbsp;<span id="companionLogFilePathLabel"></span>
+    &nbsp;&nbsp;&nbsp;<button id="copyCompanionLogFilePathButton">Copy to clipboard</button>
 
     <script src="../js/dialog/options.js"></script>
 </body>
