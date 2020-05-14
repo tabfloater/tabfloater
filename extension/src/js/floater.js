@@ -16,7 +16,7 @@ export async function tryGetFloatingTabAsync(logger) {
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
         } catch (error) {
-            logger.error(`Unable to fetch floating tab, will clear saved value. Error: '${error}'`);
+            logger.error(`Unable to fetch floating tab, will clear saved value. Error: '${error}', message: '${error.message}'`);
             await clearFloatingTabAsync();
         }
     }
@@ -45,7 +45,7 @@ export async function floatTabAsync(logger) {
             try {
                 await browser.tabs.update(succeedingActiveTab.id, { active: true });
             } catch (error) {
-                logger.error(`Unable to update active tab before floating action. Error: '${error}'`);
+                logger.error(`Unable to update active tab before floating action. Error: '${error}', message: '${error.message}'`);
             }
 
             const coordinates = await positioner.calculateCoordinatesAsync(logger);

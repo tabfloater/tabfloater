@@ -227,7 +227,7 @@ browser.runtime.onMessage.addListener(async function (request) {
                 height: maxEmptyAreaInViewport.height
             };
         } catch (error) {
-            logger.error(`Error while calculating max empty area. Error: '${error}'`);
+            logger.error(`Error while calculating max empty area. Error: '${error}', message: '${error.message}'`);
         }
     }
 });
