@@ -102,7 +102,7 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
         // it into a chrome:// page. In this case, we fall back to fixed positioning.
         // TODO notify the user that smart positioning failed
 
-        logger.warn(`Unable to calculate smart positioning coordinates, falling back to fixed positioning. ` +
+        logger.warn("Unable to calculate smart positioning coordinates, falling back to fixed positioning. " +
             `Error: '${error}', message: '${error.message}'`);
 
         const options = await loadOptionsAsync();

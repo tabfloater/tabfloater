@@ -60,7 +60,7 @@ function positioningStrategyChanged() {
     saveOptionsAsync();
 }
 
-async function setCompanionLogFileLabelAndButton() {
+async function setCompanionLogFileLabelAndButtonAsync() {
     if (debugCheckbox.checked) {
         companionLogFilePathLabel.disabled = false;
         copyCompanionLogFilePathButton.disabled = false;
@@ -75,7 +75,7 @@ async function setCompanionLogFileLabelAndButton() {
         copyCompanionLogFilePathButton.disabled = true;
         // TODO hide companion log label and button instead of disabling
     }
-};
+}
 
 window.onload = async function () {
     const options = await browser.runtime.sendMessage("loadOptions");
@@ -105,7 +105,7 @@ window.onload = async function () {
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
     debugCheckbox.checked = options.debug;
 
-    await setCompanionLogFileLabelAndButton();
+    await setCompanionLogFileLabelAndButtonAsync();
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
@@ -122,7 +122,7 @@ restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
 
 debugCheckbox.onchange = async function () {
     await saveOptionsAsync();
-    await setCompanionLogFileLabelAndButton();
+    await setCompanionLogFileLabelAndButtonAsync();
 };
 
 copyCompanionLogFilePathButton.onclick = async function () {
@@ -134,4 +134,4 @@ copyCompanionLogFilePathButton.onclick = async function () {
     } catch (error) {
         // TODO handle error - maybe show notification on the UI?
     }
-}
+};
