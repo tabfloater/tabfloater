@@ -37,7 +37,7 @@ function isVisibleElement(node) {
         return false;
     }
 
-    return ["iframe", "textarea", "input", "button", "img", "svg", "title", "h1", "h2", "h3"]
+    return ["iframe", "textarea", "video", "ytd-player", "input", "button", "img", "svg", "title", "h1", "h2", "h3"]
         .includes(node.tagName.toString().toLowerCase());
 }
 
@@ -48,7 +48,7 @@ function forEachVisibleElement(node, callback) {
         for (let i = 0; i < childNodes.length; i++) {
             const child = childNodes[i];
             if (isVisibleElement(child)) {
-                const node = (isImage(child) || isInput(child)) && child.parentElement !== document.body
+                const node = (isInput(child) || isImage(child)) && child.parentElement !== document.body
                     ? child.parentElement
                     : child;
                 const range = document.createRange();
@@ -192,20 +192,36 @@ function calculateMaxEmptyArea(logger) {
 }
 
 function getScreenCoordinatesOfViewport(logger) {
+    if (window.mozInnerScreenX) {
+        logger.info("On Firefox, returning real coordinates");
+
+        return {
+            top: window.mozInnerScreenY,
+            left: window.mozInnerScreenX
+        };
+    }
+
     if (!window.screenTop) {
         window.screenTop = window.screenY;
         window.screenLeft = window.screenX;
     }
 
-    logger.info(`w.st: ${window.screenTop}, w.sl: ${window.screenLeft}`);
-    logger.info(`w.ow: ${window.outerWidth}, w.iw: ${window.innerWidth}, w.oh: ${window.outerHeight}, w.ih: ${window.innerHeight}`);
+    logger.info(`On Chrome, calculating coordinates from window properties. w.st: ${window.screenTop}, w.sl: ${window.screenLeft}, w.oh: ${window.outerHeight}, w.ih: ${window.innerHeight}`);
 
-    const viewportWidthOffsetRelativeToWindow = window.outerWidth - window.innerWidth;
-    const viewportHeightOffsetRelativeToWindow = window.outerHeight - window.innerHeight;
+    const viewportHeightOffsetRelativeToWindow = Math.abs(window.outerHeight - window.innerHeight);
 
     return {
         top: window.screenTop + viewportHeightOffsetRelativeToWindow,
-        left: window.screenLeft + viewportWidthOffsetRelativeToWindow
+        left: window.screenLeft
+    };
+}
+
+function convertToScreenPixels(area) {
+    return {
+        top: parseInt(area.top * window.devicePixelRatio),
+        left: parseInt(area.left * window.devicePixelRatio),
+        width: parseInt(area.width * window.devicePixelRatio),
+        height: parseInt(area.height * window.devicePixelRatio)
     };
 }
 
@@ -220,21 +236,30 @@ browser.runtime.onMessage.addListener(async function (request) {
             logger.info(`viewportCoordinates: ${JSON.stringify(viewportCoordinates)}`);
             logger.info(`maxEmptyAreaInViewport: ${JSON.stringify(maxEmptyAreaInViewport)}`);
 
-            return {
+            const rawArea = {
                 top: viewportCoordinates.top + maxEmptyAreaInViewport.top,
                 left: viewportCoordinates.left + maxEmptyAreaInViewport.left,
                 width: maxEmptyAreaInViewport.width,
                 height: maxEmptyAreaInViewport.height
             };
+
+            const normalizedArea = convertToScreenPixels(rawArea);
+
+            logger.info(`rawArea: ${JSON.stringify(rawArea)}, devicePixelRatio: ${window.devicePixelRatio}`);
+            logger.info(`normalizedArea: ${JSON.stringify(normalizedArea)}`);
+
+            return normalizedArea;
         } catch (error) {
             logger.error(`Error while calculating max empty area. Error: '${error}', message: '${error.message}'`);
         }
     }
 });
 
+/* eslint-disable no-console */
 function getLogger(debug) {
     return {
         info: debug ? message => console.log(`[TABFLOATER] ${message}`) : () => { },
         error: debug ? message => console.error(`[TABFLOATER] ${message}`) : () => { }
     };
 }
+/* eslint-enable no-console */
