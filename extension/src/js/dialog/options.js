@@ -10,8 +10,10 @@ const viewportTopOffsetInput = window.viewportTopOffsetInput;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
 const debugCheckbox = window.debugCheckbox;
+const companionLogFilePathLabel = window.companionLogFilePathLabel;
+const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
 
-function saveOptions() {
+async function saveOptionsAsync() {
     const options = {};
 
     options.positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
@@ -36,9 +38,9 @@ function saveOptions() {
     options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
     options.smartPositioningRestrictMaxFloatingTabSize = restrictMaxFloatingTabSizeCheckbox.checked;
-    options.debugging = debugCheckbox.checked;
+    options.debug = debugCheckbox.checked;
 
-    browser.storage.sync.set({ options: options });
+    await browser.storage.sync.set({ options: options });
 }
 
 function setPositionButtonStates() {
@@ -55,7 +57,24 @@ function setPositionButtonStates() {
 
 function positioningStrategyChanged() {
     setPositionButtonStates();
-    saveOptions();
+    saveOptionsAsync();
+}
+
+async function setCompanionLogFileLabelAndButtonAsync() {
+    if (debugCheckbox.checked) {
+        companionLogFilePathLabel.disabled = false;
+        copyCompanionLogFilePathButton.disabled = false;
+        // TODO unhide companion log label and button instead of enabling
+
+        if (companionLogFilePathLabel.textContent === "") {
+            const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
+            companionLogFilePathLabel.textContent = companionInfo.logFilePath;
+        }
+    } else {
+        companionLogFilePathLabel.disabled = true;
+        copyCompanionLogFilePathButton.disabled = true;
+        // TODO hide companion log label and button instead of disabling
+    }
 }
 
 window.onload = async function () {
@@ -84,18 +103,35 @@ window.onload = async function () {
     viewportTopOffsetInput.value = options.viewportTopOffset;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
-    debugCheckbox.checked = options.debugging;
+    debugCheckbox.checked = options.debug;
+
+    await setCompanionLogFileLabelAndButtonAsync();
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
 smartPositionRadioButton.onchange = positioningStrategyChanged;
-topLeftRadioButton.onchange = saveOptions;
-topRightRadioButton.onchange = saveOptions;
-bottomLeftRadioButton.onchange = saveOptions;
-bottomRightRadioButton.onchange = saveOptions;
-smallSizeRadioButton.onchange = saveOptions;
-standardSizeRadioButton.onchange = saveOptions;
-viewportTopOffsetInput.onblur = saveOptions;
-followTabSwitchCheckbox.onchange = saveOptions;
-restrictMaxFloatingTabSizeCheckbox.onchange = saveOptions;
-debugCheckbox.onchange = saveOptions;
+topLeftRadioButton.onchange = saveOptionsAsync;
+topRightRadioButton.onchange = saveOptionsAsync;
+bottomLeftRadioButton.onchange = saveOptionsAsync;
+bottomRightRadioButton.onchange = saveOptionsAsync;
+smallSizeRadioButton.onchange = saveOptionsAsync;
+standardSizeRadioButton.onchange = saveOptionsAsync;
+viewportTopOffsetInput.onblur = saveOptionsAsync;
+followTabSwitchCheckbox.onchange = saveOptionsAsync;
+restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
+
+debugCheckbox.onchange = async function () {
+    await saveOptionsAsync();
+    await setCompanionLogFileLabelAndButtonAsync();
+};
+
+copyCompanionLogFilePathButton.onclick = async function () {
+    const logFilePath = companionLogFilePathLabel.textContent;
+
+    try {
+        await navigator.clipboard.writeText(logFilePath);
+        // TODO show 'Copied' notification on the dialog
+    } catch (error) {
+        // TODO handle error - maybe show notification on the UI?
+    }
+};

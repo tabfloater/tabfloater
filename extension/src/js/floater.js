@@ -1,7 +1,7 @@
 import { sendMakeDialogRequestAsync } from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 
-export async function tryGetFloatingTabAsync() {
+export async function tryGetFloatingTabAsync(logger) {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
     const tabProps = data.floatingTabProperties;
 
@@ -16,6 +16,7 @@ export async function tryGetFloatingTabAsync() {
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
         } catch (error) {
+            logger.error(`Unable to fetch floating tab, will clear saved value. Error: '${error}', message: '${error.message}'`);
             await clearFloatingTabAsync();
         }
     }
@@ -23,8 +24,8 @@ export async function tryGetFloatingTabAsync() {
     return result;
 }
 
-export async function floatTabAsync() {
-    const { floatingTab } = await tryGetFloatingTabAsync();
+export async function floatTabAsync(logger) {
+    const { floatingTab } = await tryGetFloatingTabAsync(logger);
 
     if (!floatingTab) {
         const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
@@ -38,15 +39,16 @@ export async function floatTabAsync() {
                 position: await positioner.getStartingPositionAsync()
             };
 
+            logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
+
             const succeedingActiveTab = await getSucceedingActiveTabAsync();
             try {
-                // TODO this is a sporadic error - sometimes succedingActiveTab is undefined here
                 await browser.tabs.update(succeedingActiveTab.id, { active: true });
             } catch (error) {
-                alert(error);
+                logger.error(`Unable to update active tab before floating action. Error: '${error}', message: '${error.message}'`);
             }
 
-            const coordinates = await positioner.calculateCoordinatesAsync();
+            const coordinates = await positioner.calculateCoordinatesAsync(logger);
 
             await browser.windows.create({
                 "tabId": currentTab.id,
@@ -58,14 +60,16 @@ export async function floatTabAsync() {
             });
 
             const parentWindowTitle = succeedingActiveTab.title;
-            await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle);
+            await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
             await setFloatingTabAsync(tabProps);
+        } else {
+            logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
         }
     }
 }
 
-export async function unfloatTabAsync() {
-    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
+export async function unfloatTabAsync(logger) {
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
 
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
@@ -73,11 +77,11 @@ export async function unfloatTabAsync() {
     }
 }
 
-export async function repositionFloatingTabIfExistsAsync() {
-    const { floatingTab } = await tryGetFloatingTabAsync();
+export async function repositionFloatingTabIfExistsAsync(logger) {
+    const { floatingTab } = await tryGetFloatingTabAsync(logger);
 
     if (floatingTab) {
-        const coordinates = await positioner.calculateCoordinatesAsync();
+        const coordinates = await positioner.calculateCoordinatesAsync(logger);
         await browser.windows.update(floatingTab.windowId, coordinates);
     }
 }

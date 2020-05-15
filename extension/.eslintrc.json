@@ -19,9 +19,17 @@
             4,
             { "SwitchCase": 1 }
         ],
-        "linebreak-style": [
-            "error",
-            "unix"
+        "no-warning-comments": [
+            "warn"
+        ],
+        "no-console": [
+            "warn"
+        ],
+        "no-debugger": [
+            "error"
+        ],
+        "no-alert": [
+            "error"
         ],
         "quotes": [
             "error",

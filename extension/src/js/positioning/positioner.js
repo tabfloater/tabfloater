@@ -28,10 +28,9 @@ export async function getStartingPositionAsync() {
  * current window, so the caller must set the active tab to the desired parent window tab
  * before calling this method.
  */
-export async function calculateCoordinatesAsync() {
+export async function calculateCoordinatesAsync(logger) {
     const options = await loadOptionsAsync();
-    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
-    let coordinates;
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
     let parentWindow;
     let fixedPosition;
 
@@ -43,17 +42,24 @@ export async function calculateCoordinatesAsync() {
         fixedPosition = options.fixedPosition;
     }
 
+    let coordinates;
+
     if (options.positioningStrategy === "fixed") {
-        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options);
+        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options, logger);
     } else if (options.positioningStrategy === "smart") {
-        coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options);
+        coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options, logger);
     }
+
+    logger.info(`Calculated coordinates: ${JSON.stringify(coordinates)}`);
 
     return coordinates;
 }
 
-function getFixedPositionCoordinates(parentWindow, position, options) {
-    const dimensions = getFixedFloatingTabDimensions(parentWindow, options);
+function getFixedPositionCoordinates(parentWindow, position, options, logger) {
+    const dimensions = getFixedFloatingTabDimensions(parentWindow, options, logger);
+
+    logger.info(`Position: ${position}, parent window top: ${parentWindow.top}, left: ${parentWindow.left}, ` +
+        `width: ${parentWindow.width}, height: ${parentWindow.height}`);
 
     dimensions.top = position.startsWith("top")
         ? parentWindow.top + options.viewportTopOffset
@@ -66,7 +72,7 @@ function getFixedPositionCoordinates(parentWindow, position, options) {
     return dimensions;
 }
 
-async function getSmartPositionCoordinatesAsync(parentWindow, options) {
+async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
     const parentWindowActiveTab = parentWindow.tabs.find(tab => tab.active);
 
     try {
@@ -75,7 +81,7 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options) {
 
         const coordinates = await browser.tabs.sendMessage(parentWindowActiveTab.id, {
             action: "calculateMaxEmptyArea",
-            debug: true // TODO implement debugging with marking & wire in debugging option
+            debug: options.debug
         });
 
         if (!coordinates) {
@@ -83,24 +89,28 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options) {
         }
 
         if (options.smartPositioningRestrictMaxFloatingTabSize) {
-            const maxDimensions = getFixedFloatingTabDimensions(parentWindow, options);
+            logger.info(`Restricting max size of smart positioned floating window. Original coordinates: ${JSON.stringify(coordinates)}`);
+
+            const maxDimensions = getFixedFloatingTabDimensions(parentWindow, options, logger);
             coordinates.width = Math.min(coordinates.width, maxDimensions.width);
             coordinates.height = Math.min(coordinates.height, maxDimensions.height);
         }
 
         return coordinates;
     } catch (error) {
-        // TODO notify the user that smart positioning failed
-
         // The content script can fail sometimes, for example if we want to inject
         // it into a chrome:// page. In this case, we fall back to fixed positioning.
+        // TODO notify the user that smart positioning failed
+
+        logger.warn("Unable to calculate smart positioning coordinates, falling back to fixed positioning. " +
+            `Error: '${error}', message: '${error.message}'`);
 
         const options = await loadOptionsAsync();
-        return getFixedPositionCoordinates(parentWindow, options.fixedPosition);
+        return getFixedPositionCoordinates(parentWindow, options.fixedPosition, options, logger);
     }
 }
 
-function getFixedFloatingTabDimensions(parentWindow, options) {
+function getFixedFloatingTabDimensions(parentWindow, options, logger) {
     const minSideLength = 200;
     let divisor;
 
@@ -113,6 +123,9 @@ function getFixedFloatingTabDimensions(parentWindow, options) {
     const topOffset = Math.min(Math.max(options.viewportTopOffset, 0), parentWindow.height / divisor);
     const rawWidth = parseInt(parentWindow.width / divisor);
     const rawHeight = parseInt((parentWindow.height - topOffset) / divisor);
+
+    logger.info(`viewportTopOffset: ${options.viewportTopOffset}, divisor: ${divisor}`);
+    logger.info(`topOffset: ${topOffset}, rawWidth: ${rawWidth}, rawHeight: ${rawHeight}`);
 
     return {
         width: Math.max(rawWidth - FloatingTabPadding * 2, minSideLength),

@@ -4,17 +4,26 @@
 #include <string>
 #include <regex>
 
+#define LOG_FILE "tabfloater_companion.log"
+
 #ifndef VERSION
 #define VERSION "unknown"
 #endif
 
 #ifdef _WIN32
 #include <fcntl.h>
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#define PATH_SEPARATOR "\\\\"
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#define PATH_SEPARATOR "/"
 #endif
 
 void initLogging()
 {
-    loguru::add_file("tabfloater_companion.log", loguru::Append, loguru::Verbosity_MAX);
+    loguru::add_file(LOG_FILE, loguru::Append, loguru::Verbosity_MAX);
     std::string initMessage = std::string("TabFloater Companion started. Version: ") + VERSION + ", OS: ";
 
 #ifdef _WIN32
@@ -108,36 +117,67 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
     return std::string();
 }
 
-void sendStatus(std::string status, bool appendVersionAndOs = false)
+std::string getCurrentWorkingDirectory()
 {
-    LOG_F(INFO, "Sending status \"%s\"", status.c_str());
+    char buffer[FILENAME_MAX];
+    GetCurrentDir(buffer, FILENAME_MAX);
+    std::string workingDir(buffer);
 
-    std::string statusJson = "{\"status\":\"" + status + "\"";
-
-    if (appendVersionAndOs)
-    {
-        statusJson += std::string(",\"version\":\"") + VERSION + "\"";
-        statusJson += std::string(",\"os\":\"");
 #ifdef _WIN32
-        statusJson += "Windows";
-#endif
-#ifdef linux
-        statusJson += "Linux";
-#endif
-        statusJson += "\"";
+    for (int i = 0; i < workingDir.size(); i++)
+    {
+        if (workingDir[i] == '\\')
+        {
+            workingDir.insert(i, "\\");
+            i++;
+        }
     }
+#endif
 
-    statusJson += "}";
-    unsigned int len = statusJson.length();
+    return workingDir;
+}
 
-    LOG_F(INFO, "statusJson: \"%s\", length: %d", statusJson.c_str(), len);
+void sendMessage(std::string message)
+{
+    unsigned int len = message.length();
+
+    LOG_F(INFO, "Sending JSON: \"%s\", length: %d", message.c_str(), len);
 
     std::cout << char(len >> 0)
               << char(len >> 8)
               << char(len >> 16)
               << char(len >> 24);
 
-    std::cout << statusJson;
+    std::cout << message;
+}
+
+void sendPingResponse(bool debugging)
+{
+    std::string responseJson = std::string("{\"status\":\"ok\",\"version\":\"") + VERSION + "\",\"os\":\"";
+
+#ifdef _WIN32
+    responseJson += "Windows";
+#endif
+#ifdef linux
+    responseJson += "Linux";
+#endif
+    responseJson += "\"";
+
+    if (debugging)
+    {
+        std::string logFilePath = getCurrentWorkingDirectory() + PATH_SEPARATOR + LOG_FILE;
+        responseJson += ",\"logfile\":\"" + logFilePath + "\"";
+    }
+
+    responseJson += "}";
+
+    sendMessage(responseJson);
+}
+
+void sendStatus(std::string status)
+{
+    std::string statusJson = "{\"status\":\"" + status + "\"}";
+    sendMessage(statusJson);
 }
 
 int main(int argc, char *argv[])
@@ -169,8 +209,9 @@ int main(int argc, char *argv[])
         std::string json = readStringFromStdIn(messageLength);
         std::string action = getJsonValueByKey(json, "action");
         std::string debug = getJsonValueByKey(json, "debug");
+        bool debugging = debug.compare("true") == 0;
 
-        if (debug.compare("true") == 0)
+        if (debugging)
         {
             loguru::init(argc, argv);
             initLogging();
@@ -182,7 +223,7 @@ int main(int argc, char *argv[])
         if (action.compare("ping") == 0)
         {
             LOG_F(INFO, "Ping received");
-            sendStatus("ok", true);
+            sendPingResponse(debugging);
         }
         else if (action.compare("setAsModelessDialog") == 0)
         {

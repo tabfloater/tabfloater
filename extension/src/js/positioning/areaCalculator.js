@@ -1,19 +1,3 @@
-// for testing only
-// eslint-disable-next-line no-unused-vars
-function markArea(rectangle, highlight) {
-    const div = document.createElement("div");
-    div.style.width = `${rectangle.width}px`;
-    div.style.height = `${rectangle.height}px`;
-    div.style.top = `${rectangle.top + window.scrollY}px`;
-    div.style.left = `${rectangle.left + window.scrollX}px`;
-    div.style.position = "absolute";
-    div.style.borderWidth = highlight ? "thick" : "thin";
-    div.style.borderStyle = "solid";
-    div.style.borderColor = highlight ? "lightgreen" : "red";
-
-    document.body.appendChild(div);
-}
-
 function isTextNode(node) {
     return node.nodeType === 3;
 }
@@ -93,10 +77,6 @@ function mapViewportToMatrixWithEmptyMarkers(cellSize) {
     var emptyMarkers = Array(rowCount).fill(true).map(() => Array(columnCount).fill(true));
 
     forEachVisibleElement(document.body, elementRectangle => {
-
-        // TODO debugging?
-        // markArea(elementRectangle);
-
         let rowStartIndex = Math.floor(elementRectangle.top / cellSize);
         let colStartIndex = Math.floor(elementRectangle.left / cellSize);
         let rowEndIndex = rowStartIndex + Math.ceil(elementRectangle.height / cellSize);
@@ -196,10 +176,12 @@ function getMaxRectangleInMatrix(matrix) {
     return maxRectangle;
 }
 
-function calculateMaxEmptyArea() {
+function calculateMaxEmptyArea(logger) {
     const cellSize = 30;
     const matrix = mapViewportToMatrixWithEmptyMarkers(cellSize);
     const maxRect = getMaxRectangleInMatrix(matrix);
+
+    logger.info(`maxRect: ${JSON.stringify(maxRect)}`);
 
     return {
         top: maxRect.row * cellSize,
@@ -209,15 +191,17 @@ function calculateMaxEmptyArea() {
     };
 }
 
-function getScreenCoordinatesOfViewport() {
+function getScreenCoordinatesOfViewport(logger) {
     if (!window.screenTop) {
         window.screenTop = window.screenY;
         window.screenLeft = window.screenX;
     }
 
+    logger.info(`w.st: ${window.screenTop}, w.sl: ${window.screenLeft}`);
+    logger.info(`w.ow: ${window.outerWidth}, w.iw: ${window.innerWidth}, w.oh: ${window.outerHeight}, w.ih: ${window.innerHeight}`);
+
     const viewportWidthOffsetRelativeToWindow = window.outerWidth - window.innerWidth;
     const viewportHeightOffsetRelativeToWindow = window.outerHeight - window.innerHeight;
-    // TODO log these variables when debugging?
 
     return {
         top: window.screenTop + viewportHeightOffsetRelativeToWindow,
@@ -227,21 +211,30 @@ function getScreenCoordinatesOfViewport() {
 
 browser.runtime.onMessage.addListener(async function (request) {
     if (request.action === "calculateMaxEmptyArea") {
-        if (request.debug) {
-            // TODO implement debugging
+        const logger = getLogger(request.debug);
+
+        try {
+            const viewportCoordinates = getScreenCoordinatesOfViewport(logger);
+            const maxEmptyAreaInViewport = calculateMaxEmptyArea(logger);
+
+            logger.info(`viewportCoordinates: ${JSON.stringify(viewportCoordinates)}`);
+            logger.info(`maxEmptyAreaInViewport: ${JSON.stringify(maxEmptyAreaInViewport)}`);
+
+            return {
+                top: viewportCoordinates.top + maxEmptyAreaInViewport.top,
+                left: viewportCoordinates.left + maxEmptyAreaInViewport.left,
+                width: maxEmptyAreaInViewport.width,
+                height: maxEmptyAreaInViewport.height
+            };
+        } catch (error) {
+            logger.error(`Error while calculating max empty area. Error: '${error}', message: '${error.message}'`);
         }
-
-        const viewportCoordinates = getScreenCoordinatesOfViewport();
-        const maxEmptyAreaInViewport = calculateMaxEmptyArea();
-
-        // TODO debugging
-        //markArea(maxEmptyAreaInViewport, true);
-
-        return {
-            top: viewportCoordinates.top + maxEmptyAreaInViewport.top,
-            left: viewportCoordinates.left + maxEmptyAreaInViewport.left,
-            width: maxEmptyAreaInViewport.width,
-            height: maxEmptyAreaInViewport.height
-        };
     }
 });
+
+function getLogger(debug) {
+    return {
+        info: debug ? message => console.log(`[TABFLOATER] ${message}`) : () => { },
+        error: debug ? message => console.error(`[TABFLOATER] ${message}`) : () => { }
+    };
+}
