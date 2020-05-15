@@ -63,7 +63,7 @@ export async function floatTabAsync(logger) {
             await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
             await setFloatingTabAsync(tabProps);
         } else {
-            logger.warn("Tried to float current tab, but no active tab found - this should not happen");
+            logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
         }
     }
 }

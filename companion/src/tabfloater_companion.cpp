@@ -14,11 +14,11 @@
 #include <fcntl.h>
 #include <direct.h>
 #define GetCurrentDir _getcwd
-#define PATH_SEPARATOR '\\'
+#define PATH_SEPARATOR "\\\\"
 #else
 #include <unistd.h>
 #define GetCurrentDir getcwd
-#define PATH_SEPARATOR '/'
+#define PATH_SEPARATOR "/"
 #endif
 
 void initLogging()
@@ -117,6 +117,26 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
     return std::string();
 }
 
+std::string getCurrentWorkingDirectory()
+{
+    char buffer[FILENAME_MAX];
+    GetCurrentDir(buffer, FILENAME_MAX);
+    std::string workingDir(buffer);
+
+#ifdef _WIN32
+    for (int i = 0; i < workingDir.size(); i++)
+    {
+        if (workingDir[i] == '\\')
+        {
+            workingDir.insert(i, "\\");
+            i++;
+        }
+    }
+#endif
+
+    return workingDir;
+}
+
 void sendMessage(std::string message)
 {
     unsigned int len = message.length();
@@ -145,9 +165,7 @@ void sendPingResponse(bool debugging)
 
     if (debugging)
     {
-        char workingDir[FILENAME_MAX];
-        GetCurrentDir(workingDir, FILENAME_MAX);
-        std::string logFilePath = std::string(workingDir) + PATH_SEPARATOR + LOG_FILE;
+        std::string logFilePath = getCurrentWorkingDirectory() + PATH_SEPARATOR + LOG_FILE;
         responseJson += ",\"logfile\":\"" + logFilePath + "\"";
     }
 
