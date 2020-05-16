@@ -28,42 +28,48 @@ export async function floatTabAsync(logger) {
     const { floatingTab } = await tryGetFloatingTabAsync(logger);
 
     if (!floatingTab) {
-        const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
-        const currentTab = allActiveTabs[0];
+        await floatingStartedAsync();
 
-        if (currentTab) {
-            const tabProps = {
-                tabId: currentTab.id,
-                parentWindowId: currentTab.windowId,
-                originalIndex: currentTab.index,
-                position: await positioner.getStartingPositionAsync()
-            };
+        try {
+            const allActiveTabs = await browser.tabs.query({ active: true, lastFocusedWindow: true });
+            const currentTab = allActiveTabs[0];
 
-            logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
+            if (currentTab) {
+                const tabProps = {
+                    tabId: currentTab.id,
+                    parentWindowId: currentTab.windowId,
+                    originalIndex: currentTab.index,
+                    position: await positioner.getStartingPositionAsync()
+                };
 
-            const succeedingActiveTab = await getSucceedingActiveTabAsync();
-            try {
-                await browser.tabs.update(succeedingActiveTab.id, { active: true });
-            } catch (error) {
-                logger.error(`Unable to update active tab before floating action. Error: '${error}', message: '${error.message}'`);
+                logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
+
+                const succeedingActiveTab = await getSucceedingActiveTabAsync();
+                try {
+                    await browser.tabs.update(succeedingActiveTab.id, { active: true });
+                } catch (error) {
+                    logger.error(`Unable to update active tab before floating action. Error: '${error}', message: '${error.message}'`);
+                }
+
+                const coordinates = await positioner.calculateCoordinatesAsync(logger);
+
+                await browser.windows.create({
+                    "tabId": currentTab.id,
+                    "type": "popup",
+                    "top": coordinates.top,
+                    "left": coordinates.left,
+                    "width": coordinates.width,
+                    "height": coordinates.height,
+                });
+
+                const parentWindowTitle = succeedingActiveTab.title;
+                await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
+                await setFloatingTabAsync(tabProps);
+            } else {
+                logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
             }
-
-            const coordinates = await positioner.calculateCoordinatesAsync(logger);
-
-            await browser.windows.create({
-                "tabId": currentTab.id,
-                "type": "popup",
-                "top": coordinates.top,
-                "left": coordinates.left,
-                "width": coordinates.width,
-                "height": coordinates.height,
-            });
-
-            const parentWindowTitle = succeedingActiveTab.title;
-            await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
-            await setFloatingTabAsync(tabProps);
-        } else {
-            logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
+        } finally {
+            await clearFloatingProgressAsync();
         }
     }
 }
@@ -87,6 +93,11 @@ export async function repositionFloatingTabIfExistsAsync(logger) {
 }
 
 export async function canFloatCurrentTabAsync() {
+    const floatingProgress = await browser.storage.local.get(["floatingInProgress"]);
+    if (floatingProgress.floatingInProgress) {
+        return false;
+    }
+
     const parentWindow = await browser.windows.getLastFocused({ populate: true });
     return parentWindow.tabs.length > 1;
 }
@@ -97,6 +108,14 @@ export async function setFloatingTabAsync(tabProps) {
 
 export async function clearFloatingTabAsync() {
     await browser.storage.local.remove(["floatingTabProperties"]);
+}
+
+export async function clearFloatingProgressAsync() {
+    await browser.storage.local.remove(["floatingInProgress"]);
+}
+
+async function floatingStartedAsync() {
+    await browser.storage.local.set({ floatingInProgress: true });
 }
 
 /**
