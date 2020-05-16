@@ -29,6 +29,7 @@ async function setDefaultOptionsAsync() {
 
 async function startupAsync() {
     await floater.clearFloatingTabAsync();
+    await floater.clearFloatingProgressAsync();
 }
 
 browser.runtime.onInstalled.addListener(async () => {
@@ -94,7 +95,7 @@ browser.commands.onCommand.addListener(async command => {
         if (await floater.canFloatCurrentTabAsync()) {
             await floater.floatTabAsync(logger);
         } else {
-            logger.info("Parent window only has one tab, ignoring float request");
+            logger.info("Unable to float current tab: either parent window only has one tab, or another floating is already in progress");
         }
     }
 });
