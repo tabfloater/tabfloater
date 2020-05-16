@@ -18,7 +18,7 @@ export const CommandToPositionMapping = {
 
 // TODO finalise these options
 export const DefaultOptions = {
-    positioningStrategy: "fixed",
+    positioningStrategy: "smart",
     fixedPosition: "topRight",
     fixedTabSize: "standard",
     viewportTopOffset: 150,
@@ -28,3 +28,4 @@ export const DefaultOptions = {
 };
 
 export const FloatingTabPadding = 50;
+export const MinimumFloatingTabSideLength = 300;
