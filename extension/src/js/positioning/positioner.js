@@ -1,4 +1,4 @@
-import { FloatingTabPadding } from "../constants.js";
+import { FloatingTabPadding, MinimumFloatingTabSideLength } from "../constants.js";
 import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
 
@@ -50,9 +50,11 @@ export async function calculateCoordinatesAsync(logger) {
         coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options, logger);
     }
 
-    logger.info(`Calculated coordinates: ${JSON.stringify(coordinates)}`);
+    const normalizedCoordinates = normalizeDimensions(coordinates);
 
-    return coordinates;
+    logger.info(`Calculated coordinates: ${JSON.stringify(coordinates)}, normalized coordinates: ${JSON.stringify(normalizedCoordinates)}`);
+
+    return normalizedCoordinates;
 }
 
 function getFixedPositionCoordinates(parentWindow, position, options, logger) {
@@ -111,7 +113,6 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
 }
 
 function getFixedFloatingTabDimensions(parentWindow, options, logger) {
-    const minSideLength = 200;
     let divisor;
 
     switch (options.fixedTabSize) {
@@ -128,7 +129,17 @@ function getFixedFloatingTabDimensions(parentWindow, options, logger) {
     logger.info(`topOffset: ${topOffset}, rawWidth: ${rawWidth}, rawHeight: ${rawHeight}`);
 
     return {
-        width: Math.max(rawWidth - FloatingTabPadding * 2, minSideLength),
-        height: Math.max(rawHeight - FloatingTabPadding * 2, minSideLength)
+        width: rawWidth - FloatingTabPadding * 2,
+        height: rawHeight - FloatingTabPadding * 2
+    };
+}
+
+function normalizeDimensions(coordinates) {
+    return {
+        top: coordinates.top,
+        left: coordinates.left,
+        width: Math.max(coordinates.width, MinimumFloatingTabSideLength),
+        height: Math.max(coordinates.height, MinimumFloatingTabSideLength)
+
     };
 }
