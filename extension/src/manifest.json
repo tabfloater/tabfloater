@@ -27,7 +27,7 @@
         }
     },
     "options_ui": {
-        "page": "html/options.html",
+        "page": "html/options_new.html",
         "open_in_tab": false
     },
     "commands": {

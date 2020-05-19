@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="../css/uk-switch.css" />
+        <link rel="stylesheet" href="../css/uk-tabfloater.css" />
+        <script src="../libs/uikit//uikit.min.js"></script>
+        <script src="../libs/uikit/uikit-icons.min.js"></script>
+        <script type="module" src="../libs/webextension-polyfill/browser-polyfill.min.js"></script>
+    </head>
+    <body style="width: 500px; border-color: red; border-style: solid">
+
+        <div class="uk-section">
+            <div class="uk-container">
+                <h3>Companion</h3>
+
+                <div class="uk-margin uk-grid-small uk-child-width-1-2 uk-margin-medium-left" uk-grid>
+                    <div>
+                        Status
+                    </div>
+                    <div>
+                        <div class="uk-alert-success" uk-alert>
+                            <p>Connected</p>
+                        </div>
+                    </div>
+                    <div>
+                        Version
+                    </div>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="bottomRightRadioButton" name="fixPosition">Bottom right</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="uk-section">
+            <div class="uk-container">
+                <h3>Positioning</h3>
+
+                <label><input class="uk-radio uk-margin-left uk-margin-small-right" type="radio" id="fixedPositionRadioButton" name="positionStrategy">Fixed position</label>
+
+                <div class="uk-margin uk-grid-small uk-child-width-1-3 uk-margin-medium-left" uk-grid>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="topLeftRadioButton" name="fixPosition">Top left</label>
+                    </div>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="topRightRadioButton" name="fixPosition">Top right</label>
+                    </div>
+                    <div></div>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="bottomLeftRadioButton" name="fixPosition">Bottom left</label>
+                    </div>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="bottomRightRadioButton" name="fixPosition">Bottom right</label>
+                    </div>
+                    <div></div>
+                </div>
+
+
+                <div class="uk-margin uk-grid-small uk-child-width-1-3 uk-margin-medium-left" uk-grid>
+                    <div>
+                        Tab size
+                    </div>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="topRightRadioButton" name="fixPosition">Small</label>
+                    </div>
+                    <div>
+                        <label><input class="uk-radio uk-margin-small-right" type="radio" id="bottomLeftRadioButton" name="fixPosition">Standard</label>
+                    </div>
+                </div>
+
+                <div class="uk-margin uk-grid-small uk-child-width-expand uk-margin-medium-left" uk-grid>
+                    <div>
+                        Viewport top offset
+                    </div>
+                    <div class="uk-width-1-4">
+                        <input class="uk-input" id="viewportTopOffsetInput" type="number" placeholder="Input">
+                    </div>
+                </div>
+
+
+                <label>
+                    <input class="uk-radio uk-margin-left uk-margin-small-right" type="radio" id="smartPositionRadioButton" name="positionStrategy">Smart positioning
+                    <div class="uk-inline">
+                        <sup><span uk-icon="icon: question; ratio: 0.8"></sup></span>
+                        <div uk-drop>
+                            <div class="uk-card-small uk-card-body uk-card-default">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>
+                        </div>
+                    </div>
+                </label>
+
+                <div class="uk-margin uk-grid-small uk-child-width-expand uk-margin-medium-left" uk-grid>
+                    <div>
+                        Reposition when switching tabs
+                    </div>
+                    <div class="uk-width-1-4">
+                        <label class="uk-switch" for="followTabSwitchCheckbox">
+                            <input type="checkbox" id="followTabSwitchCheckbox">
+                            <div class="uk-switch-slider"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="uk-margin uk-grid-small uk-child-width-expand uk-margin-medium-left" uk-grid>
+                    <div>
+                        Restrict floating tab size
+                    </div>
+                    <div class="uk-width-1-4">
+                        <label class="uk-switch" for="restrictMaxFloatingTabSizeCheckbox">
+                            <input type="checkbox" id="restrictMaxFloatingTabSizeCheckbox">
+                            <div class="uk-switch-slider"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="uk-section">
+            <div class="uk-container">
+                <h3>Misc</h3>
+
+                <div class="uk-grid-small uk-child-width-expand uk-margin-left" uk-grid>
+                    <div>
+                        Enable debugging
+                    </div>
+                    <div class="uk-width-1-4">
+                        <label class="uk-switch" for="debugCheckbox">
+                            <input type="checkbox" id="debugCheckbox">
+                            <div class="uk-switch-slider"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <h1 class="uk-heading-small">Small</h1>
+<h1 class="uk-heading-medium">Medium</h1>
+<h1 class="uk-heading-large">Large</h1>
+<h1 class="uk-heading-xlarge">X-Large</h1>
+<h1 class="uk-heading-2xlarge">2X-Large</h1>
+
+<div>
+    <h5>Check</h5>
+      <label class="uk-switch" for="default-2">
+        <input type="checkbox" id="default-2" checked>
+        <div class="uk-switch-slider"></div>
+      </label>
+  </div>
+
+<div class="uk-inline">
+    <button class="uk-button uk-button-default" type="button">Hover</button>
+    <div uk-drop>
+        <div class="uk-card uk-card-body uk-card-default">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>
+    </div>
+</div>
+
+<div class="uk-inline">
+    <button class="uk-button uk-button-default" type="button">Click</button>
+    <div uk-drop="mode: click">
+        <div class="uk-card uk-card-body uk-card-default">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>
+    </div>
+</div>
+
+<div class="uk-alert-primary" uk-alert>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+</div>
+
+<div class="uk-alert-success" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+</div>
+
+<div class="uk-alert-warning" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+</div>
+
+<div class="uk-alert-danger" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+</div>
+
+        <form>
+            <fieldset class="uk-fieldset">
+
+                <legend class="uk-legend">Legend</legend>
+
+                <div class="uk-margin">
+                    <input class="uk-input" type="text" placeholder="Input">
+                </div>
+
+                <div class="uk-margin">
+                    <select class="uk-select">
+                        <option>Option 01</option>
+                        <option>Option 02</option>
+                    </select>
+                </div>
+
+                <div class="uk-margin">
+                    <textarea class="uk-textarea" rows="5" placeholder="Textarea"></textarea>
+                </div>
+
+
+                <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                    <label><input class="uk-checkbox InputfieldCheckbox" type="checkbox" checked> A</label>
+                    <label><input class="uk-checkbox" type="checkbox"> B</label>
+                </div>
+
+                <div class="uk-margin">
+                    <input class="uk-range" type="range" value="2" min="0" max="10" step="0.1">
+                </div>
+
+            </fieldset>
+        </form>
+
+        <div uk-alert>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
+    </body>
+</html>

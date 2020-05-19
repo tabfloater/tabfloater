@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "npx eslint src/js",
     "postinstall": "run-script-os",
-    "postinstall:nix": "mkdir src/libs/webextension-polyfill && cp node_modules/webextension-polyfill/dist/*.min.js* src/libs/webextension-polyfill; mkdir src/libs/fontawesome-free && cp node_modules/@fortawesome/fontawesome-free/js/all.min.js src/libs/fontawesome-free",
-    "postinstall:windows": "mkdir src\\libs\\webextension-polyfill && copy node_modules\\webextension-polyfill\\dist\\*.min.js* src\\libs\\webextension-polyfill & mkdir src\\libs\\fontawesome-free && copy node_modules\\@fortawesome\\fontawesome-free\\js\\all.min.js src\\libs\\fontawesome-free"
+    "postinstall:nix": "postinstall.sh",
+    "postinstall:windows": "mkdir src\\libs\\webextension-polyfill && copy node_modules\\webextension-polyfill\\dist\\*.min.js* src\\libs\\webextension-polyfill"
   },
   "repository": {
     "type": "git",
@@ -21,17 +21,17 @@
     "floating-window"
   ],
   "author": "Balazs Gyurak",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/tabfloater/tabfloater/issues"
   },
   "homepage": "https://github.com/tabfloater/tabfloater#readme",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.13.0",
+    "uikit": "^3.4.6",
     "webextension-polyfill": "^0.6.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
-    "run-script-os": "^1.1.1"
+    "run-script-os": "^1.1.1",
+    "sass": "^1.26.5"
   }
 }
