@@ -1,11 +1,3 @@
-const floatTabButton = window.floatTabButton;
-const unfloatTabButton = window.unfloatTabButton;
-const optionsButton = window.optionsButton;
-const companionStatusConnecting = window.companionStatusConnecting;
-const companionStatusConnected = window.companionStatusConnected;
-const companionStatusError = window.companionStatusError;
-const companionStatusUnavailable = window.companionStatusUnavailable;
-const outDatedVersionWarning = window.outDatedVersionWarning;
 /*
  * Copyright 2020 Balazs Gyurak
  *
@@ -22,7 +14,15 @@ const outDatedVersionWarning = window.outDatedVersionWarning;
  * limitations under the License.
  */
 
- const companionVersionLabel = window.companionVersionLabel;
+const floatTabButton = window.floatTabButton;
+const unfloatTabButton = window.unfloatTabButton;
+const optionsButton = window.optionsButton;
+const companionStatusConnecting = window.companionStatusConnecting;
+const companionStatusConnected = window.companionStatusConnected;
+const companionStatusError = window.companionStatusError;
+const companionStatusUnavailable = window.companionStatusUnavailable;
+const outDatedVersionWarning = window.outDatedVersionWarning;
+const companionVersionLabel = window.companionVersionLabel;
 const outDatedVersionBreakingChangesWarning = window.outDatedVersionBreakingChangesWarning;
 
 function hide(element) {
