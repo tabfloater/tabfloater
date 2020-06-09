@@ -14,41 +14,49 @@
  * limitations under the License.
  */
 
+const companionVersionField = window.companionVersionField;
 const fixedPositionRadioButton = window.fixedPositionRadioButton;
-const smartPositionRadioButton = window.smartPositionRadioButton;
-const topLeftRadioButton = window.topLeftRadioButton;
-const topRightRadioButton = window.topRightRadioButton;
-const bottomLeftRadioButton = window.bottomLeftRadioButton;
-const bottomRightRadioButton = window.bottomRightRadioButton;
-const smallSizeRadioButton = window.smallSizeRadioButton;
-const standardSizeRadioButton = window.normalSizeRadioButton;
+const fixPositionSelect = window.fixPositionSelect;
+const tabSizeSelect = window.tabSizeSelect;
 const viewportTopOffsetInput = window.viewportTopOffsetInput;
+const smartPositionRadioButton = window.smartPositionRadioButton;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
+const hotkeyMoveDownDescription = window.hotkeyMoveDownDescription;
+const hotkeyMoveDown = window.hotkeyMoveDown;
+const hotkeyMoveUpDescription = window.hotkeyMoveUpDescription;
+const hotkeyMoveUp = window.hotkeyMoveUp;
+const hotkeyMoveLeftDescription = window.hotkeyMoveLeftDescription;
+const hotkeyMoveLeft = window.hotkeyMoveLeft;
+const hotkeyMoveRightDescription = window.hotkeyMoveRightDescription;
+const hotkeyMoveRight = window.hotkeyMoveRight;
 const debugCheckbox = window.debugCheckbox;
-const companionLogFilePathLabel = window.companionLogFilePathLabel;
+const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
+const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSuccessIcon;
+const copyCompanionLogFilePathSuccessMessage = window.copyCompanionLogFilePathSuccessMessage;
+const tabFloaterVersionField = window.tabFloaterVersionField;
 
 async function saveOptionsAsync() {
     const options = {};
 
     options.positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
 
-    if (topLeftRadioButton.checked) {
-        options.fixedPosition = "topLeft";
-    } else if (topRightRadioButton.checked) {
-        options.fixedPosition = "topRight";
-    } else if (bottomLeftRadioButton.checked) {
-        options.fixedPosition = "bottomLeft";
-    } else if (bottomRightRadioButton.checked) {
-        options.fixedPosition = "bottomRight";
-    }
+    // if (topLeftRadioButton.checked) {
+    //     options.fixedPosition = "topLeft";
+    // } else if (topRightRadioButton.checked) {
+    //     options.fixedPosition = "topRight";
+    // } else if (bottomLeftRadioButton.checked) {
+    //     options.fixedPosition = "bottomLeft";
+    // } else if (bottomRightRadioButton.checked) {
+    //     options.fixedPosition = "bottomRight";
+    // }
 
-    if (smallSizeRadioButton.checked) {
-        options.fixedTabSize = "small";
-    } else if (standardSizeRadioButton.checked) {
-        options.fixedTabSize = "standard";
-    }
+    // if (smallSizeRadioButton.checked) {
+    //     options.fixedTabSize = "small";
+    // } else if (standardSizeRadioButton.checked) {
+    //     options.fixedTabSize = "standard";
+    // }
 
     // TODO validation (as part of UI rework). negative numbers allowed
     options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
@@ -60,94 +68,110 @@ async function saveOptionsAsync() {
 }
 
 function setPositionButtonStates() {
-    topLeftRadioButton.disabled = smartPositionRadioButton.checked;
-    topRightRadioButton.disabled = smartPositionRadioButton.checked;
-    bottomLeftRadioButton.disabled = smartPositionRadioButton.checked;
-    bottomRightRadioButton.disabled = smartPositionRadioButton.checked;
-    smallSizeRadioButton.disabled = smartPositionRadioButton.checked;
-    standardSizeRadioButton.disabled = smartPositionRadioButton.checked;
+    fixPositionSelect.disabled = smartPositionRadioButton.checked;
+    tabSizeSelect.disabled = smartPositionRadioButton.checked;
     viewportTopOffsetInput.disabled = smartPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
 }
 
-function positioningStrategyChanged() {
+async function setHotKeysAsync() {
+    const hotkeys = await browser.runtime.sendMessage("getHotkeys");
+    const moveDownHotKey = hotkeys.filter(k => k.name === "moveDown")[0];
+    const moveUpHotKey = hotkeys.filter(k => k.name === "moveUp")[0];
+    const moveLeftHotKey = hotkeys.filter(k => k.name === "moveLeft")[0];
+    const moveRightHotKey = hotkeys.filter(k => k.name === "moveRight")[0];
+
+    hotkeyMoveDownDescription.textContent = moveDownHotKey.description;
+    hotkeyMoveDown.textContent = moveDownHotKey.shortcut;
+    hotkeyMoveUpDescription.textContent = moveUpHotKey.description;
+    hotkeyMoveUp.textContent = moveUpHotKey.shortcut;
+    hotkeyMoveLeftDescription.textContent = moveLeftHotKey.description;
+    hotkeyMoveLeft.textContent = moveLeftHotKey.shortcut;
+    hotkeyMoveRightDescription.textContent = moveRightHotKey.description;
+    hotkeyMoveRight.textContent = moveRightHotKey.shortcut;
+}
+
+async function positioningStrategyChanged() {
     setPositionButtonStates();
     saveOptionsAsync();
 }
 
-async function setCompanionLogFileLabelAndButtonAsync() {
-    if (debugCheckbox.checked) {
-        companionLogFilePathLabel.disabled = false;
-        copyCompanionLogFilePathButton.disabled = false;
-        // TODO unhide companion log label and button instead of enabling
-
-        if (companionLogFilePathLabel.textContent === "") {
-            const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
-            companionLogFilePathLabel.textContent = companionInfo.logFilePath;
-        }
-    } else {
-        companionLogFilePathLabel.disabled = true;
-        copyCompanionLogFilePathButton.disabled = true;
-        // TODO hide companion log label and button instead of disabling
-    }
-}
-
 window.onload = async function () {
     const options = await browser.runtime.sendMessage("loadOptions");
+    const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
+
+    companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
     if (options.positioningStrategy === "fixed") {
         fixedPositionRadioButton.checked = true;
     } else if (options.positioningStrategy === "smart") {
         smartPositionRadioButton.checked = true;
     }
-
+    copyCompanionLogFilePathButton
     setPositionButtonStates();
 
-    switch (options.fixedPosition) {
-        case "topLeft": topLeftRadioButton.checked = true; break;
-        case "topRight": topRightRadioButton.checked = true; break;
-        case "bottomLeft": bottomLeftRadioButton.checked = true; break;
-        case "bottomRight": bottomRightRadioButton.checked = true; break;
-    }
-
-    switch (options.fixedTabSize) {
-        case "small": smallSizeRadioButton.checked = true; break;
-        case "standard": standardSizeRadioButton.checked = true; break;
-    }
-
+    fixPositionSelect.value = options.fixedPosition;
+    tabSizeSelect.value = options.fixedTabSize;
     viewportTopOffsetInput.value = options.viewportTopOffset;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
-    debugCheckbox.checked = options.debug;
 
-    await setCompanionLogFileLabelAndButtonAsync();
+    await setHotKeysAsync();
+
+    debugCheckbox.checked = options.debug;
+    companionLogFileField.value = companionInfo.logFilePath;
+
+    tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
 smartPositionRadioButton.onchange = positioningStrategyChanged;
-topLeftRadioButton.onchange = saveOptionsAsync;
-topRightRadioButton.onchange = saveOptionsAsync;
-bottomLeftRadioButton.onchange = saveOptionsAsync;
-bottomRightRadioButton.onchange = saveOptionsAsync;
-smallSizeRadioButton.onchange = saveOptionsAsync;
-standardSizeRadioButton.onchange = saveOptionsAsync;
+// topLeftRadioButton.onchange = saveOptionsAsync;
+// topRightRadioButton.onchange = saveOptionsAsync;
+// bottomLeftRadioButton.onchange = saveOptionsAsync;
+// bottomRightRadioButton.onchange = saveOptionsAsync;
+// smallSizeRadioButton.onchange = saveOptionsAsync;
+// standardSizeRadioButton.onchange = saveOptionsAsync;
 viewportTopOffsetInput.onblur = saveOptionsAsync;
 followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
-
-debugCheckbox.onchange = async function () {
-    await saveOptionsAsync();
-    await setCompanionLogFileLabelAndButtonAsync();
-};
+debugCheckbox.onchange = saveOptionsAsync;
 
 copyCompanionLogFilePathButton.onclick = async function () {
-    const logFilePath = companionLogFilePathLabel.textContent;
+    const logFilePath = companionLogFileField.value;
 
     try {
         await navigator.clipboard.writeText(logFilePath);
-        // TODO show 'Copied' notification on the dialog
+        showCopySuccessIndicators(true);
+        await delay(1500);
+        showCopySuccessIndicators(false);
     } catch (error) {
-        // TODO handle error - maybe show notification on the UI?
+        UIkit.notification({
+            message: `Copy failed: ${error}`,
+            status: "danger",
+            pos: "bottom-right",
+            timeout: 5000
+        });
+        
+        // We also show an empty notification as extra bottom margin for the
+        // first notification. If this wasn't here, the first notification
+        // would be barely visible.
+        UIkit.notification({
+            message: "",
+            status: "danger",
+            pos: "bottom-right",
+            timeout: 5000
+        });
     }
 };
+
+function showCopySuccessIndicators(visible) {
+    copyCompanionLogFilePathButton.hidden = visible;
+    copyCompanionLogFilePathSuccessIcon.hidden = !visible;
+    copyCompanionLogFilePathSuccessMessage.hidden = !visible;
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

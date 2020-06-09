@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
  * Copyright (c) 2020 by Seba (https://codepen.io/zzseba78/pen/PxwmeV)
  * Fork of an original work Custom Checkbox Toggle Slider (https://codepen.io/AllThingsSmitty/pen/MmxxOz
@@ -50,7 +51,7 @@
   }
   /* Slider active color */
   input:checked + .uk-switch-slider {
-    background-color: #39f !important;
+    background-color: #39f ;
   }
   /* Pointer active animation */
   input:checked + .uk-switch-slider:before {

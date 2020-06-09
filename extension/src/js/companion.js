@@ -34,6 +34,7 @@ export async function getCompanionInfoAsync(logger) {
             return {
                 status: "connected",
                 version: companionInfo.version,
+                os: companionInfo.os,
                 latestVersion: getLatestCompanionVersion(companionInfo),
                 isOutdated: isOutdated,
                 latestVersionHasBreakingChanges: isOutdated ? latestVersionHasBreakingChanges(companionInfo) : false,

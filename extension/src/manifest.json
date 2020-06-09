@@ -28,7 +28,7 @@
     },
     "options_ui": {
         "page": "html/options_new.html",
-        "open_in_tab": false
+        "open_in_tab": true
     },
     "commands": {
         "moveDown": {

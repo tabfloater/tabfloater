@@ -136,6 +136,7 @@ browser.runtime.onMessage.addListener(async request => {
         case "floatTab": await floater.floatTabAsync(logger); break;
         case "unfloatTab": await floater.unfloatTabAsync(logger); break;
         case "loadOptions": return await loadOptionsAsync();
+        case "getHotkeys": return await browser.commands.getAll();
     }
 });
 
