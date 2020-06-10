@@ -21,7 +21,7 @@ import { getLoggerAsync } from "./logger.js";
 
 const activeTabChangedListenerAsync = async activeInfo => {
     const logger = await getLoggerAsync();
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     logger.info(`Active tab changed. floatingTab: ${floatingTab}, tabProps: '${JSON.stringify(tabProps)}', activeWindowId: ${activeInfo.windowId}`);
 
@@ -59,7 +59,7 @@ async function floatTabIfPossibleAsync(logger) {
 browser.runtime.onInstalled.addListener(async () => {
     await startupAsync();
     await setDefaultOptionsAsync();
-    browser.browserAction.setBadgeBackgroundColor({color: '#3DCBA8'});
+    browser.browserAction.setBadgeBackgroundColor({color: "#3DCBA8"});
 });
 
 browser.runtime.onStartup.addListener(async () => {
@@ -67,8 +67,7 @@ browser.runtime.onStartup.addListener(async () => {
 });
 
 browser.tabs.onRemoved.addListener(async closingTabId => {
-    const logger = await getLoggerAsync();
-    const { floatingTab } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && floatingTab.id === closingTabId) {
         await floater.clearFloatingTabAsync();
@@ -76,8 +75,7 @@ browser.tabs.onRemoved.addListener(async closingTabId => {
 });
 
 browser.windows.onRemoved.addListener(async closingWindowId => {
-    const logger = await getLoggerAsync();
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && tabProps.parentWindowId === closingWindowId) {
         await browser.tabs.remove(floatingTab.id);
@@ -87,7 +85,7 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
 
 browser.browserAction.onClicked.addListener(async () => {
     const logger = await getLoggerAsync();
-    const { floatingTab } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab) {
         await floater.unfloatTabAsync(logger);
@@ -98,7 +96,7 @@ browser.browserAction.onClicked.addListener(async () => {
 
 browser.commands.onCommand.addListener(async command => {
     const logger = await getLoggerAsync();
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     const options = await loadOptionsAsync();
 
     logger.info(`Command received: ${command}`);

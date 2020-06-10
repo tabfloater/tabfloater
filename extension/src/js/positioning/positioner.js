@@ -46,7 +46,7 @@ export async function getStartingPositionAsync() {
  */
 export async function calculateCoordinatesAsync(logger) {
     const options = await loadOptionsAsync();
-    const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
     let parentWindow;
     let fixedPosition;
 

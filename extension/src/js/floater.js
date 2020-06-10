@@ -17,7 +17,7 @@
 import { sendMakeDialogRequestAsync } from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 
-export async function tryGetFloatingTabAsync(logger) {
+export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
     const tabProps = data.floatingTabProperties;
 
@@ -40,7 +40,7 @@ export async function tryGetFloatingTabAsync(logger) {
 }
 
 export async function floatTabAsync(logger) {
-    const { floatingTab } = await tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (!floatingTab) {
         await floatingStartedAsync();
@@ -91,8 +91,8 @@ export async function floatTabAsync(logger) {
     }
 }
 
-export async function unfloatTabAsync(logger) {
-    const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
+export async function unfloatTabAsync() {
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
@@ -102,7 +102,7 @@ export async function unfloatTabAsync(logger) {
 }
 
 export async function repositionFloatingTabIfExistsAsync(logger) {
-    const { floatingTab } = await tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
         const coordinates = await positioner.calculateCoordinatesAsync(logger);
