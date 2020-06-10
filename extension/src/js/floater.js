@@ -80,6 +80,8 @@ export async function floatTabAsync(logger) {
                 const parentWindowTitle = succeedingActiveTab.title;
                 await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
                 await setFloatingTabAsync(tabProps);
+
+                setFloatingStatusForIcon(true);
             } else {
                 logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
             }
@@ -95,6 +97,7 @@ export async function unfloatTabAsync(logger) {
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
         await clearFloatingTabAsync();
+        setFloatingStatusForIcon(false);
     }
 }
 
@@ -148,4 +151,11 @@ async function getSucceedingActiveTabAsync() {
     return currentTabIsLast
         ? allTabsOnCurrentWindow[currentTab.index - 1]
         : allTabsOnCurrentWindow[currentTab.index + 1];
+}
+
+function setFloatingStatusForIcon(isFloating) {
+    const title = isFloating ? "Unfloat tab!" : "Float tab!";
+    const badgeText = isFloating ? "F" : "";
+    browser.browserAction.setTitle({title: title});
+    browser.browserAction.setBadgeText({text: badgeText});
 }

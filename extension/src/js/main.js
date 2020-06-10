@@ -59,6 +59,7 @@ async function floatTabIfPossibleAsync(logger) {
 browser.runtime.onInstalled.addListener(async () => {
     await startupAsync();
     await setDefaultOptionsAsync();
+    browser.browserAction.setBadgeBackgroundColor({color: '#3DCBA8'});
 });
 
 browser.runtime.onStartup.addListener(async () => {
