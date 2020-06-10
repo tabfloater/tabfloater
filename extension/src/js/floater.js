@@ -32,7 +32,6 @@ export async function tryGetFloatingTabAsync(logger) {
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
         } catch (error) {
-            logger.error(`Unable to fetch floating tab, will clear saved value. Error: '${error}', message: '${error.message}'`);
             await clearFloatingTabAsync();
         }
     }
