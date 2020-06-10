@@ -42,25 +42,16 @@ async function saveOptionsAsync() {
     const options = {};
 
     options.positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
+    options.fixedPosition = fixPositionSelect.value;
+    options.fixedTabSize = tabSizeSelect.value;
 
-    // if (topLeftRadioButton.checked) {
-    //     options.fixedPosition = "topLeft";
-    // } else if (topRightRadioButton.checked) {
-    //     options.fixedPosition = "topRight";
-    // } else if (bottomLeftRadioButton.checked) {
-    //     options.fixedPosition = "bottomLeft";
-    // } else if (bottomRightRadioButton.checked) {
-    //     options.fixedPosition = "bottomRight";
-    // }
+    if (isNumberInputValid(viewportTopOffsetInput)) {
+        viewportTopOffsetInput.classList.remove("uk-form-danger");
+        options.viewportTopOffset = viewportTopOffsetInput.value;
+    } else {
+        viewportTopOffsetInput.classList.add("uk-form-danger");
+    }
 
-    // if (smallSizeRadioButton.checked) {
-    //     options.fixedTabSize = "small";
-    // } else if (standardSizeRadioButton.checked) {
-    //     options.fixedTabSize = "standard";
-    // }
-
-    // TODO validation (as part of UI rework). negative numbers allowed
-    options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
     options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
     options.smartPositioningRestrictMaxFloatingTabSize = restrictMaxFloatingTabSizeCheckbox.checked;
     options.debug = debugCheckbox.checked;
@@ -109,7 +100,7 @@ window.onload = async function () {
     } else if (options.positioningStrategy === "smart") {
         smartPositionRadioButton.checked = true;
     }
-    copyCompanionLogFilePathButton
+
     setPositionButtonStates();
 
     fixPositionSelect.value = options.fixedPosition;
@@ -128,12 +119,8 @@ window.onload = async function () {
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
 smartPositionRadioButton.onchange = positioningStrategyChanged;
-// topLeftRadioButton.onchange = saveOptionsAsync;
-// topRightRadioButton.onchange = saveOptionsAsync;
-// bottomLeftRadioButton.onchange = saveOptionsAsync;
-// bottomRightRadioButton.onchange = saveOptionsAsync;
-// smallSizeRadioButton.onchange = saveOptionsAsync;
-// standardSizeRadioButton.onchange = saveOptionsAsync;
+fixPositionSelect.onchange = saveOptionsAsync;
+tabSizeSelect.onchange = saveOptionsAsync;
 viewportTopOffsetInput.onblur = saveOptionsAsync;
 followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
@@ -179,4 +166,16 @@ function showCopySuccessIndicators(visible) {
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isNumberInputValid(input) {
+    if (!input.value || input.value === "") {
+        return false;
+    }
+
+    if (input.value.toString().includes(".")) {
+        return false;
+    }
+
+    return Math.abs(input.value) <= 5000;
 }
