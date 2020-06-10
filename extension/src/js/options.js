@@ -30,6 +30,7 @@ const hotkeyMoveLeftDescription = window.hotkeyMoveLeftDescription;
 const hotkeyMoveLeft = window.hotkeyMoveLeft;
 const hotkeyMoveRightDescription = window.hotkeyMoveRightDescription;
 const hotkeyMoveRight = window.hotkeyMoveRight;
+const hotkeyChangeButton = window.hotkeyChangeButton;
 const debugCheckbox = window.debugCheckbox;
 const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
@@ -138,6 +139,10 @@ followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
 debugCheckbox.onchange = saveOptionsAsync;
 
+hotkeyChangeButton.onclick = function () {
+    browser.tabs.create({url: "chrome://extensions/shortcuts/"});
+}
+
 copyCompanionLogFilePathButton.onclick = async function () {
     const logFilePath = companionLogFileField.value;
 
@@ -153,7 +158,7 @@ copyCompanionLogFilePathButton.onclick = async function () {
             pos: "bottom-right",
             timeout: 5000
         });
-        
+
         // We also show an empty notification as extra bottom margin for the
         // first notification. If this wasn't here, the first notification
         // would be barely visible.
