@@ -18,6 +18,12 @@ const companionStatusIndicatorConnected = window.companionStatusIndicatorConnect
 const companionStatusIndicatorUnavailable = window.companionStatusIndicatorUnavailable;
 const companionUnavailableMessageCard = window.companionUnavailableMessageCard;
 const companionVersionField = window.companionVersionField;
+const companionRequiredIndicator = window.companionRequiredIndicator;
+const companionUpdateIndicator = window.companionUpdateIndicator;
+const companionUpdateVersionText = window.companionUpdateVersionText;
+const companionBreakingChangesIndicator = window.companionBreakingChangesIndicator;
+const downloadCompanionButton = window.downloadCompanionButton;
+const downloadCompanionLink = window.downloadCompanionLink;
 const fixedPositionRadioButton = window.fixedPositionRadioButton;
 const fixPositionSelect = window.fixPositionSelect;
 const tabSizeSelect = window.tabSizeSelect;
@@ -74,9 +80,23 @@ function setCompanionFields(companionInfo) {
     if (companionInfo.status === "unavailable") {
         companionStatusIndicatorUnavailable.hidden = false;
         companionUnavailableMessageCard.textContent += companionInfo.errorMessage;
+        companionRequiredIndicator.hidden = false;
+        downloadCompanionButton.hidden = false;
+        downloadCompanionLink.textContent = "Get the companion...";
     } else if (companionInfo.status === "connected") {
         companionStatusIndicatorConnected.hidden = false;
         companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
+
+        if (companionInfo.isOutdated) {
+            companionUpdateIndicator.hidden = false;
+            companionUpdateVersionText.textContent += companionInfo.latestVersion;
+            downloadCompanionButton.hidden = false;
+            downloadCompanionLink.textContent = "Update the companion...";
+
+            if (companionInfo.latestVersionHasBreakingChanges) {
+                companionBreakingChangesIndicator.hidden = false;
+            }
+        }
     }
 }
 
