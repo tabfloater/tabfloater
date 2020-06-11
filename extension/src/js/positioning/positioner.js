@@ -121,7 +121,7 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
         // TODO notify the user that smart positioning failed?
 
         logger.info("Unable to calculate smart positioning coordinates, falling back to fixed positioning. " +
-            `Error: '${error}', message: '${error.message}'`);
+            `Error: '${JSON.stringify(error)}'`);
 
         const options = await loadOptionsAsync();
         return getFixedPositionCoordinates(parentWindow, options.fixedPosition, options, logger);

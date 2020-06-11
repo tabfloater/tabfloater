@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+const companionStatusIndicatorConnected = window.companionStatusIndicatorConnected;
+const companionStatusIndicatorUnavailable = window.companionStatusIndicatorUnavailable;
+const companionUnavailableMessageCard = window.companionUnavailableMessageCard;
 const companionVersionField = window.companionVersionField;
 const fixedPositionRadioButton = window.fixedPositionRadioButton;
 const fixPositionSelect = window.fixPositionSelect;
@@ -67,6 +70,16 @@ function setPositionButtonStates() {
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
 }
 
+function setCompanionFields(companionInfo) {
+    if (companionInfo.status === "unavailable") {
+        companionStatusIndicatorUnavailable.hidden = false;
+        companionUnavailableMessageCard.textContent += companionInfo.errorMessage;
+    } else if (companionInfo.status === "connected") {
+        companionStatusIndicatorConnected.hidden = false;
+        companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
+    }
+}
+
 async function setHotKeysAsync() {
     const hotkeys = await browser.runtime.sendMessage("getHotkeys");
     const moveDownHotKey = hotkeys.filter(k => k.name === "moveDown")[0];
@@ -93,7 +106,7 @@ window.onload = async function () {
     const options = await browser.runtime.sendMessage("loadOptions");
     const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
 
-    companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
+    setCompanionFields(companionInfo);
 
     if (options.positioningStrategy === "fixed") {
         fixedPositionRadioButton.checked = true;
@@ -140,7 +153,7 @@ copyCompanionLogFilePathButton.onclick = async function () {
         showCopySuccessIndicators(false);
     } catch (error) {
         UIkit.notification({
-            message: `Copy failed: ${error}`,
+            message: `Copy failed: '${JSON.stringify(error)}'`,
             status: "danger",
             pos: "bottom-right",
             timeout: 5000

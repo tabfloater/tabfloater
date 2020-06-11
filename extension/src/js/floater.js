@@ -63,7 +63,7 @@ export async function floatTabAsync(logger) {
                 try {
                     await browser.tabs.update(succeedingActiveTab.id, { active: true });
                 } catch (error) {
-                    logger.error(`Unable to update active tab before floating action. Error: '${error}', message: '${error.message}'`);
+                    logger.error(`Unable to update active tab before floating action. Error: '${JSON.stringify(error)}'`);
                 }
 
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);

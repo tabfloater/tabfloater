@@ -48,10 +48,11 @@ export async function getCompanionInfoAsync(logger) {
         }
     }
     catch (error) {
-        logger.warn(`Unable to contact companion for ping request: ${error}, message: '${error.message}'`);
+        logger.warn(`Unable to contact companion for ping request: '${JSON.stringify(error)}'`);
 
         return {
-            status: "unavailable"
+            status: "unavailable",
+            errorMessage: error.message
         };
     }
 }
@@ -68,7 +69,7 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle,
             debug: debug.toString()
         });
     } catch (error) {
-        logger.error(`Unable to contact companion for MakeDialog request. Error: ${error}, message: '${error.message}'`);
+        logger.error(`Unable to contact companion for MakeDialog request. Error: '${JSON.stringify(error)}'`);
     }
 }
 
