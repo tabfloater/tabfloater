@@ -127,7 +127,7 @@ async function setHotKeysLabelsAsync(positioningStrategy) {
     }
 }
 
-async function positioningStrategyChanged() {
+function positioningStrategyChanged() {
     setPositionButtonStates();
     saveOptionsAsync();
     setHotKeysLabelsAsync(fixedPositionRadioButton.checked ? "fixed" : "smart");
@@ -172,7 +172,7 @@ debugCheckbox.onchange = saveOptionsAsync;
 
 hotkeyChangeButton.onclick = function () {
     browser.tabs.create({url: "chrome://extensions/shortcuts/"});
-}
+};
 
 copyCompanionLogFilePathButton.onclick = async function () {
     const logFilePath = companionLogFileField.value;
