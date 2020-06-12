@@ -11,4 +11,4 @@ Work in progress
 ## License
 
 TabFloater is under the [Apache 2.0](https://github.com/tabfloater/tabfloater/blob/master/LICENSE) license, with the following exceptions:
- * [uk-switch.css](https://codepen.io/chsyu/pen/bGNRgLQ): MIT license
+ * [uk-switch.css](TODO): MIT license
