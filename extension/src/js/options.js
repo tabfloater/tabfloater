@@ -16,7 +16,7 @@
 
 const companionStatusIndicatorConnected = window.companionStatusIndicatorConnected;
 const companionStatusIndicatorUnavailable = window.companionStatusIndicatorUnavailable;
-const companionUnavailableMessageCard = window.companionUnavailableMessageCard;
+const companionUnavailableMessage = window.companionUnavailableMessage;
 const companionVersionField = window.companionVersionField;
 const companionRequiredIndicator = window.companionRequiredIndicator;
 const companionUpdateIndicator = window.companionUpdateIndicator;
@@ -79,7 +79,7 @@ function setPositionButtonStates() {
 function setCompanionFields(companionInfo) {
     if (companionInfo.status === "unavailable") {
         companionStatusIndicatorUnavailable.hidden = false;
-        companionUnavailableMessageCard.textContent += companionInfo.errorMessage;
+        companionUnavailableMessage.textContent += companionInfo.errorMessage;
         companionRequiredIndicator.hidden = false;
         downloadCompanionButton.hidden = false;
         downloadCompanionLink.textContent = "Get the companion...";
@@ -100,26 +100,37 @@ function setCompanionFields(companionInfo) {
     }
 }
 
-async function setHotKeysAsync() {
+async function setHotKeysLabelsAsync(positioningStrategy) {
     const hotkeys = await browser.runtime.sendMessage("getHotkeys");
     const moveDownHotKey = hotkeys.filter(k => k.name === "moveDown")[0];
     const moveUpHotKey = hotkeys.filter(k => k.name === "moveUp")[0];
     const moveLeftHotKey = hotkeys.filter(k => k.name === "moveLeft")[0];
     const moveRightHotKey = hotkeys.filter(k => k.name === "moveRight")[0];
 
-    hotkeyMoveDownDescription.textContent = moveDownHotKey.description;
     hotkeyMoveDown.textContent = moveDownHotKey.shortcut;
-    hotkeyMoveUpDescription.textContent = moveUpHotKey.description;
     hotkeyMoveUp.textContent = moveUpHotKey.shortcut;
-    hotkeyMoveLeftDescription.textContent = moveLeftHotKey.description;
-    hotkeyMoveLeft.textContent = moveLeftHotKey.shortcut;
-    hotkeyMoveRightDescription.textContent = moveRightHotKey.description;
-    hotkeyMoveRight.textContent = moveRightHotKey.shortcut;
+
+    if (positioningStrategy === "fixed") {
+        hotkeyMoveDownDescription.textContent = moveDownHotKey.description;
+        hotkeyMoveUpDescription.textContent = moveUpHotKey.description;
+        hotkeyMoveLeftDescription.textContent = moveLeftHotKey.description;
+        hotkeyMoveLeft.textContent = moveLeftHotKey.shortcut;
+        hotkeyMoveRightDescription.textContent = moveRightHotKey.description;
+        hotkeyMoveRight.textContent = moveRightHotKey.shortcut;
+    } else {
+        hotkeyMoveDownDescription.textContent = "Float tab";
+        hotkeyMoveUpDescription.textContent = "Unfloat tab";
+        hotkeyMoveLeftDescription.textContent = "Unused";
+        hotkeyMoveLeft.textContent = "";
+        hotkeyMoveRightDescription.textContent = "Unused";
+        hotkeyMoveRight.textContent = "";
+    }
 }
 
 async function positioningStrategyChanged() {
     setPositionButtonStates();
     saveOptionsAsync();
+    setHotKeysLabelsAsync(fixedPositionRadioButton.checked ? "fixed" : "smart");
 }
 
 window.onload = async function () {
@@ -142,7 +153,7 @@ window.onload = async function () {
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
 
-    await setHotKeysAsync();
+    await setHotKeysLabelsAsync(options.positioningStrategy);
 
     debugCheckbox.checked = options.debug;
     companionLogFileField.value = companionInfo.logFilePath;

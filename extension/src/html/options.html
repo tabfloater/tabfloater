@@ -64,7 +64,11 @@ limitations under the License.
                         <div class="uk-inline">
                             <span class="uk-margin-small-right" uk-icon="icon: warning"></span> Unavailable
                             <div uk-drop>
-                                <div id="companionUnavailableMessageCard" class="uk-card-small uk-card-body uk-card-default">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>
+                                <div class="uk-card-small uk-card-body uk-card-default">
+                                    <p>The extension was unable to contact the companion. This usually means that the companion is not installed, however it can be caused by a variety of problems.</p>
+                                    <p>If you have already installed the companion but still see this message, please report an issue using the link in the 'Help' section.</p>
+                                    <p id="companionUnavailableMessage">The error message was: </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -123,6 +127,15 @@ limitations under the License.
             <div class="uk-margin-left uk-child-width-expand" uk-grid>
                 <div class="uk-width-auto">
                     <label><input class="uk-radio uk-margin-small-right" type="radio" id="fixedPositionRadioButton" name="positionStrategy">Fixed position</label>
+                    <div class="uk-inline uk-margin-small-left">
+                        <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                        <div uk-drop>
+                            <div class="uk-card-small uk-card-body uk-card-default">
+                                <p>The floating tab will appear in a fixed position, at a fixed size.</p>
+                                <p>When the tab is floated, you can move the tab with the keyboard from one position to another. See the Hotkeys section.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -165,7 +178,11 @@ limitations under the License.
                         <div class="uk-inline uk-margin-small-left">
                             <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
                             <div uk-drop>
-                                <div class="uk-card-small uk-card-body uk-card-default">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>
+                                <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
+                                    <p>The distance between the top of the browser window and the top of the floating tab, in pixels. Change this value if the floating tab overlaps the address/bookmark bar, or if the tab appears too low.</p>
+                                    <p>Negative values are allowed, in which case the floating tab will appear above the browser window (if there is space on the screen). The tab will never go out of the screen's dimensions.</p>
+                                    <p>This value is only taken into account in the 'Top left' and 'Top right' positions.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -178,13 +195,16 @@ limitations under the License.
                 </div>
             </div>
 
-            <div class="uk-margin-left uk-margin-small-top uk-child-width-expand">
+            <div class="uk-margin-left uk-margin-small-top uk-child-width-expand" uk-grid>
                 <div class="uk-width-auto">
                     <label><input class="uk-radio uk-margin-small-right" type="radio" id="smartPositionRadioButton" name="positionStrategy">Smart positioning</label>
                     <div class="uk-inline uk-margin-small-left">
                         <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
                         <div uk-drop>
-                            <div class="uk-card-small uk-card-body uk-card-default">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</div>
+                            <div class="uk-card-small uk-card-body uk-card-default">
+                                <p>The application will identify the largest empty area on the web page behind the floating tab (the parent page), and position the floating tab on that empty area. This way, the floating tab does not cover up any content on the parent page.</p>
+                                <p>Note: smart positioning works on a best effort basis. The calculated size and position will not always be perfect and the functionality may not work on all web sites. In this case, the application will fall back to fixed positioning.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -193,7 +213,7 @@ limitations under the License.
             <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-width-auto uk-text-center uk-flex-middle">
                     <div class="uk-margin-medium-left">
-                        Reposition when switching tabs
+                        Reposition floating tab when switching parent tabs
                     </div>
                 </div>
                 <div class="uk-width-expand"></div>
@@ -210,7 +230,16 @@ limitations under the License.
             <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-width-auto uk-text-center uk-flex-middle">
                     <div class="uk-margin-medium-left">
-                        Restrict floating tab size
+                        Normalize floating tab size
+                        <div class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
+                                    <p>When disabled, the floating tab dimensions will exactly match the largest empty area on the parent web page. If this area is too small or too large, the floating tab's dimensions may be impractical.</p>
+                                    <p>With normalization enabled, the application will enforce a minimum floating tab size (even if it covers up parts of the parent page), and restrict the maximum size. This way, the floating tab does not get too small or unusally large.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="uk-width-expand"></div>
@@ -295,7 +324,19 @@ limitations under the License.
 
             <div class="uk-margin-left uk-grid-match" uk-grid>
                 <div class="uk-flex-middle">
-                    Enable debugging
+                    <div>
+                        Enable debugging
+                        <div class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default">
+                                    <p>If enabled, the application collects logs. To view the browser extension logs, go into the Extensions page, choose 'Details' for TabFloater, then click the 'html/background.html' link.</p>
+                                    <p>To view the companion logs, copy the below file path and open it in your favorite text editor. Note: the file only exists if you have used the application with debugging enabled.</p>
+                                    <p>It is recommended to only enable this option if you need to troubleshoot a problem with the application.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="uk-width-expand"></div>
                 <div class="uk-width-auto">

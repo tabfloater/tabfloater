@@ -34,25 +34,25 @@
             "suggested_key": {
                 "default": "Alt+K"
             },
-            "description": "Float tab / move window down"
+            "description": "Float tab / move down"
         },
         "moveUp": {
             "suggested_key": {
                 "default": "Alt+I"
             },
-            "description": "Unfloat tab / move window up"
+            "description": "Unfloat tab / move up"
         },
         "moveLeft": {
             "suggested_key": {
                 "default": "Alt+J"
             },
-            "description": "Move window left"
+            "description": "Move left"
         },
         "moveRight": {
             "suggested_key": {
                 "default": "Alt+L"
             },
-            "description": "Move window right"
+            "description": "Move right"
         }
     },
     "icons": {

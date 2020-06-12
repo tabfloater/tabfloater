@@ -97,7 +97,6 @@ export async function unfloatTabAsync() {
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
         await clearFloatingTabAsync();
-        setFloatingStatusForIcon(false);
     }
 }
 
@@ -126,6 +125,7 @@ export async function setFloatingTabAsync(tabProps) {
 
 export async function clearFloatingTabAsync() {
     await browser.storage.local.remove(["floatingTabProperties"]);
+    setFloatingStatusForIcon(false);
 }
 
 export async function clearFloatingProgressAsync() {
