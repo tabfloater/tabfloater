@@ -41,10 +41,7 @@ export async function getCompanionInfoAsync(logger) {
                 logFilePath: companionInfo.logfile
             };
         } else {
-            // TODO handle error somehow. show it in tooltip? extra status?
-            return {
-                status: "error"
-            };
+            // should never happen - the companion only sends "ok" to a ping request
         }
     }
     catch (error) {
@@ -62,14 +59,29 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle,
 
     try {
         const debug = await isDebuggingEnabledAsync();
-        await browser.runtime.sendNativeMessage(CompanionName, {
+        const result = await browser.runtime.sendNativeMessage(CompanionName, {
             action: "setAsModelessDialog",
             windowTitle: windowTitle,
             parentWindowTitle: parentWindowTitle,
             debug: debug.toString()
         });
+
+        if (result.status === "ok") {
+            return {
+                success: true
+            };
+        }
+
+        return {
+            success: false,
+            reason: "error"
+        };
     } catch (error) {
         logger.error(`Unable to contact companion for MakeDialog request. Error: '${JSON.stringify(error)}'`);
+        return {
+            success: false,
+            reason: "unavailable"
+        };
     }
 }
 

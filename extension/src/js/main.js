@@ -59,7 +59,6 @@ async function floatTabIfPossibleAsync(logger) {
 browser.runtime.onInstalled.addListener(async () => {
     await startupAsync();
     await setDefaultOptionsAsync();
-    browser.browserAction.setBadgeBackgroundColor({color: "#3DCBA8"});
 });
 
 browser.runtime.onStartup.addListener(async () => {
@@ -88,7 +87,7 @@ browser.browserAction.onClicked.addListener(async () => {
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab) {
-        await floater.unfloatTabAsync(logger);
+        await floater.unfloatTabAsync();
     } else {
         await floatTabIfPossibleAsync(logger);
     }
@@ -106,13 +105,13 @@ browser.commands.onCommand.addListener(async command => {
 
         if (options.positioningStrategy === "smart" || tabProps.position === "smart") {
             if (command === "moveUp") {
-                await floater.unfloatTabAsync(logger);
+                await floater.unfloatTabAsync();
             }
         } else if (options.positioningStrategy === "fixed") {
             const currentPosition = tabProps.position;
             const inUpperHalf = currentPosition === "topLeft" || currentPosition === "topRight";
             if (inUpperHalf && command === "moveUp") {
-                await floater.unfloatTabAsync(logger);
+                await floater.unfloatTabAsync();
             } else {
                 const newPosition = constants.CommandToPositionMapping[`${currentPosition},${command}`];
 

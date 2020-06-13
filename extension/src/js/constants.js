@@ -34,7 +34,7 @@ export const CommandToPositionMapping = {
 
 // TODO finalise these options
 export const DefaultOptions = {
-    positioningStrategy: "smart",
+    positioningStrategy: "fixed",
     fixedPosition: "topRight",
     fixedTabSize: "standard",
     viewportTopOffset: 150,

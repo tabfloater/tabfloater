@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { sendMakeDialogRequestAsync } from "./companion.js";
+import * as companion from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
+import * as notifier from "./notifier.js";
+import { getLoggerAsync } from "./logger.js";
 
 export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
@@ -78,10 +80,18 @@ export async function floatTabAsync(logger) {
                 });
 
                 const parentWindowTitle = succeedingActiveTab.title;
-                await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
+                const result = await companion.sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
                 await setFloatingTabAsync(tabProps);
 
-                setFloatingStatusForIcon(true);
+                if (result.success) {
+                    notifier.setFloatingSuccessIndicator();
+                } else {
+                    if (result.reason === "error") {
+                        notifier.setErrorIndicator("The companion returned an error!");
+                    } else if (result.reason === "unavailable") {
+                        notifier.setErrorIndicator("Unable to contact companion!");
+                    }
+                }
             } else {
                 logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
             }
@@ -124,8 +134,15 @@ export async function setFloatingTabAsync(tabProps) {
 }
 
 export async function clearFloatingTabAsync() {
+    const logger = await getLoggerAsync();
     await browser.storage.local.remove(["floatingTabProperties"]);
-    setFloatingStatusForIcon(false);
+
+    const companionInfo = await companion.getCompanionInfoAsync(logger);
+    if (companionInfo.isOutdated) {
+        notifier.setUpdateAvailableIndicator();
+    } else {
+        notifier.clearIndicator();
+    }
 }
 
 export async function clearFloatingProgressAsync() {
@@ -151,11 +168,4 @@ async function getSucceedingActiveTabAsync() {
     return currentTabIsLast
         ? allTabsOnCurrentWindow[currentTab.index - 1]
         : allTabsOnCurrentWindow[currentTab.index + 1];
-}
-
-function setFloatingStatusForIcon(isFloating) {
-    const title = isFloating ? "Unfloat tab!" : "Float tab!";
-    const badgeText = isFloating ? "F" : "";
-    browser.browserAction.setTitle({title: title});
-    browser.browserAction.setBadgeText({text: badgeText});
 }
