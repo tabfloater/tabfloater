@@ -68,7 +68,7 @@ async function saveOptionsAsync() {
     await browser.storage.sync.set({ options: options });
 }
 
-function setPositionButtonStates() {
+function setPositioningControlStates() {
     fixPositionSelect.disabled = smartPositionRadioButton.checked;
     tabSizeSelect.disabled = smartPositionRadioButton.checked;
     viewportTopOffsetInput.disabled = smartPositionRadioButton.checked;
@@ -128,9 +128,9 @@ async function setHotKeysLabelsAsync(positioningStrategy) {
 }
 
 function positioningStrategyChanged() {
-    setPositionButtonStates();
-    saveOptionsAsync();
+    setPositioningControlStates();
     setHotKeysLabelsAsync(fixedPositionRadioButton.checked ? "fixed" : "smart");
+    saveOptionsAsync();
 }
 
 window.onload = async function () {
@@ -145,7 +145,7 @@ window.onload = async function () {
         smartPositionRadioButton.checked = true;
     }
 
-    setPositionButtonStates();
+    setPositioningControlStates();
 
     fixPositionSelect.value = options.fixedPosition;
     tabSizeSelect.value = options.fixedTabSize;
@@ -171,7 +171,7 @@ restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
 debugCheckbox.onchange = saveOptionsAsync;
 
 hotkeyChangeButton.onclick = function () {
-    browser.tabs.create({url: "chrome://extensions/shortcuts/"});
+    browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
 };
 
 copyCompanionLogFilePathButton.onclick = async function () {
