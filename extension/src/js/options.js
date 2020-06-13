@@ -47,6 +47,7 @@ const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
 const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSuccessIcon;
 const copyCompanionLogFilePathSuccessMessage = window.copyCompanionLogFilePathSuccessMessage;
+const verticalExpander = window.verticalExpander;
 const tabFloaterVersionField = window.tabFloaterVersionField;
 
 async function saveOptionsAsync() {
@@ -88,13 +89,18 @@ function setPositioningControlStates() {
 
 function setCompanionFields(companionInfo) {
     if (companionInfo.status === "unavailable") {
+        companionStatusIndicatorConnected.hidden = true;
         companionStatusIndicatorUnavailable.hidden = false;
         companionUnavailableMessage.textContent += companionInfo.errorMessage;
         companionRequiredIndicator.hidden = false;
         downloadCompanionButton.hidden = false;
         downloadCompanionLink.textContent = "Get the companion...";
     } else if (companionInfo.status === "connected") {
-        companionStatusIndicatorConnected.hidden = false;
+        // The "connected" indicator is invisible rather than hidden, because
+        // we need a div to take up the space until the page fully loads. If
+        // this were hidden instead of invisible, the page would jump around
+        // while loading.
+        companionStatusIndicatorConnected.classList.remove("uk-invisible");
         companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
         if (companionInfo.isOutdated) {
@@ -169,6 +175,8 @@ window.onload = async function () {
     companionLogFileField.value = companionInfo.logFilePath;
 
     tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
+
+    verticalExpander.setAttribute("uk-height-viewport", "expand: true");
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
