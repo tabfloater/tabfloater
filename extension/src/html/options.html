@@ -28,392 +28,411 @@ limitations under the License.
 </head>
 
 <body>
-    <div class="uk-section-xsmall uk-section-secondary uk-preserve-color">
-        <div class="uk-container uk-container-medium">
-            <div class="uk-grid-match" uk-grid>
-                <div>
-                    <a href="https://www.tabfloater.io/" target="_blank">
-                        <img data-src="../images/logo.png" alt="tabfloater_logo" uk-img>
-                    </a>
+    <header>
+        <div class="uk-section-xsmall uk-section-secondary uk-preserve-color">
+            <div class="uk-container uk-container-medium">
+                <div class="uk-grid-match" uk-grid>
+                    <div>
+                        <a href="https://www.tabfloater.io/" target="_blank">
+                            <img data-src="../images/logo.png" alt="tabfloater_logo" uk-img>
+                        </a>
+                    </div>
+                    <div class="uk-width-expand"></div>
+                    <div class="uk-flex-middle">
+                        <a href="https://github.com/tabfloater/tabfloater" target="_blank"
+                            uk-icon="icon: github; ratio: 1.5"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section uk-height-viewport="expand: true" class="uk-margin-small-top">
+        <div class="uk-container uk-container-small uk-margin-small">
+            <h3>Companion</h3>
+
+            <div class="uk-margin-left uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div>
+                        Status
+                    </div>
                 </div>
                 <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div id="companionStatusIndicatorConnected"
+                        class="uk-invisible uk-alert-success uk-border-pill uk-padding-small" uk-alert>
+                        <div class="uk-inline">
+                            Connected <span uk-icon="icon: check"></span>
+                        </div>
+                    </div>
+                    <div hidden id="companionStatusIndicatorUnavailable"
+                        class="uk-alert-danger uk-border-pill uk-padding-small" uk-alert>
+                        <div class="uk-inline">
+                            <span class="uk-margin-small-right" uk-icon="icon: warning"></span> Unavailable
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default">
+                                    <p>The extension was unable to contact the companion. This usually means that the
+                                        companion is not installed, however it can be caused by a variety of reasons.
+                                    </p>
+                                    <p>If you have already installed the companion but still see this message, please
+                                        report
+                                        an issue using the link in the 'Help' section.</p>
+                                    <p id="companionUnavailableMessage">The error message was: </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-flex-middle">
-                    <a href="https://github.com/tabfloater/tabfloater" target="_blank"
-                        uk-icon="icon: github; ratio: 1.5"></a>
+                    Version
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div id="companionVersionField" class="uk-width-auto">&nbsp;</div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="uk-container uk-container-small uk-margin-small">
-        <h3>Companion</h3>
-
-        <div class="uk-margin-left uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <div>
-                    Status
-                </div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div id="companionStatusIndicatorConnected"
-                    class="uk-invisible uk-alert-success uk-border-pill uk-padding-small" uk-alert>
-                    <div class="uk-inline">
-                        Connected <span uk-icon="icon: check"></span>
-                    </div>
-                </div>
-                <div hidden id="companionStatusIndicatorUnavailable"
-                    class="uk-alert-danger uk-border-pill uk-padding-small" uk-alert>
-                    <div class="uk-inline">
-                        <span class="uk-margin-small-right" uk-icon="icon: warning"></span> Unavailable
-                        <div uk-drop>
-                            <div class="uk-card-small uk-card-body uk-card-default">
-                                <p>The extension was unable to contact the companion. This usually means that the
-                                    companion is not installed, however it can be caused by a variety of reasons.</p>
-                                <p>If you have already installed the companion but still see this message, please report
-                                    an issue using the link in the 'Help' section.</p>
-                                <p id="companionUnavailableMessage">The error message was: </p>
-                            </div>
-                        </div>
+            <div hidden id="companionRequiredIndicator" class="uk-margin-left uk-margin-small-top uk-grid-match"
+                uk-grid>
+                <div class="uk-margin-small-top">
+                    <div class="uk-alert-primary uk-border-pill uk-padding-small">
+                        <span class="uk-margin-small-right" uk-icon="icon: info"></span> Companion required</a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                Version
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div id="companionVersionField" class="uk-width-auto">&nbsp;</div>
-            </div>
-        </div>
-
-        <div hidden id="companionRequiredIndicator" class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-margin-small-top">
-                <div class="uk-alert-primary uk-border-pill uk-padding-small">
-                    <span class="uk-margin-small-right" uk-icon="icon: info"></span> Companion required</a>
-                </div>
-            </div>
-        </div>
-
-        <div hidden id="companionUpdateIndicator" class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-margin-small-top">
-                <div class="uk-alert-primary uk-border-pill uk-padding-small">
-                    <span class="uk-margin-small-right" uk-icon="icon: info"></span> <span
-                        id="companionUpdateVersionText">A new version is available: </span>
-                </div>
-            </div>
-        </div>
-
-        <div hidden id="companionBreakingChangesIndicator" class="uk-margin-left uk-margin-remove-top uk-grid-match"
-            uk-grid>
-            <div class="uk-margin-small-top">
-                <div class="uk-alert-danger uk-border-pill uk-padding-small">
-                    <span class="uk-margin-small-right" uk-icon="icon: warning"></span> Your current companion is
-                    outdated. The application might not work correctly until you update.
-                </div>
-            </div>
-        </div>
-
-        <div hidden id="downloadCompanionButton" class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-margin-small-top">
-                <a id="downloadCompanionLink" href="https://github.com/tabfloater/tabfloater/issues/new"
-                    target="_blank"></a>
-            </div>
-        </div>
-    </div>
-
-    <div class="uk-container uk-container-small uk-margin-small">
-        <hr>
-    </div>
-
-    <div class="uk-container uk-container-small uk-margin-small">
-        <h3>Positioning</h3>
-
-        <div class="uk-margin-left uk-child-width-expand" uk-grid>
-            <div class="uk-width-auto">
-                <label><input class="uk-radio uk-margin-small-right" type="radio" id="fixedPositionRadioButton"
-                        name="positionStrategy">Fixed position</label>
-                <div class="uk-inline uk-margin-small-left">
-                    <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
-                    <div uk-drop>
-                        <div class="uk-card-small uk-card-body uk-card-default">
-                            <p>The floating tab will appear in a fixed position, at a fixed size.</p>
-                            <p>When the tab is floated, you can move the tab with the keyboard from one position to
-                                another. See the Hotkeys section.</p>
-                        </div>
+            <div hidden id="companionUpdateIndicator" class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-margin-small-top">
+                    <div class="uk-alert-primary uk-border-pill uk-padding-small">
+                        <span class="uk-margin-small-right" uk-icon="icon: info"></span> <span
+                            id="companionUpdateVersionText">A new version is available: </span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-width-auto uk-text-center uk-flex-middle">
-                <div class="uk-margin-medium-left">
-                    Tab position
-                </div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-1-4">
-                <select class="uk-select" id="fixPositionSelect">
-                    <option value="topLeft">Top left</option>
-                    <option value="topRight">Top right</option>
-                    <option value="bottomLeft">Bottom left</option>
-                    <option value="bottomRight">Bottom right</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-width-auto uk-text-center uk-flex-middle">
-                <div class="uk-margin-medium-left">
-                    Tab size
-                </div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-1-4">
-                <select class="uk-select" id="tabSizeSelect">
-                    <option value="small">Small</option>
-                    <option value="standard">Standard</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-width-auto uk-text-center uk-flex-middle">
-                <div class="uk-margin-medium-left">
-                    Viewport top offset
-                    <div class="uk-inline uk-margin-small-left">
-                        <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
-                        <div uk-drop>
-                            <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
-                                <p>The distance between the top of the browser window and the top of the floating tab,
-                                    in pixels. Change this value if the floating tab overlaps the address/bookmark bar,
-                                    or if the tab appears too low.</p>
-                                <p>Negative values are allowed, in which case the floating tab will appear above the
-                                    browser window (if there is space on the screen). The tab will never go out of the
-                                    screen's dimensions.</p>
-                                <p>This value is only taken into account in the 'Top left' and 'Top right' positions.
-                                </p>
-                            </div>
-                        </div>
+            <div hidden id="companionBreakingChangesIndicator" class="uk-margin-left uk-margin-remove-top uk-grid-match"
+                uk-grid>
+                <div class="uk-margin-small-top">
+                    <div class="uk-alert-danger uk-border-pill uk-padding-small">
+                        <span class="uk-margin-small-right" uk-icon="icon: warning"></span> Your current companion is
+                        outdated. The application might not work correctly until you update.
                     </div>
                 </div>
             </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-1-4">
-                <div>
-                    <input class="uk-input" id="viewportTopOffsetInput" type="number" placeholder="-5000 - 5000">
+
+            <div hidden id="downloadCompanionButton" class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-margin-small-top">
+                    <a id="downloadCompanionLink" href="https://github.com/tabfloater/tabfloater/issues/new"
+                        target="_blank"></a>
                 </div>
             </div>
         </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-child-width-expand" uk-grid>
-            <div class="uk-width-auto">
-                <label><input class="uk-radio uk-margin-small-right" type="radio" id="smartPositionRadioButton"
-                        name="positionStrategy">Smart positioning</label>
-                <div class="uk-inline uk-margin-small-left">
-                    <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
-                    <div uk-drop>
-                        <div class="uk-card-small uk-card-body uk-card-default">
-                            <p>The application will identify the largest empty area on the web page behind the floating
-                                tab (the parent page), and position the floating tab on that empty area. This way, the
-                                floating tab does not cover up any content on the parent page.</p>
-                            <p>Note: smart positioning works on a best effort basis. The calculated size and position
-                                will not always be perfect and the functionality may not work on all web sites. In this
-                                case, the application will fall back to fixed positioning.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="uk-container uk-container-small uk-margin-small">
+            <hr>
         </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-width-auto uk-text-center uk-flex-middle">
-                <div class="uk-margin-medium-left">
-                    Reposition floating tab when switching parent tabs
-                </div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div>
-                    <label class="uk-switch" for="followTabSwitchCheckbox">
-                        <input type="checkbox" id="followTabSwitchCheckbox">
-                        <div id="followTabSwitchSlider" class="uk-switch-slider"></div>
-                    </label>
-                </div>
-            </div>
-        </div>
+        <div class="uk-container uk-container-small uk-margin-small">
+            <h3>Positioning</h3>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-width-auto uk-text-center uk-flex-middle">
-                <div class="uk-margin-medium-left">
-                    Normalize floating tab size
-                    <div class="uk-inline uk-margin-small-left">
-                        <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
-                        <div uk-drop>
-                            <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
-                                <p>When disabled, the floating tab dimensions will exactly match the largest empty area
-                                    on the parent web page. If this area is too small or too large, the floating tab's
-                                    dimensions may be impractical.</p>
-                                <p>With normalization enabled, the application will enforce a minimum floating tab size
-                                    (even if it covers up parts of the parent page), and restrict the maximum size. This
-                                    way, the floating tab does not get too small or unusally large.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div>
-                    <label class="uk-switch" for="restrictMaxFloatingTabSizeCheckbox">
-                        <input type="checkbox" id="restrictMaxFloatingTabSizeCheckbox">
-                        <div id="restrictMaxFloatingTabSizeSlider" class="uk-switch-slider"></div>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="uk-container uk-container-small uk-margin-small">
-        <hr>
-    </div>
-
-    <div class="uk-container uk-container-small uk-margin-small">
-        <h3>Hotkeys</h3>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <div id="hotkeyMoveDownDescription">&nbsp;</div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div id="hotkeyMoveDown">&nbsp;</div>
-            </div>
-        </div>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <div id="hotkeyMoveUpDescription">&nbsp;</div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div id="hotkeyMoveUp">&nbsp;</div>
-            </div>
-        </div>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <div id="hotkeyMoveLeftDescription">&nbsp;</div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div id="hotkeyMoveLeft">&nbsp;</div>
-            </div>
-        </div>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <div id="hotkeyMoveRightDescription">&nbsp;</div>
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div id="hotkeyMoveRight">&nbsp;</div>
-            </div>
-        </div>
-
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <a id="hotkeyChangeButton" href="#">Change...</a>
-            </div>
-            <div class="uk-width-expand"></div>
-        </div>
-    </div>
-
-    <div class="uk-container uk-container-small uk-margin-small">
-        <hr>
-    </div>
-
-    <div class="uk-container uk-container-small uk-margin-small">
-        <h3>Help</h3>
-
-        <div class="uk-margin-left uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <div>
-                    Enable debugging
+            <div class="uk-margin-left uk-child-width-expand" uk-grid>
+                <div class="uk-width-auto">
+                    <label><input class="uk-radio uk-margin-small-right" type="radio" id="fixedPositionRadioButton"
+                            name="positionStrategy">Fixed position</label>
                     <div class="uk-inline uk-margin-small-left">
                         <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
                         <div uk-drop>
                             <div class="uk-card-small uk-card-body uk-card-default">
-                                <p>If enabled, the application collects logs. To view the browser extension logs, go
-                                    into the Extensions page, choose 'Details' for TabFloater, then click the
-                                    'html/background.html' link.</p>
-                                <p>To view the companion logs, copy the below file path and open it in your favorite
-                                    text editor. Note: the file only exists if you have used the application with
-                                    debugging enabled.</p>
-                                <p>It is recommended to only enable this option if you need to troubleshoot a problem
-                                    with the application.</p>
+                                <p>The floating tab will appear in a fixed position, at a fixed size.</p>
+                                <p>When the tab is floated, you can move the tab with the keyboard from one position to
+                                    another. See the Hotkeys section.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-auto">
-                <div>
-                    <label class="uk-switch" for="debugCheckbox">
-                        <input type="checkbox" id="debugCheckbox">
-                        <div class="uk-switch-slider"></div>
-                    </label>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-width-auto uk-text-center uk-flex-middle">
+                    <div class="uk-margin-medium-left">
+                        Tab position
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-1-4">
+                    <select class="uk-select" id="fixPositionSelect">
+                        <option value="topLeft">Top left</option>
+                        <option value="topRight">Top right</option>
+                        <option value="bottomLeft">Bottom left</option>
+                        <option value="bottomRight">Bottom right</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-width-auto uk-text-center uk-flex-middle">
+                    <div class="uk-margin-medium-left">
+                        Tab size
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-1-4">
+                    <select class="uk-select" id="tabSizeSelect">
+                        <option value="small">Small</option>
+                        <option value="standard">Standard</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-width-auto uk-text-center uk-flex-middle">
+                    <div class="uk-margin-medium-left">
+                        Viewport top offset
+                        <div class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
+                                    <p>The distance between the top of the browser window and the top of the floating
+                                        tab,
+                                        in pixels. Change this value if the floating tab overlaps the address/bookmark
+                                        bar,
+                                        or if the tab appears too low.</p>
+                                    <p>Negative values are allowed, in which case the floating tab will appear above the
+                                        browser window (if there is space on the screen). The tab will never go out of
+                                        the
+                                        screen's dimensions.</p>
+                                    <p>This value is only taken into account in the 'Top left' and 'Top right'
+                                        positions.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-1-4">
+                    <div>
+                        <input class="uk-input" id="viewportTopOffsetInput" type="number" placeholder="-5000 - 5000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-child-width-expand" uk-grid>
+                <div class="uk-width-auto">
+                    <label><input class="uk-radio uk-margin-small-right" type="radio" id="smartPositionRadioButton"
+                            name="positionStrategy">Smart positioning</label>
+                    <div class="uk-inline uk-margin-small-left">
+                        <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                        <div uk-drop>
+                            <div class="uk-card-small uk-card-body uk-card-default">
+                                <p>The application will identify the largest empty area on the web page behind the
+                                    floating
+                                    tab (the parent page), and position the floating tab on that empty area. This way,
+                                    the
+                                    floating tab does not cover up any content on the parent page.</p>
+                                <p>Note: smart positioning works on a best effort basis. The calculated size and
+                                    position
+                                    will not always be perfect and the functionality may not work on all web sites. In
+                                    this
+                                    case, the application will fall back to fixed positioning.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-width-auto uk-text-center uk-flex-middle">
+                    <div class="uk-margin-medium-left">
+                        Reposition floating tab when switching parent tabs
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div>
+                        <label class="uk-switch" for="followTabSwitchCheckbox">
+                            <input type="checkbox" id="followTabSwitchCheckbox">
+                            <div id="followTabSwitchSlider" class="uk-switch-slider"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-width-auto uk-text-center uk-flex-middle">
+                    <div class="uk-margin-medium-left">
+                        Normalize floating tab size
+                        <div class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
+                                    <p>When disabled, the floating tab dimensions will exactly match the largest empty
+                                        area
+                                        on the parent web page. If this area is too small or too large, the floating
+                                        tab's
+                                        dimensions may be impractical.</p>
+                                    <p>With normalization enabled, the application will enforce a minimum floating tab
+                                        size
+                                        (even if it covers up parts of the parent page), and restrict the maximum size.
+                                        This
+                                        way, the floating tab does not get too small or unusally large.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div>
+                        <label class="uk-switch" for="restrictMaxFloatingTabSizeCheckbox">
+                            <input type="checkbox" id="restrictMaxFloatingTabSizeCheckbox">
+                            <div id="restrictMaxFloatingTabSizeSlider" class="uk-switch-slider"></div>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match uk-grid-collapse" uk-grid>
-            <div class="uk-flex-middle uk-margin-medium-left">
-                Companion log file
-            </div>
-            <div class="uk-width-expand"></div>
-            <div class="uk-width-1-2">
-                <div class="uk-inline">
-                    <input class="uk-input" id="companionLogFileField" readonly="true">
+        <div class="uk-container uk-container-small uk-margin-small">
+            <hr>
+        </div>
+
+        <div class="uk-container uk-container-small uk-margin-small">
+            <h3>Hotkeys</h3>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div id="hotkeyMoveDownDescription">&nbsp;</div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div id="hotkeyMoveDown">&nbsp;</div>
                 </div>
             </div>
-            <div class="uk-width-auto uk-margin-small-left uk-flex-middle">
-                <a class="uk-padding-small" id="copyCompanionLogFilePathButton" uk-icon="icon: copy"></a>
 
-                <span hidden id="copyCompanionLogFilePathSuccessIcon"
-                    class="uk-animation-fade uk-amination-fast uk-alert-success uk-border-pill uk-padding-small"
-                    uk-icon="icon: check"></span>
-
-                <div hidden id="copyCompanionLogFilePathSuccessMessage" class="uk-width-auto"
-                    uk-drop="delay-hide: 1500">
-                    <div class="uk-card-small uk-card-default uk-padding-small">Copied!</div>
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div id="hotkeyMoveUpDescription">&nbsp;</div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div id="hotkeyMoveUp">&nbsp;</div>
                 </div>
             </div>
-        </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <a href="https://github.com/tabfloater/tabfloater/issues/new" target="_blank">Report a problem...</a>
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div id="hotkeyMoveLeftDescription">&nbsp;</div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div id="hotkeyMoveLeft">&nbsp;</div>
+                </div>
             </div>
-            <div class="uk-width-expand"></div>
-        </div>
 
-        <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
-            <div class="uk-flex-middle">
-                <a href="#" target="_blank">Open welcome page...</a>
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div id="hotkeyMoveRightDescription">&nbsp;</div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div id="hotkeyMoveRight">&nbsp;</div>
+                </div>
             </div>
-            <div class="uk-width-expand"></div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <a id="hotkeyChangeButton" href="#">Change...</a>
+                </div>
+                <div class="uk-width-expand"></div>
+            </div>
         </div>
-    </div>
 
-    <div id="verticalExpander" uk-height-viewport></div>
+        <div class="uk-container uk-container-small uk-margin-small">
+            <hr>
+        </div>
 
-    <div class="uk-section-xsmall uk-section-muted uk-preserve-color">
+        <div class="uk-container uk-container-small uk-margin-small">
+            <h3>Help</h3>
+
+            <div class="uk-margin-left uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div>
+                        Enable debugging
+                        <div class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default">
+                                    <p>If enabled, the application collects logs. To view the browser extension logs, go
+                                        into the Extensions page, choose 'Details' for TabFloater, then click the
+                                        'html/background.html' link.</p>
+                                    <p>To view the companion logs, copy the below file path and open it in your favorite
+                                        text editor. Note: the file only exists if you have used the application with
+                                        debugging enabled.</p>
+                                    <p>It is recommended to only enable this option if you need to troubleshoot a
+                                        problem
+                                        with the application.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div>
+                        <label class="uk-switch" for="debugCheckbox">
+                            <input type="checkbox" id="debugCheckbox">
+                            <div class="uk-switch-slider"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match uk-grid-collapse" uk-grid>
+                <div class="uk-flex-middle uk-margin-medium-left">
+                    Companion log file
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-1-2">
+                    <div class="uk-inline">
+                        <input class="uk-input" id="companionLogFileField" readonly="true">
+                    </div>
+                </div>
+                <div class="uk-width-auto uk-margin-small-left uk-flex-middle">
+                    <a class="uk-padding-small" id="copyCompanionLogFilePathButton" uk-icon="icon: copy"></a>
+
+                    <span hidden id="copyCompanionLogFilePathSuccessIcon"
+                        class="uk-animation-fade uk-amination-fast uk-alert-success uk-border-pill uk-padding-small"
+                        uk-icon="icon: check"></span>
+
+                    <div hidden id="copyCompanionLogFilePathSuccessMessage" class="uk-width-auto"
+                        uk-drop="delay-hide: 1500">
+                        <div class="uk-card-small uk-card-default uk-padding-small">Copied!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <a href="https://github.com/tabfloater/tabfloater/issues/new" target="_blank">Report a
+                        problem...</a>
+                </div>
+                <div class="uk-width-expand"></div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <a href="#" target="_blank">Open welcome page...</a>
+                </div>
+                <div class="uk-width-expand"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="uk-section-xsmall uk-section-muted uk-preserve-color">
         <div class="uk-container uk-container-medium">
             <div class="uk-grid-match uk-grid-small uk-margin-remove" uk-grid>
                 <div>
@@ -432,7 +451,7 @@ limitations under the License.
                 </div>
             </div>
         </div>
-    </div>
+    </footer>
 
     <script src="../js/options.js"></script>
 </body>
