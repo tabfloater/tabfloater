@@ -59,7 +59,6 @@ async function floatTabIfPossibleAsync(logger) {
 browser.runtime.onInstalled.addListener(async () => {
     await startupAsync();
     await setDefaultOptionsAsync();
-    browser.browserAction.setBadgeBackgroundColor({color: "#3DCBA8"});
 });
 
 browser.runtime.onStartup.addListener(async () => {
@@ -85,32 +84,13 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
 
 browser.browserAction.onClicked.addListener(async () => {
     const logger = await getLoggerAsync();
-    try {
+    const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
-
-var text = 'HEY! Your task  is now overdue.';
-var notification = new Notification('To do list', { body: text, icon: "../images/icons/32.png" });
-
-        await browser.notifications.create({
-            type: "basic",
-            title: "title",
-            message: "message",
-            contextMessage: "contextmsg",
-            iconUrl: "../images/icons/32.png"
-        });
-    } catch (error) {
-        logger.error(JSON.stringify(error));
+    if (floatingTab) {
+        await floater.unfloatTabAsync();
+    } else {
+        await floatTabIfPossibleAsync(logger);
     }
-
-
-    // const logger = await getLoggerAsync();
-    // const { floatingTab } = await floater.tryGetFloatingTabAsync();
-
-    // if (floatingTab) {
-    //     await floater.unfloatTabAsync(logger);
-    // } else {
-    //     await floatTabIfPossibleAsync(logger);
-    // }
 });
 
 browser.commands.onCommand.addListener(async command => {
@@ -125,13 +105,13 @@ browser.commands.onCommand.addListener(async command => {
 
         if (options.positioningStrategy === "smart" || tabProps.position === "smart") {
             if (command === "moveUp") {
-                await floater.unfloatTabAsync(logger);
+                await floater.unfloatTabAsync();
             }
         } else if (options.positioningStrategy === "fixed") {
             const currentPosition = tabProps.position;
             const inUpperHalf = currentPosition === "topLeft" || currentPosition === "topRight";
             if (inUpperHalf && command === "moveUp") {
-                await floater.unfloatTabAsync(logger);
+                await floater.unfloatTabAsync();
             } else {
                 const newPosition = constants.CommandToPositionMapping[`${currentPosition},${command}`];
 
