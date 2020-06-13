@@ -47,6 +47,7 @@ const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
 const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSuccessIcon;
 const copyCompanionLogFilePathSuccessMessage = window.copyCompanionLogFilePathSuccessMessage;
+const verticalExpander = window.verticalExpander;
 const tabFloaterVersionField = window.tabFloaterVersionField;
 
 async function saveOptionsAsync() {
@@ -169,6 +170,8 @@ window.onload = async function () {
     companionLogFileField.value = companionInfo.logFilePath;
 
     tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
+
+    verticalExpander.setAttribute("uk-height-viewport", "expand: true");
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChanged;
