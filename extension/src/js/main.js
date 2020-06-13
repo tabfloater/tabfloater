@@ -85,13 +85,32 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
 
 browser.browserAction.onClicked.addListener(async () => {
     const logger = await getLoggerAsync();
-    const { floatingTab } = await floater.tryGetFloatingTabAsync();
+    try {
 
-    if (floatingTab) {
-        await floater.unfloatTabAsync(logger);
-    } else {
-        await floatTabIfPossibleAsync(logger);
+
+var text = 'HEY! Your task  is now overdue.';
+var notification = new Notification('To do list', { body: text, icon: "../images/icons/32.png" });
+
+        await browser.notifications.create({
+            type: "basic",
+            title: "title",
+            message: "message",
+            contextMessage: "contextmsg",
+            iconUrl: "../images/icons/32.png"
+        });
+    } catch (error) {
+        logger.error(JSON.stringify(error));
     }
+
+
+    // const logger = await getLoggerAsync();
+    // const { floatingTab } = await floater.tryGetFloatingTabAsync();
+
+    // if (floatingTab) {
+    //     await floater.unfloatTabAsync(logger);
+    // } else {
+    //     await floatTabIfPossibleAsync(logger);
+    // }
 });
 
 browser.commands.onCommand.addListener(async command => {
