@@ -57,8 +57,10 @@ async function floatTabIfPossibleAsync(logger) {
 }
 
 browser.runtime.onInstalled.addListener(async () => {
-    await startupAsync();
     await setDefaultOptionsAsync();
+    await startupAsync();
+    //TODO restore this
+    // await browser.tabs.create({ url: "html/welcome.html" });
 });
 
 browser.runtime.onStartup.addListener(async () => {
