@@ -7,7 +7,7 @@
     "lint": "npx eslint src/js",
     "postinstall": "run-script-os",
     "postinstall:nix": "./postinstall.sh",
-    "postinstall:windows": "mkdir src\\libs\\webextension-polyfill && copy node_modules\\webextension-polyfill\\dist\\*.min.js* src\\libs\\webextension-polyfill"
+    "postinstall:windows": "postinstall.bat"
   },
   "repository": {
     "type": "git",
