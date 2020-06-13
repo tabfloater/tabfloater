@@ -56,7 +56,7 @@ async function saveOptionsAsync() {
 
     if (isNumberInputValid(viewportTopOffsetInput)) {
         viewportTopOffsetInput.classList.remove("uk-form-danger");
-        options.viewportTopOffset = viewportTopOffsetInput.value;
+        options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
     } else {
         viewportTopOffsetInput.classList.add("uk-form-danger");
     }
