@@ -1,9 +1,10 @@
 # Extension
+.sass-cache
 node_modules/
 extension/src/libs/*
 !extension/src/libs/.gitkeep
-.sass-cache
-extension/src/css/uk-tabfloater.css
+extension/src/css/generated/*
+!extension/src/css/generated/.gitkeep
 
 # Chrome Web Store key file
 key.pem

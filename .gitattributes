@@ -1,1 +1,2 @@
-extension/src/css/* linguist-vendored
+extension/src/css/generated/* linguist-vendored
+extension/src/libs/* linguist-vendored
