@@ -30,7 +30,9 @@ const tabSizeSelect = window.tabSizeSelect;
 const viewportTopOffsetInput = window.viewportTopOffsetInput;
 const smartPositionRadioButton = window.smartPositionRadioButton;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
+const followTabSwitchSlider = window.followTabSwitchSlider;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
+const restrictMaxFloatingTabSizeSlider = window.restrictMaxFloatingTabSizeSlider;
 const hotkeyMoveDownDescription = window.hotkeyMoveDownDescription;
 const hotkeyMoveDown = window.hotkeyMoveDown;
 const hotkeyMoveUpDescription = window.hotkeyMoveUpDescription;
@@ -74,6 +76,14 @@ function setPositioningControlStates() {
     viewportTopOffsetInput.disabled = smartPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
+
+    if (fixedPositionRadioButton.checked) {
+        followTabSwitchSlider.classList.add("uk-switch-slider-disabled");
+        restrictMaxFloatingTabSizeSlider.classList.add("uk-switch-slider-disabled");
+    } else {
+        followTabSwitchSlider.classList.remove("uk-switch-slider-disabled");
+        restrictMaxFloatingTabSizeSlider.classList.remove("uk-switch-slider-disabled");
+    }
 }
 
 function setCompanionFields(companionInfo) {
