@@ -266,7 +266,7 @@ browser.runtime.onMessage.addListener(async function (request) {
 
             return normalizedArea;
         } catch (error) {
-            logger.error(`Error while calculating max empty area. Error: '${error}', message: '${error.message}'`);
+            logger.error(`Error while calculating max empty area. Error: '${JSON.stringify(error)}'`);
         }
     }
 });

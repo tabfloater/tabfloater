@@ -17,7 +17,7 @@
 import { sendMakeDialogRequestAsync } from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 
-export async function tryGetFloatingTabAsync(logger) {
+export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
     const tabProps = data.floatingTabProperties;
 
@@ -32,7 +32,6 @@ export async function tryGetFloatingTabAsync(logger) {
             result.floatingTab = floatingTab;
             result.tabProps = tabProps;
         } catch (error) {
-            logger.error(`Unable to fetch floating tab, will clear saved value. Error: '${error}', message: '${error.message}'`);
             await clearFloatingTabAsync();
         }
     }
@@ -41,7 +40,7 @@ export async function tryGetFloatingTabAsync(logger) {
 }
 
 export async function floatTabAsync(logger) {
-    const { floatingTab } = await tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (!floatingTab) {
         await floatingStartedAsync();
@@ -64,7 +63,7 @@ export async function floatTabAsync(logger) {
                 try {
                     await browser.tabs.update(succeedingActiveTab.id, { active: true });
                 } catch (error) {
-                    logger.error(`Unable to update active tab before floating action. Error: '${error}', message: '${error.message}'`);
+                    logger.error(`Unable to update active tab before floating action. Error: '${JSON.stringify(error)}'`);
                 }
 
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);
@@ -81,6 +80,8 @@ export async function floatTabAsync(logger) {
                 const parentWindowTitle = succeedingActiveTab.title;
                 await sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
                 await setFloatingTabAsync(tabProps);
+
+                setFloatingStatusForIcon(true);
             } else {
                 logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
             }
@@ -90,8 +91,8 @@ export async function floatTabAsync(logger) {
     }
 }
 
-export async function unfloatTabAsync(logger) {
-    const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
+export async function unfloatTabAsync() {
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
@@ -100,7 +101,7 @@ export async function unfloatTabAsync(logger) {
 }
 
 export async function repositionFloatingTabIfExistsAsync(logger) {
-    const { floatingTab } = await tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
         const coordinates = await positioner.calculateCoordinatesAsync(logger);
@@ -124,6 +125,7 @@ export async function setFloatingTabAsync(tabProps) {
 
 export async function clearFloatingTabAsync() {
     await browser.storage.local.remove(["floatingTabProperties"]);
+    setFloatingStatusForIcon(false);
 }
 
 export async function clearFloatingProgressAsync() {
@@ -149,4 +151,11 @@ async function getSucceedingActiveTabAsync() {
     return currentTabIsLast
         ? allTabsOnCurrentWindow[currentTab.index - 1]
         : allTabsOnCurrentWindow[currentTab.index + 1];
+}
+
+function setFloatingStatusForIcon(isFloating) {
+    const title = isFloating ? "Unfloat tab!" : "Float tab!";
+    const badgeText = isFloating ? "F" : "";
+    browser.browserAction.setTitle({title: title});
+    browser.browserAction.setBadgeText({text: badgeText});
 }

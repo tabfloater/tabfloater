@@ -21,7 +21,7 @@ import { getLoggerAsync } from "./logger.js";
 
 const activeTabChangedListenerAsync = async activeInfo => {
     const logger = await getLoggerAsync();
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     logger.info(`Active tab changed. floatingTab: ${floatingTab}, tabProps: '${JSON.stringify(tabProps)}', activeWindowId: ${activeInfo.windowId}`);
 
@@ -48,9 +48,18 @@ async function startupAsync() {
     await floater.clearFloatingProgressAsync();
 }
 
+async function floatTabIfPossibleAsync(logger) {
+    if (await floater.canFloatCurrentTabAsync()) {
+        await floater.floatTabAsync(logger);
+    } else {
+        logger.info("Unable to float current tab: either parent window only has one tab, or another floating is already in progress");
+    }
+}
+
 browser.runtime.onInstalled.addListener(async () => {
     await startupAsync();
     await setDefaultOptionsAsync();
+    browser.browserAction.setBadgeBackgroundColor({color: "#3DCBA8"});
 });
 
 browser.runtime.onStartup.addListener(async () => {
@@ -58,8 +67,7 @@ browser.runtime.onStartup.addListener(async () => {
 });
 
 browser.tabs.onRemoved.addListener(async closingTabId => {
-    const logger = await getLoggerAsync();
-    const { floatingTab } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && floatingTab.id === closingTabId) {
         await floater.clearFloatingTabAsync();
@@ -67,8 +75,7 @@ browser.tabs.onRemoved.addListener(async closingTabId => {
 });
 
 browser.windows.onRemoved.addListener(async closingWindowId => {
-    const logger = await getLoggerAsync();
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab && tabProps.parentWindowId === closingWindowId) {
         await browser.tabs.remove(floatingTab.id);
@@ -76,9 +83,20 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
     }
 });
 
+browser.browserAction.onClicked.addListener(async () => {
+    const logger = await getLoggerAsync();
+    const { floatingTab } = await floater.tryGetFloatingTabAsync();
+
+    if (floatingTab) {
+        await floater.unfloatTabAsync(logger);
+    } else {
+        await floatTabIfPossibleAsync(logger);
+    }
+});
+
 browser.commands.onCommand.addListener(async command => {
     const logger = await getLoggerAsync();
-    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     const options = await loadOptionsAsync();
 
     logger.info(`Command received: ${command}`);
@@ -108,11 +126,7 @@ browser.commands.onCommand.addListener(async command => {
             }
         }
     } else if (command === "moveDown") {
-        if (await floater.canFloatCurrentTabAsync()) {
-            await floater.floatTabAsync(logger);
-        } else {
-            logger.info("Unable to float current tab: either parent window only has one tab, or another floating is already in progress");
-        }
+        await floatTabIfPossibleAsync(logger);
     }
 });
 
@@ -122,20 +136,9 @@ browser.runtime.onMessage.addListener(async request => {
     logger.info(`Request received: ${request}`);
 
     switch (request) {
-        case "canFloatCurrentTab": {
-            const canFloatCurrentTab = await floater.canFloatCurrentTabAsync();
-            logger.info(`canFloatCurrentTab: ${canFloatCurrentTab}`);
-            return canFloatCurrentTab;
-        }
-        case "getFloatingTab": {
-            const { floatingTab } = await floater.tryGetFloatingTabAsync(logger);
-            logger.info(`floatingTab: ${floatingTab}`);
-            return floatingTab;
-        }
         case "getCompanionInfo": return await getCompanionInfoAsync(logger);
-        case "floatTab": await floater.floatTabAsync(logger); break;
-        case "unfloatTab": await floater.unfloatTabAsync(logger); break;
         case "loadOptions": return await loadOptionsAsync();
+        case "getHotkeys": return await browser.commands.getAll();
     }
 });
 

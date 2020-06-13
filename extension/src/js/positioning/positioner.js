@@ -46,7 +46,7 @@ export async function getStartingPositionAsync() {
  */
 export async function calculateCoordinatesAsync(logger) {
     const options = await loadOptionsAsync();
-    const { floatingTab, tabProps } = await tryGetFloatingTabAsync(logger);
+    const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
     let parentWindow;
     let fixedPosition;
 
@@ -118,10 +118,10 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
     } catch (error) {
         // The content script can fail sometimes, for example if we want to inject
         // it into a chrome:// page. In this case, we fall back to fixed positioning.
-        // TODO notify the user that smart positioning failed
+        // TODO notify the user that smart positioning failed?
 
-        logger.warn("Unable to calculate smart positioning coordinates, falling back to fixed positioning. " +
-            `Error: '${error}', message: '${error.message}'`);
+        logger.info("Unable to calculate smart positioning coordinates, falling back to fixed positioning. " +
+            `Error: '${JSON.stringify(error)}'`);
 
         const options = await loadOptionsAsync();
         return getFixedPositionCoordinates(parentWindow, options.fixedPosition, options, logger);

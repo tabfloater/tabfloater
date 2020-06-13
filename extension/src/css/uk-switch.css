@@ -1,0 +1,84 @@
+@charset "UTF-8";
+/*
+ * Copyright (c) 2020 by Seba (https://codepen.io/zzseba78/pen/PxwmeV)
+ * Fork of an original work Custom Checkbox Toggle Slider (https://codepen.io/AllThingsSmitty/pen/MmxxOz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+  /* Switch */
+  .uk-switch {
+    position: relative;
+    display: inline-block;
+    height: 19px;
+    width: 40px;
+  }
+
+  /* Hide default HTML checkbox */
+  .uk-switch input {
+    display:none;
+  }
+  /* Slider */
+  .uk-switch-slider {
+    background-color: rgba(0,0,0,0.22);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 500px;
+    bottom: 0;
+    cursor: pointer;
+    transition-property: background-color;
+      transition-duration: .2s;
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.07);
+  }
+  /* Switch pointer */
+  .uk-switch-slider:before {
+    content: '';
+    background-color: #fff;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    left: 2px;
+    bottom: 2px;
+    border-radius: 50%;
+    transition-property: transform, box-shadow;
+    transition-duration: .2s;
+  }
+  /* Slider active color */
+  input:checked + .uk-switch-slider {
+    background-color: #39f ;
+  }
+  /* Pointer active animation */
+  input:checked + .uk-switch-slider:before {
+    transform: translateX(21px);
+  }
+
+  /* Modifiers */
+  .uk-switch-slider.uk-switch-on-off {
+    background-color: #f0506e;
+  }
+  input:checked + .uk-switch-slider.uk-switch-on-off {
+    background-color: #32d296 !important;
+  }
+
+  /* Style Modifier */
+  .uk-switch-slider.uk-switch-big:before {
+    transform: scale(1.2);
+    box-shadow: 0 0 6px rgba(0,0,0,0.22);
+  }
+  .uk-switch-slider.uk-switch-small:before {
+    box-shadow: 0 0 6px rgba(0,0,0,0.22);
+  }
+  input:checked + .uk-switch-slider.uk-switch-big:before {
+    transform: translateX(21px) scale(1.2);
+  }
+
+  /* Inverse Modifier - affects only default */
+  .uk-light .uk-switch-slider:not(.uk-switch-on-off) {
+    background-color: rgba(255,255,255,0.22);
+  }
