@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const companionSection = window.companionSection;
 const companionStatusIndicatorConnected = window.companionStatusIndicatorConnected;
 const companionStatusIndicatorUnavailable = window.companionStatusIndicatorUnavailable;
 const companionUnavailableMessage = window.companionUnavailableMessage;
@@ -43,6 +44,9 @@ const hotkeyMoveRightDescription = window.hotkeyMoveRightDescription;
 const hotkeyMoveRight = window.hotkeyMoveRight;
 const hotkeyChangeButton = window.hotkeyChangeButton;
 const debugCheckbox = window.debugCheckbox;
+const chromeDebugInfo = window.chromeDebugInfo;
+const firefoxDebugInfo = window.firefoxDebugInfo;
+const companionLogFileSection = window.companionLogFileSection;
 const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
 const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSuccessIcon;
@@ -87,31 +91,43 @@ function setPositioningControlStates() {
 }
 
 function setCompanionFields(companionInfo) {
-    if (companionInfo.status === "unavailable") {
-        companionStatusIndicatorConnected.hidden = true;
-        companionStatusIndicatorUnavailable.hidden = false;
-        companionUnavailableMessage.textContent += companionInfo.errorMessage;
-        companionRequiredIndicator.hidden = false;
-        downloadCompanionButton.hidden = false;
-        downloadCompanionLink.textContent = "Get the companion...";
-    } else if (companionInfo.status === "connected") {
-        // The "connected" indicator is invisible rather than hidden, because
-        // we need a div to take up the space until the page fully loads. If
-        // this were hidden instead of invisible, the page would jump around
-        // while loading.
-        companionStatusIndicatorConnected.classList.remove("uk-invisible");
-        companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
-        if (companionInfo.isOutdated) {
-            companionUpdateIndicator.hidden = false;
-            companionUpdateVersionText.textContent += companionInfo.latestVersion;
-            downloadCompanionButton.hidden = false;
-            downloadCompanionLink.textContent = "Update the companion...";
+    switch (companionInfo.status) {
+        case "connected": {
+            // The "connected" indicator is invisible rather than hidden, because
+            // we need a div to take up the space until the page fully loads. If
+            // this were hidden instead of invisible, the page would jump around
+            // while loading.
+            companionStatusIndicatorConnected.classList.remove("uk-invisible");
+            companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
-            if (companionInfo.latestVersionHasBreakingChanges) {
-                companionBreakingChangesIndicator.hidden = false;
+            if (companionInfo.isOutdated) {
+                companionUpdateIndicator.hidden = false;
+                companionUpdateVersionText.textContent += companionInfo.latestVersion;
+                downloadCompanionButton.hidden = false;
+                downloadCompanionLink.textContent = "Update the companion...";
+
+                if (companionInfo.latestVersionHasBreakingChanges) {
+                    companionBreakingChangesIndicator.hidden = false;
+                }
             }
-        }
+
+            companionLogFileField.value = companionInfo.logFilePath;
+        } break;
+        case "unavailable": {
+            companionStatusIndicatorConnected.hidden = true;
+            companionStatusIndicatorUnavailable.hidden = false;
+            companionUnavailableMessage.textContent += companionInfo.errorMessage;
+            companionRequiredIndicator.hidden = false;
+            downloadCompanionButton.hidden = false;
+            downloadCompanionLink.textContent = "Get the companion...";
+            companionLogFileField.value = "";
+        } break;
+        case "n/a": {
+            // Running on Firefox - no need for companion
+            companionSection.hidden = true;
+            companionLogFileSection.hidden = true;
+        } break;
     }
 }
 
@@ -171,7 +187,10 @@ window.onload = async function () {
     await setHotKeysLabelsAsync(options.positioningStrategy);
 
     debugCheckbox.checked = options.debug;
-    companionLogFileField.value = companionInfo.logFilePath;
+    if (companionInfo.status === "n/a") {
+        chromeDebugInfo.hidden = true;
+        firefoxDebugInfo.hidden = false;
+    }
 
     tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
 };

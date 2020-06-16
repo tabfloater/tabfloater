@@ -18,6 +18,7 @@ import * as companion from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 import * as notifier from "./notifier.js";
 import { getLoggerAsync } from "./logger.js";
+import { runningOnFirefoxAsync } from "./main.js";
 
 export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
@@ -70,7 +71,7 @@ export async function floatTabAsync(logger) {
 
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);
 
-                await browser.windows.create({
+                const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
                     "type": "popup",
                     "top": coordinates.top,
@@ -78,6 +79,19 @@ export async function floatTabAsync(logger) {
                     "width": coordinates.width,
                     "height": coordinates.height,
                 });
+
+                if (await runningOnFirefoxAsync()) {
+                    // On Firefox, "popup" or "panel" windows do not respect the
+                    // coordinates when created, so we need to set them explicitly.
+                    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1271047
+
+                    await browser.windows.update(newWindow.id, {
+                        "top": coordinates.top,
+                        "left": coordinates.left,
+                        "width": coordinates.width,
+                        "height": coordinates.height,
+                    });
+                }
 
                 const parentWindowTitle = succeedingActiveTab.title;
                 const result = await companion.sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
