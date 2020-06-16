@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "lint": "npx eslint src/js",
+    "run-ff": "./run_firefox.sh",
     "postinstall": "run-script-os",
     "postinstall:nix": "./postinstall.sh",
     "postinstall:windows": "postinstall.bat"
