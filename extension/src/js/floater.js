@@ -88,7 +88,7 @@ export async function floatTabAsync(logger) {
                         "height": coordinates.height,
                     });
 
-                    // Firefox prepends the URL of the page to the window title, if the
+                    // Firefox prepends the URL of the page to the window title if the
                     // window type is "popup", so we need to update it
                     floatingTabTitle = newWindow.title;
                 }
