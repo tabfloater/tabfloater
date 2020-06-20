@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const companionSection = window.companionSection;
 const companionStatusIndicatorConnected = window.companionStatusIndicatorConnected;
 const companionStatusIndicatorUnavailable = window.companionStatusIndicatorUnavailable;
 const companionUnavailableMessage = window.companionUnavailableMessage;
@@ -46,7 +45,6 @@ const hotkeyChangeButton = window.hotkeyChangeButton;
 const debugCheckbox = window.debugCheckbox;
 const chromeDebugInfo = window.chromeDebugInfo;
 const firefoxDebugInfo = window.firefoxDebugInfo;
-const companionLogFileSection = window.companionLogFileSection;
 const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
 const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSuccessIcon;
@@ -123,11 +121,6 @@ function setCompanionFields(companionInfo) {
             downloadCompanionLink.textContent = "Get the companion...";
             companionLogFileField.value = "";
         } break;
-        case "n/a": {
-            // Running on Firefox - no need for companion
-            companionSection.hidden = true;
-            companionLogFileSection.hidden = true;
-        } break;
     }
 }
 
@@ -167,6 +160,7 @@ function positioningStrategyChanged() {
 window.onload = async function () {
     const options = await browser.runtime.sendMessage("loadOptions");
     const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
+    const runningOnFirefox = await browser.runtime.sendMessage("runningOnFirefox");
 
     setCompanionFields(companionInfo);
 
@@ -187,7 +181,7 @@ window.onload = async function () {
     await setHotKeysLabelsAsync(options.positioningStrategy);
 
     debugCheckbox.checked = options.debug;
-    if (companionInfo.status === "n/a") {
+    if (runningOnFirefox) {
         chromeDebugInfo.hidden = true;
         firefoxDebugInfo.hidden = false;
     }

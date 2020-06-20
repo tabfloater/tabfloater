@@ -149,6 +149,7 @@ browser.runtime.onMessage.addListener(async request => {
         case "getCompanionInfo": return await getCompanionInfoAsync(logger);
         case "loadOptions": return await loadOptionsAsync();
         case "getHotkeys": return await browser.commands.getAll();
+        case "runningOnFirefox": return await runningOnFirefoxAsync();
     }
 });
 

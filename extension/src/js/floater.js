@@ -63,6 +63,14 @@ export async function floatTabAsync(logger) {
                 logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
 
                 const succeedingActiveTab = await getSucceedingActiveTabAsync();
+
+                // TODO do we need this update here? maybe not!
+                try {
+                    await browser.tabs.update(succeedingActiveTab.id, { active: true });
+                } catch (error) {
+                    logger.error(`Unable to update active tab before floating action. Error: '${JSON.stringify(error)}'`);
+                }
+
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);
                 const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
