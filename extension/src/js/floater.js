@@ -63,14 +63,6 @@ export async function floatTabAsync(logger) {
                 logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
 
                 const succeedingActiveTab = await getSucceedingActiveTabAsync();
-
-                // TODO do we need this update here? maybe not!
-                try {
-                    await browser.tabs.update(succeedingActiveTab.id, { active: true });
-                } catch (error) {
-                    logger.error(`Unable to update active tab before floating action. Error: '${JSON.stringify(error)}'`);
-                }
-
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);
                 const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
@@ -80,6 +72,9 @@ export async function floatTabAsync(logger) {
                     "width": coordinates.width,
                     "height": coordinates.height,
                 });
+
+                let floatingTabTitle = currentTab.title;
+                const parentWindowTitle = succeedingActiveTab.title;
 
                 if (await runningOnFirefoxAsync()) {
                     // On Firefox, "popup" or "panel" windows do not respect the
@@ -92,10 +87,13 @@ export async function floatTabAsync(logger) {
                         "width": coordinates.width,
                         "height": coordinates.height,
                     });
+
+                    // Firefox prepends the URL of the page to the window title, if the
+                    // window type is "popup", so we need to update it
+                    floatingTabTitle = newWindow.title;
                 }
 
-                const parentWindowTitle = succeedingActiveTab.title;
-                const result = await companion.sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
+                const result = await companion.sendMakeDialogRequestAsync(floatingTabTitle, parentWindowTitle, logger);
                 await setFloatingTabAsync(tabProps);
 
                 if (result.success) {
@@ -175,7 +173,7 @@ async function floatingStartedAsync() {
  */
 async function getSucceedingActiveTabAsync() {
     const allTabsOnCurrentWindow = await browser.tabs.query({ lastFocusedWindow: true });
-    allTabsOnCurrentWindow.sort((tab1, tab2) => tab1.index < tab2.index);
+    allTabsOnCurrentWindow.sort((tab1, tab2) => tab1.index < tab2.index ? -1 : 1);
 
     const currentTab = allTabsOnCurrentWindow.find(tab => tab.active);
     const currentTabIsLast = currentTab.index === allTabsOnCurrentWindow.length - 1;

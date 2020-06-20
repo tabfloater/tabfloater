@@ -16,16 +16,9 @@
 
 import { CompanionName } from "./constants.js";
 import { CompanionLatestVersions } from "./constants.js";
-import * as main from "./main.js";
+import { loadOptionsAsync } from "./main.js";
 
 export async function getCompanionInfoAsync(logger) {
-    if (await main.runningOnFirefoxAsync()) {
-        return {
-            status: "n/a",
-            isOutdated: false
-        };
-    }
-
     try {
         const debug = await isDebuggingEnabledAsync();
         const companionInfo = await browser.runtime.sendNativeMessage(CompanionName, {
@@ -62,13 +55,6 @@ export async function getCompanionInfoAsync(logger) {
 }
 
 export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle, logger) {
-    if (await main.runningOnFirefoxAsync()) {
-        logger.info("Running on Firefox - ignoring MakeDialog request");
-        return {
-            success: true
-        };
-    }
-
     logger.info(`MakeDialog request received. Window title: '${windowTitle}', parent window title: '${parentWindowTitle}'`);
 
     try {
@@ -120,6 +106,6 @@ function getMajorVersion(version) {
 }
 
 async function isDebuggingEnabledAsync() {
-    const options = await main.loadOptionsAsync();
+    const options = await loadOptionsAsync();
     return options.debug;
 }
