@@ -63,6 +63,16 @@ export async function floatTabAsync(logger) {
                 logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
 
                 const succeedingActiveTab = await getSucceedingActiveTabAsync();
+
+                // We need to set the parent tab as active **before** the floating action happens,
+                // because this is the only way we can reliably inject the smart positioning
+                // content script into the parent tab
+                try {
+                    await browser.tabs.update(succeedingActiveTab.id, { active: true });
+                } catch (error) {
+                    logger.error(`Unable to update active tab before floating action. Error: '${JSON.stringify(error)}'`);
+                }
+
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);
                 const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
