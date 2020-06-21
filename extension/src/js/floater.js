@@ -66,7 +66,7 @@ export async function floatTabAsync(logger) {
 
                 // We need to set the parent tab as active **before** the floating action happens,
                 // because this is the only way we can reliably inject the smart positioning
-                // content script into the parent tab
+                // content script into the parent tab.
                 try {
                     await browser.tabs.update(succeedingActiveTab.id, { active: true });
                 } catch (error) {
@@ -99,7 +99,9 @@ export async function floatTabAsync(logger) {
                     });
 
                     // Firefox prepends the URL of the page to the window title if the
-                    // window type is "popup", so we need to update it
+                    // window type is "popup", so we need to update it here. We can only
+                    // use the 'title' property on Firefox, because it's not defined on
+                    // Chrome for the 'Window' object.
                     floatingTabTitle = newWindow.title;
                 }
 
