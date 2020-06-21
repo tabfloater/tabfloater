@@ -125,7 +125,7 @@ function setCompanionFields(companionInfo) {
     }
 }
 
-async function setHotKeysFieldsAsync(positioningStrategy, runningOnFirefox) {
+async function setHotKeysLabelsAsync(positioningStrategy) {
     const hotkeys = await browser.runtime.sendMessage("getHotkeys");
     const moveDownHotKey = hotkeys.filter(k => k.name === "moveDown")[0];
     const moveUpHotKey = hotkeys.filter(k => k.name === "moveUp")[0];
@@ -149,15 +149,6 @@ async function setHotKeysFieldsAsync(positioningStrategy, runningOnFirefox) {
         hotkeyMoveLeft.textContent = "";
         hotkeyMoveRightDescription.textContent = "Unused";
         hotkeyMoveRight.textContent = "";
-    }
-
-    if (runningOnFirefox) {
-        firefoxHotKeyChangeInfo.hidden = false;
-        hotkeyChangeButton.classList.add("uk-link-muted");
-    } else {
-        hotkeyChangeButton.onclick = function () {
-            browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
-        };
     }
 }
 
@@ -188,7 +179,15 @@ window.onload = async function () {
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
 
-    await setHotKeysFieldsAsync(options.positioningStrategy, runningOnFirefox);
+    await setHotKeysLabelsAsync(options.positioningStrategy);
+    if (runningOnFirefox) {
+        firefoxHotKeyChangeInfo.hidden = false;
+        hotkeyChangeButton.classList.add("uk-link-muted");
+    } else {
+        hotkeyChangeButton.onclick = function () {
+            browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
+        };
+    }
 
     debugCheckbox.checked = options.debug;
     if (runningOnFirefox) {
