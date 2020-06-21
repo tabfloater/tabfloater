@@ -99,8 +99,8 @@ export async function floatTabAsync(logger) {
                     });
 
                     // Firefox prepends the URL of the page to the window title if the
-                    // window type is "popup", so we need to update it here. We can only
-                    // use the 'title' property on Firefox, because it's not defined on
+                    // window type is "popup", so we need to update it here. We can use
+                    // the 'title' property only on Firefox, because it's not defined on
                     // Chrome for the 'Window' object.
                     floatingTabTitle = newWindow.title;
                 }
