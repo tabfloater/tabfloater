@@ -77,9 +77,9 @@ browser.runtime.onStartup.addListener(async () => {
 });
 
 browser.tabs.onRemoved.addListener(async closingTabId => {
-    const { floatingTab } = await floater.tryGetFloatingTabAsync();
+    const floatingTabData = await floater.tryGetFloatingTabAsync();
 
-    if (floatingTab && floatingTab.id === closingTabId) {
+    if (floatingTabData.tabProps && floatingTabData.tabProps.tabId === closingTabId) {
         await floater.clearFloatingTabAsync();
     }
 });

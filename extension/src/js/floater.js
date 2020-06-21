@@ -26,16 +26,19 @@ export async function tryGetFloatingTabAsync() {
 
     const result = {
         floatingTab: undefined,
-        floatingTabProperties: undefined
+        tabProps: tabProps
     };
 
     if (tabProps) {
         try {
             const floatingTab = await browser.tabs.get(tabProps.tabId);
             result.floatingTab = floatingTab;
-            result.tabProps = tabProps;
-        } catch (error) {
-            await clearFloatingTabAsync();
+        } catch (ignore) {
+            // This happens if the floating tab is closed by the user
+            // without being unfloated first. In this case, we ignore
+            // the error and return 'undefined' for the floating tab.
+            // We still return the 'tabProps', as that property is
+            // required by some callers.
         }
     }
 
