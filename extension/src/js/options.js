@@ -42,6 +42,7 @@ const hotkeyMoveLeft = window.hotkeyMoveLeft;
 const hotkeyMoveRightDescription = window.hotkeyMoveRightDescription;
 const hotkeyMoveRight = window.hotkeyMoveRight;
 const hotkeyChangeButton = window.hotkeyChangeButton;
+const firefoxHotKeyChangeInfo = window.firefoxHotKeyChangeInfo;
 const debugCheckbox = window.debugCheckbox;
 const chromeDebugInfo = window.chromeDebugInfo;
 const firefoxDebugInfo = window.firefoxDebugInfo;
@@ -124,7 +125,7 @@ function setCompanionFields(companionInfo) {
     }
 }
 
-async function setHotKeysLabelsAsync(positioningStrategy) {
+async function setHotKeysFieldsAsync(positioningStrategy, runningOnFirefox) {
     const hotkeys = await browser.runtime.sendMessage("getHotkeys");
     const moveDownHotKey = hotkeys.filter(k => k.name === "moveDown")[0];
     const moveUpHotKey = hotkeys.filter(k => k.name === "moveUp")[0];
@@ -148,6 +149,15 @@ async function setHotKeysLabelsAsync(positioningStrategy) {
         hotkeyMoveLeft.textContent = "";
         hotkeyMoveRightDescription.textContent = "Unused";
         hotkeyMoveRight.textContent = "";
+    }
+
+    if (runningOnFirefox) {
+        firefoxHotKeyChangeInfo.hidden = false;
+        hotkeyChangeButton.classList.add("uk-link-muted");
+    } else {
+        hotkeyChangeButton.onclick = function () {
+            browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
+        };
     }
 }
 
@@ -178,7 +188,7 @@ window.onload = async function () {
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
 
-    await setHotKeysLabelsAsync(options.positioningStrategy);
+    await setHotKeysFieldsAsync(options.positioningStrategy, runningOnFirefox);
 
     debugCheckbox.checked = options.debug;
     if (runningOnFirefox) {
@@ -197,11 +207,6 @@ viewportTopOffsetInput.onblur = saveOptionsAsync;
 followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
 debugCheckbox.onchange = saveOptionsAsync;
-
-hotkeyChangeButton.onclick = function () {
-    browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
-};
-
 copyCompanionLogFilePathButton.onclick = async function () {
     const logFilePath = companionLogFileField.value;
 

@@ -343,7 +343,19 @@ limitations under the License.
 
             <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-flex-middle">
-                    <a id="hotkeyChangeButton" href="#">Change...</a>
+                    <div>
+                        <a id="hotkeyChangeButton" href="#">Change...</a>
+                        <div hidden id="firefoxHotKeyChangeInfo" class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
+                                    Firefox does not allow to open the Add-ons page via links. To change hotkeys, go
+                                    to the Add-ons page, click the cogwheel icon in the top right corner, and choose
+                                    'Manage Extension Shortcuts'.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="uk-width-expand"></div>
             </div>
