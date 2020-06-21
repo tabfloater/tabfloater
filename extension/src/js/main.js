@@ -35,6 +35,15 @@ export async function loadOptionsAsync() {
     return optionsData.options;
 }
 
+export async function runningOnFirefoxAsync() {
+    if (browser.runtime.getBrowserInfo) {
+        const browserInfo = await browser.runtime.getBrowserInfo();
+        return browserInfo.name.toLowerCase().includes("firefox");
+    }
+
+    return false;
+}
+
 async function setDefaultOptionsAsync() {
     await browser.storage.sync.set({ options: constants.DefaultOptions });
 
@@ -140,6 +149,7 @@ browser.runtime.onMessage.addListener(async request => {
         case "getCompanionInfo": return await getCompanionInfoAsync(logger);
         case "loadOptions": return await loadOptionsAsync();
         case "getHotkeys": return await browser.commands.getAll();
+        case "runningOnFirefox": return await runningOnFirefoxAsync();
     }
 });
 

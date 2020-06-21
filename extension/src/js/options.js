@@ -42,7 +42,10 @@ const hotkeyMoveLeft = window.hotkeyMoveLeft;
 const hotkeyMoveRightDescription = window.hotkeyMoveRightDescription;
 const hotkeyMoveRight = window.hotkeyMoveRight;
 const hotkeyChangeButton = window.hotkeyChangeButton;
+const firefoxHotKeyChangeInfo = window.firefoxHotKeyChangeInfo;
 const debugCheckbox = window.debugCheckbox;
+const chromeDebugInfo = window.chromeDebugInfo;
+const firefoxDebugInfo = window.firefoxDebugInfo;
 const companionLogFileField = window.companionLogFileField;
 const copyCompanionLogFilePathButton = window.copyCompanionLogFilePathButton;
 const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSuccessIcon;
@@ -87,31 +90,38 @@ function setPositioningControlStates() {
 }
 
 function setCompanionFields(companionInfo) {
-    if (companionInfo.status === "unavailable") {
-        companionStatusIndicatorConnected.hidden = true;
-        companionStatusIndicatorUnavailable.hidden = false;
-        companionUnavailableMessage.textContent += companionInfo.errorMessage;
-        companionRequiredIndicator.hidden = false;
-        downloadCompanionButton.hidden = false;
-        downloadCompanionLink.textContent = "Get the companion...";
-    } else if (companionInfo.status === "connected") {
-        // The "connected" indicator is invisible rather than hidden, because
-        // we need a div to take up the space until the page fully loads. If
-        // this were hidden instead of invisible, the page would jump around
-        // while loading.
-        companionStatusIndicatorConnected.classList.remove("uk-invisible");
-        companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
-        if (companionInfo.isOutdated) {
-            companionUpdateIndicator.hidden = false;
-            companionUpdateVersionText.textContent += companionInfo.latestVersion;
-            downloadCompanionButton.hidden = false;
-            downloadCompanionLink.textContent = "Update the companion...";
+    switch (companionInfo.status) {
+        case "connected": {
+            // The "connected" indicator is invisible rather than hidden, because
+            // we need a div to take up the space until the page fully loads. If
+            // this were hidden instead of invisible, the page would jump around
+            // while loading.
+            companionStatusIndicatorConnected.classList.remove("uk-invisible");
+            companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
-            if (companionInfo.latestVersionHasBreakingChanges) {
-                companionBreakingChangesIndicator.hidden = false;
+            if (companionInfo.isOutdated) {
+                companionUpdateIndicator.hidden = false;
+                companionUpdateVersionText.textContent += companionInfo.latestVersion;
+                downloadCompanionButton.hidden = false;
+                downloadCompanionLink.textContent = "Update the companion...";
+
+                if (companionInfo.latestVersionHasBreakingChanges) {
+                    companionBreakingChangesIndicator.hidden = false;
+                }
             }
-        }
+
+            companionLogFileField.value = companionInfo.logFilePath;
+        } break;
+        case "unavailable": {
+            companionStatusIndicatorConnected.hidden = true;
+            companionStatusIndicatorUnavailable.hidden = false;
+            companionUnavailableMessage.textContent += companionInfo.errorMessage;
+            companionRequiredIndicator.hidden = false;
+            downloadCompanionButton.hidden = false;
+            downloadCompanionLink.textContent = "Get the companion...";
+            companionLogFileField.value = "";
+        } break;
     }
 }
 
@@ -151,6 +161,7 @@ function positioningStrategyChanged() {
 window.onload = async function () {
     const options = await browser.runtime.sendMessage("loadOptions");
     const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
+    const runningOnFirefox = await browser.runtime.sendMessage("runningOnFirefox");
 
     setCompanionFields(companionInfo);
 
@@ -169,9 +180,20 @@ window.onload = async function () {
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
 
     await setHotKeysLabelsAsync(options.positioningStrategy);
+    if (runningOnFirefox) {
+        firefoxHotKeyChangeInfo.hidden = false;
+        hotkeyChangeButton.classList.add("uk-link-muted");
+    } else {
+        hotkeyChangeButton.onclick = function () {
+            browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
+        };
+    }
 
     debugCheckbox.checked = options.debug;
-    companionLogFileField.value = companionInfo.logFilePath;
+    if (runningOnFirefox) {
+        chromeDebugInfo.hidden = true;
+        firefoxDebugInfo.hidden = false;
+    }
 
     tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
 };
@@ -184,11 +206,6 @@ viewportTopOffsetInput.onblur = saveOptionsAsync;
 followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
 debugCheckbox.onchange = saveOptionsAsync;
-
-hotkeyChangeButton.onclick = function () {
-    browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
-};
-
 copyCompanionLogFilePathButton.onclick = async function () {
     const logFilePath = companionLogFileField.value;
 

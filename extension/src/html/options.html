@@ -345,7 +345,19 @@ limitations under the License.
 
             <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-flex-middle">
-                    <a id="hotkeyChangeButton" href="#">Change...</a>
+                    <div>
+                        <a id="hotkeyChangeButton" href="#">Change...</a>
+                        <div hidden id="firefoxHotKeyChangeInfo" class="uk-inline uk-margin-small-left">
+                            <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
+                            <div uk-drop>
+                                <div class="uk-card-small uk-card-body uk-card-default uk-text-left">
+                                    Firefox does not allow opening the Add-ons page via links. To change hotkeys, go
+                                    to the Add-ons page, click the cogwheel icon in the top right corner, and choose
+                                    'Manage Extension Shortcuts'.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="uk-width-expand"></div>
             </div>
@@ -366,15 +378,32 @@ limitations under the License.
                             <sup><span uk-icon="icon: question; ratio: 0.7"></span></sup>
                             <div uk-drop>
                                 <div class="uk-card-small uk-card-body uk-card-default">
-                                    <p>If enabled, the application collects logs. To view the browser extension logs, go
-                                        into the Extensions page, choose 'Details' for TabFloater, then click the
-                                        'html/background.html' link.</p>
-                                    <p>To view the companion logs, copy the below file path and open it in your favorite
-                                        text editor. Note: the file only exists if you have used the application with
-                                        debugging enabled.</p>
-                                    <p>It is recommended to only enable this option if you need to troubleshoot a
-                                        problem
-                                        with the application.</p>
+                                    <span id="chromeDebugInfo">
+                                        <p>If enabled, the application collects logs. To view the browser extension
+                                            logs, go
+                                            to the Extensions page, choose 'Details' for TabFloater, then click the
+                                            'html/background.html' link. This will open the Developer Tools window.
+                                            Switch to the 'Console' tab to see the extension logs.</p>
+
+                                    </span>
+                                    <span hidden id="firefoxDebugInfo">
+                                        <p>If enabled, the application collects logs. To view the browser extension
+                                            logs, go
+                                            to the Add-ons page, click the cogwheel icon in the top right corner, choose
+                                            'Debug Add-ons', then click 'Inspect' for TabFloater. This will open the
+                                            Developer
+                                            Tools window. Switch to the 'Console' tab to see the extension logs.</p>
+                                    </span>
+                                    <span>
+                                        <p>To view the companion logs, copy the below file path and open it in your
+                                            favorite
+                                            text editor. Note: the file only exists if you have used the application
+                                            with
+                                            debugging enabled.</p>
+                                        <p>It is recommended to only enable this option if you need to troubleshoot a
+                                            problem
+                                            with the application.</p>
+                                    </span>
                                 </div>
                             </div>
                         </div>

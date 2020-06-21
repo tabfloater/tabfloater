@@ -18,6 +18,7 @@ import * as companion from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 import * as notifier from "./notifier.js";
 import { getLoggerAsync } from "./logger.js";
+import { runningOnFirefoxAsync } from "./main.js";
 
 export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
@@ -62,6 +63,10 @@ export async function floatTabAsync(logger) {
                 logger.info(`Will float current tab. TabProps: ${JSON.stringify(tabProps)}`);
 
                 const succeedingActiveTab = await getSucceedingActiveTabAsync();
+
+                // We need to set the parent tab as active **before** the floating action happens,
+                // because this is the only way we can reliably inject the smart positioning
+                // content script into the parent tab.
                 try {
                     await browser.tabs.update(succeedingActiveTab.id, { active: true });
                 } catch (error) {
@@ -69,8 +74,7 @@ export async function floatTabAsync(logger) {
                 }
 
                 const coordinates = await positioner.calculateCoordinatesAsync(logger);
-
-                await browser.windows.create({
+                const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
                     "type": "popup",
                     "top": coordinates.top,
@@ -79,8 +83,29 @@ export async function floatTabAsync(logger) {
                     "height": coordinates.height,
                 });
 
+                let floatingTabTitle = currentTab.title;
                 const parentWindowTitle = succeedingActiveTab.title;
-                const result = await companion.sendMakeDialogRequestAsync(currentTab.title, parentWindowTitle, logger);
+
+                if (await runningOnFirefoxAsync()) {
+                    // On Firefox, "popup" or "panel" windows do not respect the
+                    // coordinates when created, so we need to set them explicitly.
+                    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1271047
+
+                    await browser.windows.update(newWindow.id, {
+                        "top": coordinates.top,
+                        "left": coordinates.left,
+                        "width": coordinates.width,
+                        "height": coordinates.height,
+                    });
+
+                    // Firefox prepends the URL of the page to the window title if the
+                    // window type is "popup", so we need to update it here. We can use
+                    // the 'title' property only on Firefox, because it's not defined on
+                    // Chrome for the 'Window' object.
+                    floatingTabTitle = newWindow.title;
+                }
+
+                const result = await companion.sendMakeDialogRequestAsync(floatingTabTitle, parentWindowTitle, logger);
                 await setFloatingTabAsync(tabProps);
 
                 if (result.success) {
@@ -160,7 +185,7 @@ async function floatingStartedAsync() {
  */
 async function getSucceedingActiveTabAsync() {
     const allTabsOnCurrentWindow = await browser.tabs.query({ lastFocusedWindow: true });
-    allTabsOnCurrentWindow.sort((tab1, tab2) => tab1.index < tab2.index);
+    allTabsOnCurrentWindow.sort((tab1, tab2) => tab1.index < tab2.index ? -1 : 1);
 
     const currentTab = allTabsOnCurrentWindow.find(tab => tab.active);
     const currentTabIsLast = currentTab.index === allTabsOnCurrentWindow.length - 1;

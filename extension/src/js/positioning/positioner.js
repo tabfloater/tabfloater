@@ -94,8 +94,8 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
     const parentWindowActiveTab = parentWindow.tabs.find(tab => tab.active);
 
     try {
-        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "libs/webextension-polyfill/browser-polyfill.min.js" });
-        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "js/positioning/areaCalculator.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "/libs/webextension-polyfill/browser-polyfill.min.js" });
+        await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "/js/positioning/areaCalculator.js" });
 
         const coordinates = await browser.tabs.sendMessage(parentWindowActiveTab.id, {
             action: "calculateMaxEmptyArea",
