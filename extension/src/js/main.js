@@ -55,7 +55,8 @@ async function startupAsync() {
 }
 
 async function showWelcomePageOnFirstInstallationAsync() {
-    await browser.tabs.create({ url: "html/welcome.html" });
+    const welcomePageUrl = await browser.runtime.getURL("html/welcome.html");
+    await browser.tabs.create({ url: welcomePageUrl });
 }
 
 async function floatTabIfPossibleAsync(logger) {
