@@ -54,9 +54,13 @@ async function startupAsync() {
     await floater.clearFloatingProgressAsync();
 }
 
-async function showWelcomePageOnFirstInstallationAsync() {
-    const welcomePageUrl = await browser.runtime.getURL("html/welcome.html");
-    await browser.tabs.create({ url: welcomePageUrl });
+async function showWelcomePageOnFirstInstallationAsync(details) {
+    switch (details.reason) {
+        case "install": {
+            const welcomePageUrl = await browser.runtime.getURL("html/welcome.html");
+            await browser.tabs.create({ url: welcomePageUrl });
+        } break;
+    }
 }
 
 async function floatTabIfPossibleAsync(logger) {
@@ -67,14 +71,14 @@ async function floatTabIfPossibleAsync(logger) {
     }
 }
 
-browser.runtime.onInstalled.addListener(async () => {
+browser.runtime.onInstalled.addListener(async details => {
     const isDevelopment = await env.isDevelopmentAsync();
 
     await setDefaultOptionsAsync(isDevelopment);
     await startupAsync();
 
     if (!isDevelopment) {
-        await showWelcomePageOnFirstInstallationAsync();
+        await showWelcomePageOnFirstInstallationAsync(details);
     }
 });
 
