@@ -15,6 +15,7 @@
  */
 
 import * as constants from "./constants.js";
+import * as env from "./environment.js";
 import * as floater from "./floater.js";
 import { getCompanionInfoAsync } from "./companion.js";
 import { getLoggerAsync } from "./logger.js";
@@ -33,15 +34,6 @@ const activeTabChangedListenerAsync = async activeInfo => {
 export async function loadOptionsAsync() {
     const optionsData = await browser.storage.sync.get(["options"]);
     return optionsData.options;
-}
-
-export async function runningOnFirefoxAsync() {
-    if (browser.runtime.getBrowserInfo) {
-        const browserInfo = await browser.runtime.getBrowserInfo();
-        return browserInfo.name.toLowerCase().includes("firefox");
-    }
-
-    return false;
 }
 
 async function setDefaultOptionsAsync() {
@@ -149,7 +141,7 @@ browser.runtime.onMessage.addListener(async request => {
         case "getCompanionInfo": return await getCompanionInfoAsync(logger);
         case "loadOptions": return await loadOptionsAsync();
         case "getHotkeys": return await browser.commands.getAll();
-        case "runningOnFirefox": return await runningOnFirefoxAsync();
+        case "runningOnFirefox": return await env.runningOnFirefoxAsync();
     }
 });
 

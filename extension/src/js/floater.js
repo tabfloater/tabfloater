@@ -18,7 +18,7 @@ import * as companion from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 import * as notifier from "./notifier.js";
 import { getLoggerAsync } from "./logger.js";
-import { runningOnFirefoxAsync } from "./main.js";
+import { runningOnFirefoxAsync } from "./environment.js";
 
 export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
