@@ -36,8 +36,13 @@ export async function loadOptionsAsync() {
     return optionsData.options;
 }
 
-async function setDefaultOptionsAsync() {
-    await browser.storage.sync.set({ options: constants.DefaultOptions });
+async function setDefaultOptionsAsync(isDevelopment) {
+    const defaultOptions = constants.DefaultOptions;
+    if (isDevelopment) {
+        defaultOptions.debug = true;
+    }
+
+    await browser.storage.sync.set({ options: defaultOptions });
 
     if (constants.DefaultOptions.positioningStrategy === "smart" && constants.DefaultOptions.smartPositioningFollowTabSwitches) {
         browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
@@ -49,6 +54,10 @@ async function startupAsync() {
     await floater.clearFloatingProgressAsync();
 }
 
+async function showWelcomePageOnFirstInstallationAsync() {
+    await browser.tabs.create({ url: "html/welcome.html" });
+}
+
 async function floatTabIfPossibleAsync(logger) {
     if (await floater.canFloatCurrentTabAsync()) {
         await floater.floatTabAsync(logger);
@@ -58,10 +67,14 @@ async function floatTabIfPossibleAsync(logger) {
 }
 
 browser.runtime.onInstalled.addListener(async () => {
-    await setDefaultOptionsAsync();
+    const isDevelopment = await env.isDevelopmentAsync();
+
+    await setDefaultOptionsAsync(isDevelopment);
     await startupAsync();
-    //TODO restore this
-    // await browser.tabs.create({ url: "html/welcome.html" });
+
+    if (!isDevelopment) {
+        await showWelcomePageOnFirstInstallationAsync();
+    }
 });
 
 browser.runtime.onStartup.addListener(async () => {

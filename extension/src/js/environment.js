@@ -22,3 +22,8 @@ export async function runningOnFirefoxAsync() {
 
     return false;
 }
+
+export async function isDevelopmentAsync() {
+    const extensionInfo = await browser.management.getSelf();
+    return extensionInfo.installType === "development";
+}
