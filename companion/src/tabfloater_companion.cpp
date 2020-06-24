@@ -167,7 +167,7 @@ void sendMessage(std::string message)
     std::cout << message;
 }
 
-void sendPingResponse(bool debugging)
+void sendPingResponse()
 {
     std::string responseJson = std::string("{\"status\":\"ok\",\"version\":\"") + VERSION + "\",\"os\":\"";
 
@@ -179,13 +179,8 @@ void sendPingResponse(bool debugging)
 #endif
     responseJson += "\"";
 
-    if (debugging)
-    {
-        std::string logFilePath = getCurrentWorkingDirectory() + PATH_SEPARATOR + LOG_FILE;
-        responseJson += ",\"logfile\":\"" + logFilePath + "\"";
-    }
-
-    responseJson += "}";
+    std::string logFilePath = getCurrentWorkingDirectory() + PATH_SEPARATOR + LOG_FILE;
+    responseJson += ",\"logfile\":\"" + logFilePath + "\"}";
 
     sendMessage(responseJson);
 }
@@ -239,7 +234,7 @@ int main(int argc, char *argv[])
         if (action.compare("ping") == 0)
         {
             LOG_F(INFO, "Ping received");
-            sendPingResponse(debugging);
+            sendPingResponse();
         }
         else if (action.compare("setAsModelessDialog") == 0)
         {
