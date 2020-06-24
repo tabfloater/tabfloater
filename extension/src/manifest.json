@@ -3,12 +3,10 @@
     "version": "0.6.0",
     "description": "Picture-in-Picture for ANY tab!",
     "permissions": [
-        "activeTab",
         "nativeMessaging",
         "storage",
         "tabs",
-        "https://*/*",
-        "http://*/*"
+        "<all_urls>"
     ],
     "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlazRJmLWlYBPmSrgf5gEmXPtTk6JDnTYtcgB685fp0rjBDZm8BJRtQcsk8wWL1w59ULFYsWGjPa0OSXJfx0xATWM9nX1SlRrXjkmEfQtFokFFq/blVVOU5gsXETBbJh2fGcmXhHxma0qa6/N3JKAMsymyDmfz8igIGWxBK3ps5J+y0Eeqxo2rV1ocnAcX23ieDNSZmUezv4bfpOrB9WJ8jTptkeWHdBj7myNAKpPUJV0Q6oechq96koUG3Dwh4Ru2rdSzWKsTkGh8hVvi38tRgg1E11AFhPammYigjOoWrGL4Ov4PGoRyugrVywAudFywKoHWkvyTiBDRqrW6GJUOwIDAQAB",
     "background": {
