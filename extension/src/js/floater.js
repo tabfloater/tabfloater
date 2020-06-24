@@ -115,9 +115,9 @@ export async function floatTabAsync(logger) {
                     notifier.setFloatingSuccessIndicator();
                 } else {
                     if (result.reason === "error") {
-                        notifier.setErrorIndicator("The companion returned an error!");
+                        notifier.setErrorIndicator("The companion returned an error! Enable debugging to find out what's wrong.");
                     } else if (result.reason === "unavailable") {
-                        notifier.setErrorIndicator("Unable to contact companion!");
+                        notifier.setErrorIndicator("Unable to contact companion! Go to the Options page for more info.");
                     }
                 }
             } else {

@@ -15,7 +15,7 @@
  */
 
 export function setFloatingSuccessIndicator() {
-    setIconProperties("Unfloat tab!", "F", "info");
+    setIconProperties("Unfloat tab! The floating tab will be restored to its original position.", "F", "info");
 }
 
 export function setErrorIndicator(message) {
@@ -23,11 +23,11 @@ export function setErrorIndicator(message) {
 }
 
 export function setUpdateAvailableIndicator() {
-    setIconProperties("A companion update is available!", "U", "warn");
+    setIconProperties("A companion update is available! Go to the Options page to download it.", "U", "warn");
 }
 
 export function clearIndicator() {
-    setIconProperties("Float tab!", "", "info");
+    setIconProperties("Float tab! The current tab will be extracted into a floating window.", "", "info");
 }
 
 export function setIconProperties(tooltip, badgeText, level) {
