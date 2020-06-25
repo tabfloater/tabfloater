@@ -126,7 +126,7 @@ function setCompanionFields(companionInfo) {
 }
 
 async function setHotKeysLabelsAsync(positioningStrategy) {
-    const hotkeys = await browser.runtime.sendMessage("getHotkeys");
+    const hotkeys = await browser.commands.getAll();
     const moveDownHotKey = hotkeys.filter(k => k.name === "moveDown")[0];
     const moveUpHotKey = hotkeys.filter(k => k.name === "moveUp")[0];
     const moveLeftHotKey = hotkeys.filter(k => k.name === "moveLeft")[0];
@@ -152,10 +152,45 @@ async function setHotKeysLabelsAsync(positioningStrategy) {
     }
 }
 
-function positioningStrategyChanged() {
-    setPositioningControlStates();
-    setHotKeysLabelsAsync(fixedPositionRadioButton.checked ? "fixed" : "smart");
-    saveOptionsAsync();
+async function positioningStrategyChangedAsync() {
+    const selectedPositioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
+    let preventSwitchToSmartPositioning = false;
+
+    if (selectedPositioningStrategy === "smart") {
+        const permissions = await browser.permissions.getAll();
+
+        if (!permissions.origins.includes("<all_urls>")) {
+            preventSwitchToSmartPositioning = true;
+
+            try {
+                await UIkit.modal.confirm("Smart positioning works by examining the website layout " +
+                    "and calculating the optimal position for the floating tab. In order to do this, " +
+                    "the extension requires additional permissions from the browser. It will not read " +
+                    "any data on the websites you visit and will not track your browsing history. " +
+                    "If you wish to learn more about this, click <a href=\"#\" target=\"_blank\">here</a> " +
+                    "for more information." +
+                    "<br/><br/>" +
+                    "If you wish to proceed, click OK and grant the permissions. You only need to do this once.");
+
+                const granted = await browser.permissions.request({ origins: ["<all_urls>"] });
+
+                if (granted) {
+                    preventSwitchToSmartPositioning = false;
+                }
+            } catch (ignore) {
+                // user clicked cancel
+            }
+        }
+    }
+
+    if (preventSwitchToSmartPositioning) {
+        fixedPositionRadioButton.checked = true;
+        smartPositionRadioButton.checked = false;
+    } else {
+        setPositioningControlStates();
+        setHotKeysLabelsAsync(selectedPositioningStrategy);
+        saveOptionsAsync();
+    }
 }
 
 window.onload = async function () {
@@ -198,8 +233,8 @@ window.onload = async function () {
     tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
 };
 
-fixedPositionRadioButton.onchange = positioningStrategyChanged;
-smartPositionRadioButton.onchange = positioningStrategyChanged;
+fixedPositionRadioButton.onchange = positioningStrategyChangedAsync;
+smartPositionRadioButton.onchange = positioningStrategyChangedAsync;
 fixPositionSelect.onchange = saveOptionsAsync;
 tabSizeSelect.onchange = saveOptionsAsync;
 viewportTopOffsetInput.onblur = saveOptionsAsync;
