@@ -3,12 +3,12 @@
     "version": "0.6.0",
     "description": "Picture-in-Picture for ANY tab!",
     "permissions": [
-        "activeTab",
         "nativeMessaging",
         "storage",
-        "tabs",
-        "https://*/*",
-        "http://*/*"
+        "tabs"
+    ],
+    "optional_permissions": [
+        "<all_urls>"
     ],
     "browser_specific_settings": {
         "gecko": {
