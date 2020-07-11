@@ -33,7 +33,7 @@ jobs:
     - name: Verify install
       run: |
         dir ./src/css/generated/uk-tabfloater.css
-        dir -d ./src/libs/uikit
-        dir -d ./src/libs/webextension-polyfill
+        dir ./src/libs/uikit
+        dir ./src/libs/webextension-polyfill
     - name: Lint
       run: npm run lint
