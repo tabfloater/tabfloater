@@ -19,8 +19,8 @@ jobs:
       run: npm install
     - name: Verify install
       run: |
-        test -e src/css/generated/uk-tabfloater.css
-        test -d src/libs/uifkit
-        test -d src/libs/webextension-polyfill
+        test -e ./src/css/generated/uk-tabfloater.css
+        test -d ./src/libs/uikit
+        test -d ./src/libs/webextension-polyfill
     - name: Lint
       run: npm run lint
