@@ -11,9 +11,15 @@ defaults:
     working-directory: companion
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: ./rebuild.sh
+      run: rebuild.sh
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: rebuild.bat
