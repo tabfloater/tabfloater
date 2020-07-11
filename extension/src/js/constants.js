@@ -17,7 +17,7 @@
 export const CompanionName = "io.github.tabfloater.companion";
 
 export const CompanionLatestVersions = {
-    Linux: "0.7dfdfgdf.0",
+    Linux: "0.7dfdfgdfsdf.0",
     Windows: "0.7.0"
 };
 
