@@ -34,6 +34,6 @@ jobs:
       run: |
         dir ./src/css/generated/uk-tabfloater.css
         dir ./src/libs/uikit/*.js
-        dir ./src/libs/webextension-polyfill/*./js
+        dir ./src/libs/webextension-polyfill/*.js
     - name: Lint
       run: npm run lint
