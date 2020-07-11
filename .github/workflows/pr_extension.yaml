@@ -1,0 +1,26 @@
+name: Install and lint extension
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'extension/**'
+
+defaults:
+  run:
+    working-directory: extension
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Npm install
+      run: npm install
+    - name: Verify install
+      run: |
+        test -e src/css/generated/uk-tabfloater.css
+        test -d src/libs/uifkit
+        test -d src/libs/webextension-polyfill
+    - name: Lint
+      run: npm run lint
