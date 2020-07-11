@@ -1,4 +1,4 @@
-name: Install and lint extension
+name: Lint extension
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ defaults:
     working-directory: extension
 
 jobs:
-  build-linux:
+  lint-linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,5 +22,18 @@ jobs:
         test -e ./src/css/generated/uk-tabfloater.css
         test -d ./src/libs/uikit
         test -d ./src/libs/webextension-polyfill
+    - name: Lint
+      run: npm run lint
+  lint-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Npm install
+      run: npm install
+    - name: Verify install
+      run: |
+        dir ./src/css/generated/uk-tabfloater.css
+        dir -d ./src/libs/uikit
+        dir -d ./src/libs/webextension-polyfill
     - name: Lint
       run: npm run lint
