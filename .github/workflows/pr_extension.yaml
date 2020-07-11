@@ -19,9 +19,9 @@ jobs:
       run: npm install
     - name: Verify install
       run: |
-        test -e ./src/css/generated/uk-tabfloater.css
-        test -d ./src/libs/uikit
-        test -d ./src/libs/webextension-polyfill
+        ls ./src/css/generated/uk-tabfloater.css
+        ls ./src/libs/uikit/*.js
+        ls ./src/libs/webextension-polyfill/*.js
     - name: Lint
       run: npm run lint
   lint-windows:
@@ -33,7 +33,7 @@ jobs:
     - name: Verify install
       run: |
         dir ./src/css/generated/uk-tabfloater.css
-        dir ./src/libs/uikit
-        dir ./src/libs/webextension-polyfill
+        dir ./src/libs/uikit/*.js
+        dir ./src/libs/webextension-polyfill/*./js
     - name: Lint
       run: npm run lint
