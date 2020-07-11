@@ -183,7 +183,7 @@ void sendPingResponse()
     responseJson += ",\"logfile\":\"" + logFilePath + "\"}";
 
     sendMessage(responseJson);
-}//f
+}//fghgf
 
 void sendStatus(std::string status)
 {
