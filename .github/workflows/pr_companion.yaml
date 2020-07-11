@@ -1,0 +1,19 @@
+name: Build companion
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'companion/**'
+
+defaults:
+  run:
+    working-directory: companion
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: ./rebuild.sh
