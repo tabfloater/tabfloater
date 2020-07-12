@@ -22,7 +22,7 @@ endif()
 
 project(tabfloater_companion VERSION 0.7.0 DESCRIPTION "Companion application for the TabFloater browser extension")
 
-# variables
+# Variables
 set(CMAKE_CXX_STANDARD 11)
 set(MAIN_TARGET "tabfloater_companion")
 set(SOURCE_LIST)
@@ -38,15 +38,15 @@ endif()
 
 list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/tabfloater_companion.cpp")
 
-# includes
+# Includes
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/loguru)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# targets
+# Targets
 add_executable(${MAIN_TARGET} ${SOURCE_LIST})
 target_compile_definitions(${MAIN_TARGET} PRIVATE VERSION=\"${PROJECT_VERSION}\")
 
-# libraries
+# Libraries
 if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS " -static")
 endif()
@@ -57,12 +57,12 @@ if(UNIX)
     target_link_libraries(${MAIN_TARGET} X11)
 endif()
 
-# copy manifests for development
+# Copy manifests for development
 set(COMPANION_EXECUTABLE "${PROJECT_BINARY_DIR}/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json")
 
-# custom target to install/clean manifests for development
+# Custom target to install/clean manifests for development
 if(WIN32)
     add_custom_target(install_manifests
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -95,15 +95,19 @@ if(UNIX)
     )
 endif()
 
-# packaging
+# Packaging
 set(CPACK_PACKAGE_NAME "TabFloater Companion")
 set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
 set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
 # TODO license here?
 
-# Windows installer
-
 if(WIN32)
+    # Windows installer
+
+    set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
+
     set(CPACK_GENERATOR WIX)
     set(WINDOWS_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows")
 
@@ -116,9 +120,6 @@ if(WIN32)
     set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/banner.bmp")
     set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/dialog.bmp")
 
-    set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
 
     install(TARGETS ${MAIN_TARGET})
     install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION ".")
@@ -126,7 +127,12 @@ if(WIN32)
 endif()
 
 if(UNIX)
-    # TODO packaging for linux
+    # Linux packaging
+
+    # TODO packaging for linux - what should be the executable path?
+    set(COMPANION_EXECUTABLE "${MAIN_TARGET}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
 endif()
 
 include(CPack)
