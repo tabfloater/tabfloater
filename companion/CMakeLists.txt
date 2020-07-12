@@ -57,7 +57,7 @@ if(UNIX)
     target_link_libraries(${MAIN_TARGET} X11)
 endif()
 
-# Copy manifests for development
+# Configure native messaging host manifests for development
 set(COMPANION_EXECUTABLE "${PROJECT_BINARY_DIR}/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json")
@@ -104,32 +104,44 @@ set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
 if(WIN32)
     # Windows installer
 
+    # Configure native messaging host manifests for Windows. The executable can be a relative path.
     set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
 
-    set(CPACK_GENERATOR WIX)
     set(WINDOWS_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows")
 
+    set(CPACK_GENERATOR WIX ZIP)
+
+    # Wix properties
     set(CPACK_WIX_PRODUCT_GUID "BCF1D253-9DDA-4531-9831-4069633335D6")
     set(CPACK_WIX_UPGRADE_GUID "E6DE015D-5A6B-481D-A32C-AFCF5ED4F8C0")
+    set(CPACK_WIX_PATCH_FILE "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/registry_patch.xml")
+    set(CPACK_RESOURCE_FILE_LICENSE "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/license.rtf")
+    set(CPACK_WIX_PRODUCT_ICON "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/tabfloater.ico")
+    set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/banner.bmp")
+    set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/dialog.bmp")
 
-    set(CPACK_WIX_PATCH_FILE "${WINDOWS_PACKAGE_RESOURCES_DIR}/registry_patch.xml")
-    set(CPACK_RESOURCE_FILE_LICENSE "${WINDOWS_PACKAGE_RESOURCES_DIR}/license.rtf")
-    set(CPACK_WIX_PRODUCT_ICON "${WINDOWS_PACKAGE_RESOURCES_DIR}/tabfloater.ico")
-    set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/banner.bmp")
-    set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/dialog.bmp")
+    # Set WixUI explicitly to InstallDir, so the component chooser screen is not shown
+    set(CPACK_WIX_UI_REF "WixUI_InstallDir")
 
+    # The Wix installer should only contain core. The ZIP generator should include all components.
+    set(CPACK_COMPONENTS_ALL core)
+    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
 
-    install(TARGETS ${MAIN_TARGET})
-    install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION ".")
-    install(FILES "${PROJECT_BINARY_DIR}/manifest_firefox.json" DESTINATION ".")
+    install(TARGETS ${MAIN_TARGET} COMPONENT core)
+    install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION "." COMPONENT core)
+    install(FILES "${PROJECT_BINARY_DIR}/manifest_firefox.json" DESTINATION "." COMPONENT core)
+
+    install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/register_manifests.bat" DESTINATION "." COMPONENT portable)
+    install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/unregister_manifests.bat" DESTINATION "." COMPONENT portable)
+    install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/README.txt" DESTINATION "." COMPONENT portable)
 endif()
 
 if(UNIX)
     # Linux packaging
 
-    # TODO packaging for linux - what should be the executable path?
+    # TODO Configure native messaging host manifests for Windows. The executable has to be an absolute path.
     set(COMPANION_EXECUTABLE "${MAIN_TARGET}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
