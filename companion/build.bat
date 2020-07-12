@@ -27,6 +27,7 @@ if "%mode%" == "--help" (
     echo   -c  --clean      Deletes the build and dist directories and removes the manifest registry entries.
     echo   -p  --package    Packages the companion into the dist directory. The directory is cleaned first.
     echo   -r  --rebuild    Performs a full rebuild. Same as '--clean', then performing a build.
+    echo.
     exit /b
 )
 

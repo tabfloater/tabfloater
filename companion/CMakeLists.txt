@@ -78,14 +78,35 @@ if(WIN32)
     )
 endif()
 
+if(UNIX)
+    add_custom_target(install_manifests
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMAND trap 'test -d $ENV{HOME}/.config/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+        COMMAND trap 'test -d $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+        COMMAND trap 'test -d $ENV{HOME}/.mozilla/native-messaging-hosts && cp ${PROJECT_BINARY_DIR}/manifest_firefox_dev.json $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
+        COMMENT "Install native messaging host manifests..."
+    )
+    add_custom_target(clean_manifests
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMAND trap 'test -f $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+        COMMAND trap 'test -f $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+        COMMAND trap 'test -f $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
+        COMMENT "Cleaning native messaging host manifests..."
+    )
+endif()
+
+# packaging
+set(CPACK_PACKAGE_NAME "TabFloater Companion")
+set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
+set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
+# TODO license here?
+
 # Windows installer
+
 if(WIN32)
     set(CPACK_GENERATOR WIX)
     set(WINDOWS_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows")
 
-    set(CPACK_PACKAGE_NAME "TabFloater Companion")
-    set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
-    set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
     set(CPACK_WIX_PRODUCT_GUID "BCF1D253-9DDA-4531-9831-4069633335D6")
     set(CPACK_WIX_UPGRADE_GUID "E6DE015D-5A6B-481D-A32C-AFCF5ED4F8C0")
 
@@ -102,6 +123,10 @@ if(WIN32)
     install(TARGETS ${MAIN_TARGET})
     install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION ".")
     install(FILES "${PROJECT_BINARY_DIR}/manifest_firefox.json" DESTINATION ".")
-
-    include(CPack)
 endif()
+
+if(UNIX)
+    # TODO packaging for linux
+endif()
+
+include(CPack)
