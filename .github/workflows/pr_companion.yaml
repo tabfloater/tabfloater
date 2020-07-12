@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: ./rebuild.sh
+      run: ./build.sh
   build-windows:
     runs-on: windows-latest
     steps:
