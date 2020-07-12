@@ -1,7 +1,7 @@
 {
   "name": "io.github.tabfloater.companion",
   "description": "Tabfloater Companion",
-  "path": "./bin/tabfloater_companion.exe",
+  "path": "${COMPANION_EXECUTABLE}",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://iojgbjjdoanmhcmmihbapiejfbbadhjd/"

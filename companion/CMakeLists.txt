@@ -20,13 +20,12 @@ if(WIN32)
     add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
-project(tabfloater_companion)
+project(tabfloater_companion VERSION 0.7.0 DESCRIPTION "Companion application for the TabFloater browser extension")
 
 # variables
 set(CMAKE_CXX_STANDARD 11)
-set(TARGET "tabfloater_companion")
+set(MAIN_TARGET "tabfloater_companion")
 set(SOURCE_LIST)
-set(VERSION "0.7.0")
 
 if(UNIX)
     list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/windowhandler_linux.cpp")
@@ -44,18 +43,39 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/loguru)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # targets
-add_executable(${TARGET} ${SOURCE_LIST})
-target_compile_definitions(${TARGET} PRIVATE VERSION=\"${VERSION}\")
+add_executable(${MAIN_TARGET} ${SOURCE_LIST})
+target_compile_definitions(${MAIN_TARGET} PRIVATE VERSION=\"${PROJECT_VERSION}\")
 
 # libraries
 if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS " -static")
 endif()
 
-target_link_libraries(${TARGET} loguru)
+target_link_libraries(${MAIN_TARGET} loguru)
 
 if(UNIX)
-    target_link_libraries(${TARGET} X11)
+    target_link_libraries(${MAIN_TARGET} X11)
+endif()
+
+# copy manifests for development
+set(COMPANION_EXECUTABLE "${PROJECT_BINARY_DIR}/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json")
+
+# custom target to install/clean manifests for development
+if(WIN32)
+    add_custom_target(install_manifests
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMAND REG ADD HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\io.github.tabfloater.companion /f /ve /d "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json"
+        COMMAND REG ADD HKCU\\Software\\Mozilla\\NativeMessagingHosts\\io.github.tabfloater.companion /f /ve /d "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json"
+        COMMENT "Install native messaging host manifests..."
+    )
+    add_custom_target(clean_manifests
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        COMMAND REG DELETE HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\io.github.tabfloater.companion /f
+        COMMAND REG DELETE HKCU\\Software\\Mozilla\\NativeMessagingHosts\\io.github.tabfloater.companion /f
+        COMMENT "Cleaning native messaging host manifests..."
+    )
 endif()
 
 # Windows installer
@@ -66,7 +86,6 @@ if(WIN32)
     set(CPACK_PACKAGE_NAME "TabFloater Companion")
     set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
     set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
-    set(CPACK_PACKAGE_VERSION ${VERSION})
     set(CPACK_WIX_PRODUCT_GUID "BCF1D253-9DDA-4531-9831-4069633335D6")
     set(CPACK_WIX_UPGRADE_GUID "E6DE015D-5A6B-481D-A32C-AFCF5ED4F8C0")
 
@@ -76,9 +95,13 @@ if(WIN32)
     set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/banner.bmp")
     set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/dialog.bmp")
 
-    install(TARGETS ${TARGET})
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" DESTINATION ".")
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" DESTINATION ".")
+    set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
+
+    install(TARGETS ${MAIN_TARGET})
+    install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION ".")
+    install(FILES "${PROJECT_BINARY_DIR}/manifest_firefox.json" DESTINATION ".")
 
     include(CPack)
 endif()
