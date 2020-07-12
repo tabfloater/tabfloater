@@ -1,0 +1,9 @@
+{
+  "name": "io.github.tabfloater.companion",
+  "description": "Tabfloater Companion",
+  "path": "${COMPANION_EXECUTABLE}",
+  "type": "stdio",
+  "allowed_extensions": [
+    "tabfloater@tabfloater.io"
+  ]
+}

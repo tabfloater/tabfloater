@@ -1,0 +1,8 @@
+<CPackWiXPatch>
+  <CPackWiXFragment Id="CM_CP_core.manifest_chrome.json">
+    <RegistryValue Root="HKLM" Key="Software\Google\Chrome\NativeMessagingHosts\io.github.tabfloater.companion" Type="string" Value="[INSTALL_ROOT]\manifest_chrome.json" />
+  </CPackWiXFragment>
+  <CPackWiXFragment Id="CM_CP_core.manifest_firefox.json">
+    <RegistryValue Root="HKLM" Key="Software\Mozilla\NativeMessagingHosts\io.github.tabfloater.companion" Type="string" Value="[INSTALL_ROOT]\manifest_firefox.json" />
+  </CPackWiXFragment>
+</CPackWiXPatch>

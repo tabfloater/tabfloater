@@ -12,6 +12,7 @@ key.pem
 # C++
 bin/
 build/
+dist/
 obj/
 
 # VS Code
