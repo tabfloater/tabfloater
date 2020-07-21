@@ -30,13 +30,13 @@
   },
   "homepage": "https://github.com/tabfloater/tabfloater#readme",
   "dependencies": {
-    "uikit": "^3.5.5",
+    "uikit": "^3.4.6",
     "webextension-polyfill": "^0.6.0"
   },
   "devDependencies": {
-    "eslint": "^7.5.0",
+    "eslint": "^6.8.0",
     "eslint-plugin-no-unsanitized": "^3.1.2",
     "run-script-os": "^1.1.1",
-    "sass": "^1.26.10"
+    "sass": "^1.26.5"
   }
 }
