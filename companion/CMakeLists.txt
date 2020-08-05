@@ -36,6 +36,7 @@ if(WIN32)
 
 endif()
 
+list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/logutil.cpp")
 list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/tabfloater_companion.cpp")
 
 # Includes
