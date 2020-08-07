@@ -47,7 +47,7 @@ std::string getVersion() {
 void initLogging(std::string logFilePath)
 {
     loguru::add_file(logFilePath.c_str(), loguru::Append, loguru::Verbosity_MAX);
-    std::string initMessage = std::string("TabFloater Companion started. Version: ") + getVersion() + ", OS: " + OS + ", ";
+    std::string initMessage = std::string("TabFloater Companion started. Version: ") + getVersion() + ", OS: " + OS;
 
     LOG_F(INFO, initMessage.c_str());
 }
