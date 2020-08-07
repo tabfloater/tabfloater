@@ -14,66 +14,66 @@
  * limitations under the License.
  */
 
+#include "logutil.h"
 #include "windowhandler.h"
 #include "../libs/loguru/src/loguru.hpp"
 #include <iostream>
 #include <string>
 #include <regex>
 
-#define LOG_FILE "tabfloater_companion.log"
-
 #ifndef VERSION
-#define VERSION "unknown"
+    #define VERSION "unknown"
+#endif
+
+#ifndef DEV_BUILD
+    #define DEV_BUILD false
 #endif
 
 #ifdef _WIN32
-#include <fcntl.h>
-#include <direct.h>
-#define GetCurrentDir _getcwd
-#define PATH_SEPARATOR "\\\\"
-#else
-#include <unistd.h>
-#define GetCurrentDir getcwd
-#define PATH_SEPARATOR "/"
-#endif
-
-void initLogging()
-{
-    loguru::add_file(LOG_FILE, loguru::Append, loguru::Verbosity_MAX);
-    std::string initMessage = std::string("TabFloater Companion started. Version: ") + VERSION + ", OS: ";
-
-#ifdef _WIN32
-    initMessage += "Windows";
+    #include <fcntl.h>
+    #define OS "Windows"
 #endif
 #ifdef linux
-    initMessage += "Linux";
+    #define OS "Linux"
 #endif
+
+
+std::string getVersion() {
+    return DEV_BUILD
+            ? VERSION + std::string("-dev")
+            : VERSION;
+}
+
+void initLogging(std::string logFilePath)
+{
+    loguru::add_file(logFilePath.c_str(), loguru::Append, loguru::Verbosity_MAX);
+    std::string initMessage = std::string("TabFloater Companion started. Version: ") + getVersion() + ", OS: " + OS;
 
     LOG_F(INFO, initMessage.c_str());
 }
 
-void logStartUpError(std::string errorMessage)
+void logStartUpError(std::string logFilePath, std::string errorMessage)
 {
-    initLogging();
+    initLogging(logFilePath);
     LOG_F(ERROR, errorMessage.c_str());
 }
 
 #ifdef _WIN32
-int setBinaryMode(FILE *file)
+int setBinaryMode(FILE *file, std::string logFilePath)
 {
     int result;
 
     result = _setmode(_fileno(file), _O_BINARY);
     if (result == -1)
     {
-        logStartUpError("Unable to set binary mode. Result: " + std::to_string(result));
+        logStartUpError(logFilePath, "Unable to set binary mode. Result: " + std::to_string(result));
         abort();
     }
 
     result = setvbuf(file, NULL, _IONBF, 0);
     if (result != 0)
     {
-        logStartUpError("Unable to set buffer. Result: " + std::to_string(result));
+        logStartUpError(logFilePath, "Unable to set buffer. Result: " + std::to_string(result));
         abort();
     }
 
@@ -133,26 +133,6 @@ std::string getJsonValueByKey(std::string jsonContents, std::string key)
     return std::string();
 }
 
-std::string getCurrentWorkingDirectory()
-{
-    char buffer[FILENAME_MAX];
-    GetCurrentDir(buffer, FILENAME_MAX);
-    std::string workingDir(buffer);
-
-#ifdef _WIN32
-    for (int i = 0; i < workingDir.size(); i++)
-    {
-        if (workingDir[i] == '\\')
-        {
-            workingDir.insert(i, "\\");
-            i++;
-        }
-    }
-#endif
-
-    return workingDir;
-}
-
 void sendMessage(std::string message)
 {
     unsigned int len = message.length();
@@ -167,21 +147,22 @@ void sendMessage(std::string message)
     std::cout << message;
 }
 
-void sendPingResponse()
+void sendPingResponse(std::string logFilePath)
 {
-    std::string responseJson = std::string("{\"status\":\"ok\",\"version\":\"") + VERSION + "\",\"os\":\"";
-
 #ifdef _WIN32
-    responseJson += "Windows";
+    for (int i = 0; i < logFilePath.size(); i++)
+    {
+        if (logFilePath[i] == '\\')
+        {
+            logFilePath.insert(i, "\\");
+            i++;
+        }
+    }
 #endif
-#ifdef linux
-    responseJson += "Linux";
-#endif
-    responseJson += "\"";
 
-    std::string logFilePath = getCurrentWorkingDirectory() + PATH_SEPARATOR + LOG_FILE;
-    responseJson += ",\"logfile\":\"" + logFilePath + "\"}";
-
+    std::string responseJson = std::string("{\"status\":\"ok\",\"version\":\"") +
+                                getVersion() + "\",\"os\":\"" + OS
+                               + "\",\"logfile\":\"" + logFilePath + "\"}";
     sendMessage(responseJson);
 }
 
@@ -194,10 +175,11 @@ void sendStatus(std::string status)
 int main(int argc, char *argv[])
 {
     loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
+    std::string logFilePath = constructLogFilePath(DEV_BUILD);
 
 #ifdef _WIN32
-    setBinaryMode(stdin);
-    setBinaryMode(stdout);
+    setBinaryMode(stdin, logFilePath);
+    setBinaryMode(stdout, logFilePath);
 #endif
 
     int returnValue = 0;
@@ -225,7 +207,7 @@ int main(int argc, char *argv[])
         if (debugging)
         {
             loguru::init(argc, argv);
-            initLogging();
+            initLogging(logFilePath);
         }
 
         LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
@@ -234,7 +216,7 @@ int main(int argc, char *argv[])
         if (action.compare("ping") == 0)
         {
             LOG_F(INFO, "Ping received");
-            sendPingResponse();
+            sendPingResponse(logFilePath);
         }
         else if (action.compare("setAsModelessDialog") == 0)
         {

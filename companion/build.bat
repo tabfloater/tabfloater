@@ -71,6 +71,6 @@ rmdir /S/Q dist
 goto:eof
 
 :full_build
-cmake -G "MinGW Makefiles" -S . -B build
+cmake -G "MinGW Makefiles" -S . -B build -DDEV_BUILD:STRING=true
 cmake --build build --target all install_manifests
 goto:eof

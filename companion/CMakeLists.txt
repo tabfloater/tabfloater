@@ -26,14 +26,18 @@ project(tabfloater_companion VERSION 0.7.0 DESCRIPTION "Companion application fo
 set(CMAKE_CXX_STANDARD 11)
 set(MAIN_TARGET "tabfloater_companion")
 set(SOURCE_LIST)
+set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
+
+message("DEV_BUILD: ${DEV_BUILD}")
 
 if(UNIX)
+    list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/logutil_linux.cpp")
     list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/windowhandler_linux.cpp")
 endif()
 
 if(WIN32)
+    list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/logutil_windows.cpp")
     list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/windowhandler_windows.cpp")
-
 endif()
 
 list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/tabfloater_companion.cpp")
@@ -44,7 +48,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Targets
 add_executable(${MAIN_TARGET} ${SOURCE_LIST})
-target_compile_definitions(${MAIN_TARGET} PRIVATE VERSION=\"${PROJECT_VERSION}\")
+target_compile_definitions(${MAIN_TARGET} PRIVATE VERSION=\"${PROJECT_VERSION}\" PRIVATE DEV_BUILD=${DEV_BUILD})
 
 # Libraries
 if(WIN32)
@@ -99,7 +103,6 @@ endif()
 set(CPACK_PACKAGE_NAME "TabFloater Companion")
 set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
 set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
-# TODO license here?
 
 if(WIN32)
     # Windows installer
