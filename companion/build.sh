@@ -7,7 +7,7 @@ function clean() {
 }
 
 function full_build() {
-    cmake -S . -B build
+    cmake -S . -B build -DDEV_BUILD:STRING=true
     cmake --build build --target all install_manifests
 }
 
