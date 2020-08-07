@@ -114,13 +114,17 @@ if(WIN32)
 
     set(WINDOWS_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows")
 
+    # Configure license text and README.txt to replace the version number
+    configure_file("${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/README.txt" "${PROJECT_BINARY_DIR}")
+    configure_file("${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/license.rtf" "${PROJECT_BINARY_DIR}")
+
     set(CPACK_GENERATOR WIX ZIP)
 
     # Wix properties
     set(CPACK_WIX_PRODUCT_GUID "BCF1D253-9DDA-4531-9831-4069633335D6")
     set(CPACK_WIX_UPGRADE_GUID "E6DE015D-5A6B-481D-A32C-AFCF5ED4F8C0")
     set(CPACK_WIX_PATCH_FILE "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/registry_patch.xml")
-    set(CPACK_RESOURCE_FILE_LICENSE "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/license.rtf")
+    set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_BINARY_DIR}/license.rtf")
     set(CPACK_WIX_PRODUCT_ICON "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/tabfloater.ico")
     set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/banner.bmp")
     set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/dialog.bmp")
@@ -138,7 +142,7 @@ if(WIN32)
 
     install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/register_manifests.bat" DESTINATION "." COMPONENT portable)
     install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/unregister_manifests.bat" DESTINATION "." COMPONENT portable)
-    install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/README.txt" DESTINATION "." COMPONENT portable)
+    install(FILES "${PROJECT_BINARY_DIR}/README.txt" DESTINATION "." COMPONENT portable)
 endif()
 
 if(UNIX)

@@ -1,4 +1,4 @@
-TabFloater Companion - PORTABLE version
+TabFloater Companion ${PROJECT_VERSION} - PORTABLE version
 © 2020 Balazs Gyurak
 
 "TabFloater Companion" is free software; you may install, use, redistribute and/or modify it, under the terms of the Apache 2.0 license. A copy of this license is appended to this file.
