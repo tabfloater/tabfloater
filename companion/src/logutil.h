@@ -15,13 +15,17 @@
  */
 
 #include <string>
+#define LOG_FILE "tabfloater_companion.log"
 
 /**
  * Returns a path to the desired log file location, including the file name.
- * If the user executing the application has write access to the current working
- * directory, that will be used. Otherwise, the directory will be "$HOME/.tabfloater"
- * on Linux and xxx on Windows.
+ * This location is either the current working directory, or another directory
+ * where the user has write access to. This will be "$HOME/.tabfloater_companion"
+ * on Linux and "%APPDATA%\TabFloater Companion" on Windows.
  *
  * The log file name is always "tabfloater_companion.log".
+ *
+ * @param useWorkingDirectory if true, the current working directory will be used,
+ * otherwise the above specified directory
  */
-std::string constructLogFilePath();
+std::string constructLogFilePath(bool useWorkingDirectory);

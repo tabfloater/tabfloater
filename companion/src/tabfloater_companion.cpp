@@ -25,7 +25,12 @@
     #define VERSION "unknown"
 #endif
 
+#ifndef DEV_BUILD
+    #define DEV_BUILD false
+#endif
+
 #ifdef _WIN32
+    #include <fcntl.h>
     #define OS "Windows"
 #endif
 #ifdef linux
@@ -33,10 +38,17 @@
 #endif
 
 
+std::string getVersion() {
+    return DEV_BUILD
+            ? VERSION + std::string("-dev")
+            : VERSION;
+}
+
 void initLogging(std::string logFilePath)
 {
     loguru::add_file(logFilePath.c_str(), loguru::Append, loguru::Verbosity_MAX);
-    std::string initMessage = std::string("TabFloater Companion started. Version: ") + VERSION + ", OS: " + OS;
+    std::string initMessage = std::string("TabFloater Companion started. Version: ") + getVersion() + ", OS: " + OS + ", ";
+
     LOG_F(INFO, initMessage.c_str());
 }
 
@@ -137,9 +149,20 @@ void sendMessage(std::string message)
 
 void sendPingResponse(std::string logFilePath)
 {
+#ifdef _WIN32
+    for (int i = 0; i < logFilePath.size(); i++)
+    {
+        if (logFilePath[i] == '\\')
+        {
+            logFilePath.insert(i, "\\");
+            i++;
+        }
+    }
+#endif
+
     std::string responseJson = std::string("{\"status\":\"ok\",\"version\":\"") +
-                                VERSION + "\",\"os\":\"" + OS
-                                + "\",\"logfile\":\"" + logFilePath + "\"}";
+                                getVersion() + "\",\"os\":\"" + OS
+                               + "\",\"logfile\":\"" + logFilePath + "\"}";
     sendMessage(responseJson);
 }
 
@@ -152,7 +175,7 @@ void sendStatus(std::string status)
 int main(int argc, char *argv[])
 {
     loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
-    std::string logFilePath = constructLogFilePath();
+    std::string logFilePath = constructLogFilePath(DEV_BUILD);
 
 #ifdef _WIN32
     setBinaryMode(stdin, logFilePath);

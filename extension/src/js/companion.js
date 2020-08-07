@@ -86,7 +86,8 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle,
 }
 
 function isOutdatedVersion(companionInfo) {
-    return companionInfo.version !== getLatestCompanionVersion(companionInfo);
+    const companionVersion = companionInfo.version.replace("-dev", "");
+    return companionVersion !== getLatestCompanionVersion(companionInfo);
 }
 
 function latestVersionHasBreakingChanges(companionInfo) {

@@ -16,17 +16,16 @@
 
 #include "logutil.h"
 
-#define LOG_FILE "tabfloater_companion.log"
-
 #ifdef _WIN32
-    #include <fcntl.h>
-    #include <direct.h>
+    #include <io.h>
+    #include <fileapi.h>
     #define GetCurrentDir _getcwd
     #define PATH_SEPARATOR "\\\\"
+    #define TABFLOATER_LOG_DIR "TabFloater Companion"
 
-    inline int access(const char *pathname, int mode) {
-        return _access(pathname, mode);
-    }
+    // inline int access(const char *pathname, int mode) {
+    //     return _access_s(pathname, mode);
+    // }
 #endif
 
 #ifdef linux
@@ -35,6 +34,7 @@
     #include <pwd.h>
     #define GetCurrentDir getcwd
     #define PATH_SEPARATOR "/"
+    #define TABFLOATER_LOG_DIR ".tabfloater_companion"
 #endif
 
 
@@ -58,6 +58,7 @@ std::string getCurrentWorkingDirectory()
     return workingDir;
 }
 
+#ifdef linux
 std::string getHomeDirectory() {
     const char *homeDir;
 
@@ -67,18 +68,45 @@ std::string getHomeDirectory() {
 
     return std::string(homeDir);
 }
+#endif
+
+#ifdef _WIN32
+std::string getAppDataDirectory() {
+    return "C:\\work";
+}
+#endif
+
+std::string getLogBaseDirectory() {
+#ifdef _WIN32
+    return getAppDataDirectory();
+#endif
+#ifdef linux
+    return getHomeDirectory();
+#endif
+}
 
 std::string constructLogFilePath() {
     std::string currentDir = getCurrentWorkingDirectory();
 
-    std::string logFileDir;
-    if (access(currentDir.c_str(), W_OK) == 0) {
-        logFileDir = currentDir;
-    } else {
-        logFileDir = getHomeDirectory() + PATH_SEPARATOR + ".tabfloater";
-    }
+    std::string logFileDir = currentDir;
+    // if (access(currentDir.c_str(), W_OK) == 0) {
+    //     logFileDir = currentDir;
+    // } else {
+    //     logFileDir = getLogBaseDirectory() + PATH_SEPARATOR + TABFLOATER_LOG_DIR;
+    // }
 
     //TODO windows
+
+    std::string logfile;
+    HANDLE testFileHandle = CreateFileA("C:\\work\\1", GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+
+
+    // if (access("c:\\Program Files (x86)\\Microsoft SDKs\\", 6) == 0) {
+    //     logfile = "got";
+    // } else {
+    //     logfile = "nojoy";
+    // }
+
 
     return logFileDir + PATH_SEPARATOR + LOG_FILE;
 }
