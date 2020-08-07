@@ -17,7 +17,6 @@
 #include "logutil.h"
 
 #include <pwd.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #define PATH_SEPARATOR "/"
