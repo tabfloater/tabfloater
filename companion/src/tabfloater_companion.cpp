@@ -96,11 +96,11 @@ unsigned int readFirstFourBytesFromStdIn()
 
 std::string readStringFromStdIn(unsigned int length)
 {
-    char *buffer = new char[length];
-
-    std::cin.read(buffer, length);
-    std::string json(buffer);
-    delete[] buffer;
+    std::string json = "";
+    for (int i = 0; i < length; i++)
+    {
+        json += getchar();
+    }
 
     return json;
 }
