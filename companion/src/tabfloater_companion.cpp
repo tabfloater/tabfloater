@@ -20,7 +20,6 @@
 #include <iostream>
 #include <string>
 #include <regex>
-#include <codecvt>
 
 #ifndef VERSION
     #define VERSION "unknown"
@@ -97,34 +96,13 @@ unsigned int readFirstFourBytesFromStdIn()
 
 std::string readStringFromStdIn(unsigned int length)
 {
-    // std::wcin.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
-    // std::wstringstream wss;
-
-
-    // std::wifstream wif(filename);
-    // wif.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
-    // std::wstringstream wss;
-    // wss << wif.rdbuf();
-    // return wss.str();
-
-    std::string msg = "";
+    std::string json = "";
     for (int i = 0; i < length; i++)
     {
-        msg += getchar();
+        json += getchar();
     }
 
-    return msg;
-
-    // wchar_t *buffer = new wchar_t[length];
-
-    // std::wcin.imbue(std::locale(std::locale(""), new std::codecvt_utf8<wchar_t>));
-    // std::wcin.read(buffer, length);
-    // std::wstring json(buffer);
-    // delete[] buffer;
-
-    // std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
-    // return convert.to_bytes(json);
-    // return json;
+    return json;
 }
 
 std::string unescapeQuotes(std::string str)
@@ -234,7 +212,6 @@ int main(int argc, char *argv[])
 
         LOG_F(INFO, "Input JSON: \"%s\"", json.c_str());
         LOG_F(INFO, "Action: \"%s\"", action.c_str());
-        LOG_F(INFO, "message length: \"%d\"", messageLength);
 
         if (action.compare("ping") == 0)
         {
