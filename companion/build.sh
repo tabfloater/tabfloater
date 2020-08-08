@@ -3,7 +3,6 @@
 function clean() {
     cmake --build build --target clean_manifests
     rm -rf build
-    rm -rf dist
 }
 
 function full_build() {
@@ -22,7 +21,7 @@ if [[ "$_MODE" == "-h" || "$_MODE" == "--help" ]]; then
     echo
     echo "Usage: $0 [-c | --clean] [-p | --package] [-r | --rebuild]"
     echo
-    echo "  -c  --clean      Deletes the build and dist directories and removes the manifests."
+    echo "  -c  --clean      Deletes the build directory and removes the manifests. The dist directory is kept."
     echo "  -p  --package    Packages the companion into the dist directory. The directory is cleaned first."
     echo "  -r  --rebuild    Performs a full rebuild. Same as '--clean', then performing a build."
     echo

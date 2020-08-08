@@ -24,7 +24,7 @@ if "%mode%" == "--help" (
     echo.
     echo Usage: %0 [-c ^| --clean] [-p ^| --package] [-r ^| --rebuild]
     echo.
-    echo   -c  --clean      Deletes the build and dist directories and removes the manifest registry entries.
+    echo   -c  --clean      Deletes the build directory and removes the manifest registry entries. The dist directory is kept.
     echo   -p  --package    Packages the companion into the dist directory. The directory is cleaned first.
     echo   -r  --rebuild    Performs a full rebuild. Same as '--clean', then performing a build.
     echo.
@@ -67,7 +67,6 @@ exit /b
 :clean
 cmake --build build --target clean_manifests
 rmdir /S/Q build
-rmdir /S/Q dist
 goto:eof
 
 :full_build
