@@ -40,7 +40,7 @@ if [[ "$_MODE" == "-p" || "$_MODE" == "--package" ]]; then
         rm -rf dist
     fi
     cmake -S . -B dist
-    cmake --build dist --target package
+    cmake --build dist --target package package_source # TODO do we need binary packaging?
     exit
 fi
 

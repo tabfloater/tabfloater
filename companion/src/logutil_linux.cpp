@@ -38,7 +38,7 @@ std::string getTabFloaterDirectoryInHome() {
         homeDir = getpwuid(getuid())->pw_dir;
     }
 
-    return std::string(homeDir) + PATH_SEPARATOR + ".tabfloater_companion";
+    return std::string(homeDir) + PATH_SEPARATOR + ".tabfloater-companion";
 }
 
 std::string constructLogFilePath(bool useWorkingDirectory) {

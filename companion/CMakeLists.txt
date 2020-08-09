@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.13.4)
+cmake_minimum_required(VERSION 3.10.2)
 
 if(WIN32)
     set(CMAKE_C_COMPILER gcc)
@@ -20,11 +20,11 @@ if(WIN32)
     add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
-project(tabfloater_companion VERSION 0.7.0 DESCRIPTION "Companion application for the TabFloater browser extension")
+project(tabfloater-companion VERSION 0.7.0 DESCRIPTION "Companion application for the TabFloater browser extension")
 
 # Variables
 set(CMAKE_CXX_STANDARD 11)
-set(MAIN_TARGET "tabfloater_companion")
+set(MAIN_TARGET "tabfloater-companion")
 set(SOURCE_LIST)
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
 
@@ -100,12 +100,13 @@ if(UNIX)
 endif()
 
 # Packaging
-set(CPACK_PACKAGE_NAME "TabFloater Companion")
-set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
 set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
 
 if(WIN32)
     # Windows installer
+
+    set(CPACK_PACKAGE_NAME "TabFloater Companion")
+    set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
 
     # Configure native messaging host manifests for Windows. The executable can be a relative path.
     set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
@@ -152,6 +153,14 @@ if(UNIX)
     set(COMPANION_EXECUTABLE "${MAIN_TARGET}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
+
+    set(CPACK_SOURCE_GENERATOR "TGZ")
+    set(CPACK_SOURCE_IGNORE_FILES
+        build/
+        dist/
+        packaging/
+        build.*
+    )
 endif()
 
 include(CPack)

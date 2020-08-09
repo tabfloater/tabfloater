@@ -15,7 +15,7 @@
  */
 
 #include <string>
-#define LOG_FILE "tabfloater_companion.log"
+#define LOG_FILE "tabfloater-companion.log"
 
 /**
  * Returns a path to the desired log file location, including the file name.
