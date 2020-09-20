@@ -197,6 +197,7 @@ window.onload = async function () {
     const options = await browser.runtime.sendMessage("loadOptions");
     const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
     const runningOnFirefox = await browser.runtime.sendMessage("runningOnFirefox");
+    const isDevelopmentEnv = await browser.runtime.sendMessage("isDevelopmentEnv");
 
     setCompanionFields(companionInfo);
 
@@ -230,7 +231,11 @@ window.onload = async function () {
         firefoxDebugInfo.hidden = false;
     }
 
-    tabFloaterVersionField.textContent = `TabFloater ${await browser.runtime.getManifest().version}`;
+    let version = `TabFloater ${await browser.runtime.getManifest().version}`;
+    if (isDevelopmentEnv) {
+        version += " - dev";
+    }
+    tabFloaterVersionField.textContent = version;
 };
 
 fixedPositionRadioButton.onchange = positioningStrategyChangedAsync;
