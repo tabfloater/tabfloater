@@ -21,13 +21,19 @@ export function setLoggerImpl(logger) {
 }
 
 export function info(message) {
-    loggerImpl.info(message);
+    if (loggerImpl) {
+        loggerImpl.info(message);
+    }
 }
 
 export function warn(message) {
-    loggerImpl.warn(message);
+    if (loggerImpl) {
+        loggerImpl.warn(message);
+    }
 }
 
 export function error(message) {
-    loggerImpl.error(message);
+    if (loggerImpl) {
+        loggerImpl.error(message);
+    }
 }
