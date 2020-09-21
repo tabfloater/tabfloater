@@ -17,8 +17,9 @@
 import { CompanionName } from "./constants.js";
 import { CompanionLatestVersions } from "./constants.js";
 import { loadOptionsAsync } from "./main.js";
+import * as logger from "./logging/logger.js";
 
-export async function getCompanionInfoAsync(logger) {
+export async function getCompanionInfoAsync() {
     try {
         const debug = await isDebuggingEnabledAsync();
         const companionInfo = await browser.runtime.sendNativeMessage(CompanionName, {
@@ -54,7 +55,7 @@ export async function getCompanionInfoAsync(logger) {
     }
 }
 
-export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle, logger) {
+export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle) {
     logger.info(`MakeDialog request received. Window title: '${windowTitle}', parent window title: '${parentWindowTitle}'`);
 
     try {

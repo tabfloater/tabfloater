@@ -17,6 +17,7 @@
 import { FloatingTabPadding, MinimumFloatingTabSideLength } from "../constants.js";
 import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
+import * as logger from "../logging/logger.js";
 
 /**
  * Returns the textual representation of the position that a new floating tab should have.
@@ -44,7 +45,7 @@ export async function getStartingPositionAsync() {
  * current window, so the caller must set the active tab to the desired parent window tab
  * before calling this method.
  */
-export async function calculateCoordinatesAsync(logger) {
+export async function calculateCoordinatesAsync() {
     const options = await loadOptionsAsync();
     const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
     let parentWindow;
@@ -61,9 +62,9 @@ export async function calculateCoordinatesAsync(logger) {
     let coordinates;
 
     if (options.positioningStrategy === "fixed") {
-        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options, logger);
+        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options);
     } else if (options.positioningStrategy === "smart") {
-        coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options, logger);
+        coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options);
     }
 
     const normalizedCoordinates = normalizeDimensions(coordinates);
@@ -73,8 +74,8 @@ export async function calculateCoordinatesAsync(logger) {
     return normalizedCoordinates;
 }
 
-function getFixedPositionCoordinates(parentWindow, position, options, logger) {
-    const dimensions = getFixedFloatingTabDimensions(parentWindow, options, logger);
+function getFixedPositionCoordinates(parentWindow, position, options) {
+    const dimensions = getFixedFloatingTabDimensions(parentWindow, options);
 
     logger.info(`Position: ${position}, parent window top: ${parentWindow.top}, left: ${parentWindow.left}, ` +
         `width: ${parentWindow.width}, height: ${parentWindow.height}`);
@@ -90,7 +91,7 @@ function getFixedPositionCoordinates(parentWindow, position, options, logger) {
     return dimensions;
 }
 
-async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
+async function getSmartPositionCoordinatesAsync(parentWindow, options) {
     const parentWindowActiveTab = parentWindow.tabs.find(tab => tab.active);
 
     try {
@@ -109,7 +110,7 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
         if (options.smartPositioningRestrictMaxFloatingTabSize) {
             logger.info(`Restricting max size of smart positioned floating window. Original coordinates: ${JSON.stringify(coordinates)}`);
 
-            const maxDimensions = getFixedFloatingTabDimensions(parentWindow, options, logger);
+            const maxDimensions = getFixedFloatingTabDimensions(parentWindow, options);
             coordinates.width = Math.min(coordinates.width, maxDimensions.width);
             coordinates.height = Math.min(coordinates.height, maxDimensions.height);
         }
@@ -123,11 +124,11 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options, logger) {
             `Error: '${JSON.stringify(error)}'`);
 
         const options = await loadOptionsAsync();
-        return getFixedPositionCoordinates(parentWindow, options.fixedPosition, options, logger);
+        return getFixedPositionCoordinates(parentWindow, options.fixedPosition, options);
     }
 }
 
-function getFixedFloatingTabDimensions(parentWindow, options, logger) {
+function getFixedFloatingTabDimensions(parentWindow, options) {
     let divisor;
 
     switch (options.fixedTabSize) {

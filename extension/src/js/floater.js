@@ -17,7 +17,7 @@
 import * as companion from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 import * as notifier from "./notifier.js";
-import { getLoggerAsync } from "./logger.js";
+import * as logger from "./logging/logger.js";
 import { runningOnFirefoxAsync } from "./environment.js";
 
 export async function tryGetFloatingTabAsync() {
@@ -45,7 +45,7 @@ export async function tryGetFloatingTabAsync() {
     return result;
 }
 
-export async function floatTabAsync(logger) {
+export async function floatTabAsync() {
     const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (!floatingTab) {
@@ -76,7 +76,7 @@ export async function floatTabAsync(logger) {
                     logger.error(`Unable to update active tab before floating action. Error: '${JSON.stringify(error)}'`);
                 }
 
-                const coordinates = await positioner.calculateCoordinatesAsync(logger);
+                const coordinates = await positioner.calculateCoordinatesAsync();
                 const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
                     "type": "popup",
@@ -108,7 +108,7 @@ export async function floatTabAsync(logger) {
                     floatingTabTitle = newWindow.title;
                 }
 
-                const result = await companion.sendMakeDialogRequestAsync(floatingTabTitle, parentWindowTitle, logger);
+                const result = await companion.sendMakeDialogRequestAsync(floatingTabTitle, parentWindowTitle);
                 await setFloatingTabAsync(tabProps);
 
                 if (result.success) {
@@ -138,11 +138,11 @@ export async function unfloatTabAsync() {
     }
 }
 
-export async function repositionFloatingTabIfExistsAsync(logger) {
+export async function repositionFloatingTabIfExistsAsync() {
     const { floatingTab } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
-        const coordinates = await positioner.calculateCoordinatesAsync(logger);
+        const coordinates = await positioner.calculateCoordinatesAsync();
         await browser.windows.update(floatingTab.windowId, coordinates);
     }
 }
@@ -162,10 +162,9 @@ export async function setFloatingTabAsync(tabProps) {
 }
 
 export async function clearFloatingTabAsync() {
-    const logger = await getLoggerAsync();
     await browser.storage.local.remove(["floatingTabProperties"]);
 
-    const companionInfo = await companion.getCompanionInfoAsync(logger);
+    const companionInfo = await companion.getCompanionInfoAsync();
     if (companionInfo.isOutdated) {
         notifier.setUpdateAvailableIndicator();
     } else {
