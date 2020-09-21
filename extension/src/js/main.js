@@ -18,16 +18,17 @@ import * as constants from "./constants.js";
 import * as env from "./environment.js";
 import * as floater from "./floater.js";
 import { getCompanionInfoAsync } from "./companion.js";
-import { getLoggerAsync } from "./logger.js";
+import * as logger from "./logging/logger.js";
+import { ConsoleLogger } from "./logging/consoleLogger.js";
+import { NullLogger } from "./logging/nullLogger.js";
 
 const activeTabChangedListenerAsync = async activeInfo => {
-    const logger = await getLoggerAsync();
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
 
     logger.info(`Active tab changed. floatingTab: ${floatingTab}, tabProps: '${JSON.stringify(tabProps)}', activeWindowId: ${activeInfo.windowId}`);
 
     if (floatingTab && tabProps.position === "smart" && tabProps.parentWindowId === activeInfo.windowId) {
-        await floater.repositionFloatingTabIfExistsAsync(logger);
+        await floater.repositionFloatingTabIfExistsAsync();
     }
 };
 
@@ -49,7 +50,14 @@ async function setDefaultOptionsAsync(isDevelopment) {
     }
 }
 
+function initLogger(debug) {
+    logger.setLoggerImpl(debug ? ConsoleLogger : NullLogger);
+}
+
 async function startupAsync() {
+    const options = await loadOptionsAsync();
+    initLogger(options.debug);
+
     await floater.clearFloatingTabAsync();
     await floater.clearFloatingProgressAsync();
 }
@@ -63,9 +71,9 @@ async function showWelcomePageOnFirstInstallationAsync(details) {
     }
 }
 
-async function floatTabIfPossibleAsync(logger) {
+async function floatTabIfPossibleAsync() {
     if (await floater.canFloatCurrentTabAsync()) {
-        await floater.floatTabAsync(logger);
+        await floater.floatTabAsync();
     } else {
         logger.info("Unable to float current tab: either parent window only has one tab, or another floating is already in progress");
     }
@@ -104,18 +112,16 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
 });
 
 browser.browserAction.onClicked.addListener(async () => {
-    const logger = await getLoggerAsync();
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab) {
         await floater.unfloatTabAsync();
     } else {
-        await floatTabIfPossibleAsync(logger);
+        await floatTabIfPossibleAsync();
     }
 });
 
 browser.commands.onCommand.addListener(async command => {
-    const logger = await getLoggerAsync();
     const { floatingTab, tabProps } = await floater.tryGetFloatingTabAsync();
     const options = await loadOptionsAsync();
 
@@ -141,22 +147,20 @@ browser.commands.onCommand.addListener(async command => {
                 if (newPosition) {
                     tabProps.position = newPosition;
                     await floater.setFloatingTabAsync(tabProps);
-                    await floater.repositionFloatingTabIfExistsAsync(logger);
+                    await floater.repositionFloatingTabIfExistsAsync();
                 }
             }
         }
     } else if (command === "moveDown") {
-        await floatTabIfPossibleAsync(logger);
+        await floatTabIfPossibleAsync();
     }
 });
 
 browser.runtime.onMessage.addListener(async request => {
-    const logger = await getLoggerAsync();
-
     logger.info(`Request received: ${request}`);
 
     switch (request) {
-        case "getCompanionInfo": return await getCompanionInfoAsync(logger);
+        case "getCompanionInfo": return await getCompanionInfoAsync();
         case "loadOptions": return await loadOptionsAsync();
         case "runningOnFirefox": return await env.runningOnFirefoxAsync();
         case "isDevelopmentEnv": return await env.isDevelopmentAsync();
@@ -172,5 +176,7 @@ browser.storage.onChanged.addListener(async (changes, areaName) => {
         } else {
             browser.tabs.onActivated.removeListener(activeTabChangedListenerAsync);
         }
+
+        initLogger(newOptions.debug);
     }
 });
