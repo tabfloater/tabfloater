@@ -18,4 +18,4 @@ export const NullLogger = {
     info: () => { },
     warn: () => { },
     error: () => { }
-}
+};
