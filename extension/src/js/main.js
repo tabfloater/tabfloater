@@ -18,6 +18,9 @@ import * as constants from "./constants.js";
 import * as env from "./environment.js";
 import * as floater from "./floater.js";
 import { getCompanionInfoAsync } from "./companion.js";
+import * as analytics from "./analytics/analytics.js";
+import { GoogleAnalytics } from "./analytics/googleAnalytics.js";
+import { NullAnalytics } from "./analytics/nullAnalytics.js";
 import * as logger from "./logging/logger.js";
 import { ConsoleLogger } from "./logging/consoleLogger.js";
 import { NullLogger } from "./logging/nullLogger.js";
@@ -38,25 +41,29 @@ export async function loadOptionsAsync() {
 }
 
 async function setDefaultOptionsAsync(isDevelopment) {
-    const defaultOptions = constants.DefaultOptions;
-    if (isDevelopment) {
-        defaultOptions.debug = true;
-    }
+    const defaultOptions = isDevelopment
+        ? constants.DefaultOptionsDev
+        : constants.DefaultOptions;
 
     await browser.storage.sync.set({ options: defaultOptions });
-
-    if (constants.DefaultOptions.positioningStrategy === "smart" && constants.DefaultOptions.smartPositioningFollowTabSwitches) {
-        browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
-    }
 }
 
 function initLogger(debug) {
     logger.setLoggerImpl(debug ? ConsoleLogger : NullLogger);
 }
 
+function initAnalytics(collectUsageStats) {
+    analytics.setAnalyticsImpl(collectUsageStats ? GoogleAnalytics : NullAnalytics);
+}
+
 async function startupAsync() {
     const options = await loadOptionsAsync();
     initLogger(options.debug);
+    initAnalytics(options.collectUsageStats);
+
+    if (options.positioningStrategy === "smart" && options.smartPositioningFollowTabSwitches) {
+        browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
+    }
 
     await floater.clearFloatingTabAsync();
     await floater.clearFloatingProgressAsync();
@@ -88,6 +95,10 @@ browser.runtime.onInstalled.addListener(async details => {
     if (!isDevelopment) {
         await showWelcomePageOnFirstInstallationAsync(details);
     }
+
+    const os = await env.getOperatingSystemAsync();
+    const browser = (await env.runningOnFirefoxAsync()) ? "firefox" : "chrome";
+    await analytics.reportInstalledEventAsync(os, browser);
 });
 
 browser.runtime.onStartup.addListener(async () => {
@@ -148,6 +159,7 @@ browser.commands.onCommand.addListener(async command => {
                     tabProps.position = newPosition;
                     await floater.setFloatingTabAsync(tabProps);
                     await floater.repositionFloatingTabIfExistsAsync();
+                    await analytics.reportTabMoveEventAsync();
                 }
             }
         }
@@ -157,13 +169,14 @@ browser.commands.onCommand.addListener(async command => {
 });
 
 browser.runtime.onMessage.addListener(async request => {
-    logger.info(`Request received: ${request}`);
+    logger.info(`Request received: ${request.action}`);
 
-    switch (request) {
+    switch (request.action) {
         case "getCompanionInfo": return await getCompanionInfoAsync();
         case "loadOptions": return await loadOptionsAsync();
         case "runningOnFirefox": return await env.runningOnFirefoxAsync();
         case "isDevelopmentEnv": return await env.isDevelopmentAsync();
+        case "reportOptionsEvent": await analytics.reportOptionsEventAsync(request.data);
     }
 });
 
@@ -177,6 +190,12 @@ browser.storage.onChanged.addListener(async (changes, areaName) => {
             browser.tabs.onActivated.removeListener(activeTabChangedListenerAsync);
         }
 
+        if (!parseInt(newOptions.viewportTopOffset)) {
+            newOptions.viewportTopOffset = changes.options.oldValue.viewportTopOffset;
+            await browser.storage.sync.set({ options: newOptions });
+        }
+
         initLogger(newOptions.debug);
+        initAnalytics(newOptions.collectUsageStats);
     }
 });

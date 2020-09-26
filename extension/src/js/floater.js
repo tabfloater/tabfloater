@@ -18,6 +18,7 @@ import * as companion from "./companion.js";
 import * as positioner from "./positioning/positioner.js";
 import * as notifier from "./notifier.js";
 import * as logger from "./logging/logger.js";
+import * as analytics from "./analytics/analytics.js";
 import { runningOnFirefoxAsync } from "./environment.js";
 
 export async function tryGetFloatingTabAsync() {
@@ -113,12 +114,15 @@ export async function floatTabAsync() {
 
                 if (result.success) {
                     notifier.setFloatingSuccessIndicator();
+                    await analytics.reportFloatEventAsync();
                 } else {
                     if (result.reason === "error") {
                         notifier.setErrorIndicator("The companion returned an error! Enable debugging to find out what's wrong.");
                     } else if (result.reason === "unavailable") {
                         notifier.setErrorIndicator("Unable to contact companion! Go to the Options page for more info.");
                     }
+
+                    await analytics.reportFloatErrorEventAsync(result.reason);
                 }
             } else {
                 logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
@@ -135,6 +139,7 @@ export async function unfloatTabAsync() {
     if (floatingTab) {
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
         await clearFloatingTabAsync();
+        await analytics.reportUnfloatEventAsync();
     }
 }
 
