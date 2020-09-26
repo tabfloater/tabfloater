@@ -22,6 +22,10 @@ const companionRequiredIndicator = window.companionRequiredIndicator;
 const companionUpdateIndicator = window.companionUpdateIndicator;
 const companionUpdateVersionText = window.companionUpdateVersionText;
 const companionBreakingChangesIndicator = window.companionBreakingChangesIndicator;
+const companionStatusHiddenField = window.companionStatusHiddenField;
+const companionVersionHiddenField = window.companionVersionHiddenField;
+const companionOsHiddenField = window.companionOsHiddenField;
+const companionErrorMessageHiddenField = window.companionErrorMessageHiddenField;
 const downloadCompanionButton = window.downloadCompanionButton;
 const downloadCompanionLink = window.downloadCompanionLink;
 const fixedPositionRadioButton = window.fixedPositionRadioButton;
@@ -43,6 +47,7 @@ const hotkeyMoveRightDescription = window.hotkeyMoveRightDescription;
 const hotkeyMoveRight = window.hotkeyMoveRight;
 const hotkeyChangeButton = window.hotkeyChangeButton;
 const firefoxHotKeyChangeInfo = window.firefoxHotKeyChangeInfo;
+const collectUsageStatsCheckbox = window.collectUsageStatsCheckbox;
 const debugCheckbox = window.debugCheckbox;
 const chromeDebugInfo = window.chromeDebugInfo;
 const firefoxDebugInfo = window.firefoxDebugInfo;
@@ -52,25 +57,21 @@ const copyCompanionLogFilePathSuccessIcon = window.copyCompanionLogFilePathSucce
 const copyCompanionLogFilePathSuccessMessage = window.copyCompanionLogFilePathSuccessMessage;
 const tabFloaterVersionField = window.tabFloaterVersionField;
 
+function buildOptionsObject() {
+    return {
+        positioningStrategy: fixedPositionRadioButton.checked ? "fixed" : "smart",
+        fixedPosition: fixPositionSelect.value,
+        fixedTabSize: tabSizeSelect.value,
+        viewportTopOffset: parseInt(viewportTopOffsetInput.value),
+        smartPositioningFollowTabSwitches: followTabSwitchCheckbox.checked,
+        smartPositioningRestrictMaxFloatingTabSize: restrictMaxFloatingTabSizeCheckbox.checked,
+        collectUsageStats: collectUsageStatsCheckbox.checked,
+        debug: debugCheckbox.checked
+    };
+}
+
 async function saveOptionsAsync() {
-    const options = {};
-
-    options.positioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
-    options.fixedPosition = fixPositionSelect.value;
-    options.fixedTabSize = tabSizeSelect.value;
-
-    if (isNumberInputValid(viewportTopOffsetInput)) {
-        viewportTopOffsetInput.classList.remove("uk-form-danger");
-        options.viewportTopOffset = parseInt(viewportTopOffsetInput.value);
-    } else {
-        viewportTopOffsetInput.classList.add("uk-form-danger");
-    }
-
-    options.smartPositioningFollowTabSwitches = followTabSwitchCheckbox.checked;
-    options.smartPositioningRestrictMaxFloatingTabSize = restrictMaxFloatingTabSizeCheckbox.checked;
-    options.debug = debugCheckbox.checked;
-
-    await browser.storage.sync.set({ options: options });
+    await browser.storage.sync.set({ options: buildOptionsObject() });
 }
 
 function setPositioningControlStates() {
@@ -90,38 +91,41 @@ function setPositioningControlStates() {
 }
 
 function setCompanionFields(companionInfo) {
+    const isConnected = companionInfo.status === "connected";
 
-    switch (companionInfo.status) {
-        case "connected": {
-            // The "connected" indicator is invisible rather than hidden, because
-            // we need a div to take up the space until the page fully loads. If
-            // this were hidden instead of invisible, the page would jump around
-            // while loading.
-            companionStatusIndicatorConnected.classList.remove("uk-invisible");
-            companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
+    companionStatusHiddenField.textContent = companionInfo.status;
+    companionVersionHiddenField.textContent = isConnected ? companionInfo.version : "n/a";
+    companionOsHiddenField.textContent = isConnected ? companionInfo.os : "n/a";
+    companionErrorMessageHiddenField.textContent = companionInfo.errorMessage || "n/a";
 
-            if (companionInfo.isOutdated) {
-                companionUpdateIndicator.hidden = false;
-                companionUpdateVersionText.textContent += companionInfo.latestVersion;
-                downloadCompanionButton.hidden = false;
-                downloadCompanionLink.textContent = "Update the companion...";
+    if (isConnected) {
+        // The "connected" indicator is invisible rather than hidden, because
+        // we need a div to take up the space until the page fully loads. If
+        // this were hidden instead of invisible, the page would jump around
+        // while loading.
+        companionStatusIndicatorConnected.classList.remove("uk-invisible");
+        companionVersionField.textContent = `${companionInfo.version} (${companionInfo.os})`;
 
-                if (companionInfo.latestVersionHasBreakingChanges) {
-                    companionBreakingChangesIndicator.hidden = false;
-                }
-            }
-
-            companionLogFileField.value = companionInfo.logFilePath;
-        } break;
-        case "unavailable": {
-            companionStatusIndicatorConnected.hidden = true;
-            companionStatusIndicatorUnavailable.hidden = false;
-            companionUnavailableMessage.textContent += companionInfo.errorMessage;
-            companionRequiredIndicator.hidden = false;
+        if (companionInfo.isOutdated) {
+            companionUpdateIndicator.hidden = false;
+            companionUpdateVersionText.textContent += companionInfo.latestVersion;
             downloadCompanionButton.hidden = false;
-            downloadCompanionLink.textContent = "Get the companion...";
-            companionLogFileField.value = "";
-        } break;
+            downloadCompanionLink.textContent = "Update the companion...";
+
+            if (companionInfo.latestVersionHasBreakingChanges) {
+                companionBreakingChangesIndicator.hidden = false;
+            }
+        }
+
+        companionLogFileField.value = companionInfo.logFilePath;
+    } else {
+        companionStatusIndicatorConnected.hidden = true;
+        companionStatusIndicatorUnavailable.hidden = false;
+        companionUnavailableMessage.textContent += companionInfo.errorMessage;
+        companionRequiredIndicator.hidden = false;
+        downloadCompanionButton.hidden = false;
+        downloadCompanionLink.textContent = "Get the companion...";
+        companionLogFileField.value = "";
     }
 }
 
@@ -194,10 +198,10 @@ async function positioningStrategyChangedAsync() {
 }
 
 window.onload = async function () {
-    const options = await browser.runtime.sendMessage("loadOptions");
-    const companionInfo = await browser.runtime.sendMessage("getCompanionInfo");
-    const runningOnFirefox = await browser.runtime.sendMessage("runningOnFirefox");
-    const isDevelopmentEnv = await browser.runtime.sendMessage("isDevelopmentEnv");
+    const options = await browser.runtime.sendMessage({ action: "loadOptions" });
+    const companionInfo = await browser.runtime.sendMessage({ action: "getCompanionInfo" });
+    const runningOnFirefox = await browser.runtime.sendMessage({ action: "runningOnFirefox" });
+    const isDevelopmentEnv = await browser.runtime.sendMessage({ action: "isDevelopmentEnv" });
 
     setCompanionFields(companionInfo);
 
@@ -225,6 +229,7 @@ window.onload = async function () {
         };
     }
 
+    collectUsageStatsCheckbox.checked = options.collectUsageStats;
     debugCheckbox.checked = options.debug;
     if (runningOnFirefox) {
         chromeDebugInfo.hidden = true;
@@ -238,13 +243,36 @@ window.onload = async function () {
     tabFloaterVersionField.textContent = version;
 };
 
+window.onunload = async function () {
+    const data = Object.assign(buildOptionsObject(), {
+        companionStatus: companionStatusHiddenField.textContent,
+        companionVersion: companionVersionHiddenField.textContent,
+        companionOs: companionOsHiddenField.textContent,
+        companionErrorMessage: companionErrorMessageHiddenField.textContent
+    });
+
+    await browser.runtime.sendMessage({
+        action: "reportOptionsEvent",
+        data: data
+    });
+};
+
 fixedPositionRadioButton.onchange = positioningStrategyChangedAsync;
 smartPositionRadioButton.onchange = positioningStrategyChangedAsync;
 fixPositionSelect.onchange = saveOptionsAsync;
 tabSizeSelect.onchange = saveOptionsAsync;
-viewportTopOffsetInput.onblur = saveOptionsAsync;
+viewportTopOffsetInput.onblur = async function () {
+    if (isNumberInputValid(viewportTopOffsetInput)) {
+        viewportTopOffsetInput.classList.remove("uk-form-danger");
+    } else {
+        viewportTopOffsetInput.classList.add("uk-form-danger");
+    }
+
+    await saveOptionsAsync();
+};
 followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
+collectUsageStatsCheckbox.onchange = saveOptionsAsync;
 debugCheckbox.onchange = saveOptionsAsync;
 copyCompanionLogFilePathButton.onclick = async function () {
     const logFilePath = companionLogFileField.value;

@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-export async function getOperatingSystemAsync() {
-    return (await browser.runtime.getPlatformInfo()).os;
-}
+import * as logger from "../logging/logger.js";
 
-export async function runningOnFirefoxAsync() {
-    if (browser.runtime.getBrowserInfo) {
-        const browserInfo = await browser.runtime.getBrowserInfo();
-        return browserInfo.name.toLowerCase().includes("firefox");
+export const NullAnalytics = {
+    sendEvent: function (data) {
+        logger.info(`Not sending usage statistics, because it's disabled. Would send the following data: '${JSON.stringify(data)}'`);
     }
-
-    return false;
-}
-
-export async function isDevelopmentAsync() {
-    const extensionInfo = await browser.management.getSelf();
-    return extensionInfo.installType === "development";
-}
+};

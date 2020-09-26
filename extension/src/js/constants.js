@@ -15,11 +15,12 @@
  */
 
 export const CompanionName = "io.github.tabfloater.companion";
-
 export const CompanionLatestVersions = {
     Linux: "0.7.0",
     Windows: "0.7.0"
 };
+
+export const GoogleTagManagerId = "GTM-5FR22RR";
 
 export const CommandToPositionMapping = {
     "topLeft,moveDown": "bottomLeft",
@@ -39,8 +40,14 @@ export const DefaultOptions = {
     viewportTopOffset: 150,
     smartPositioningFollowTabSwitches: true,
     smartPositioningRestrictMaxFloatingTabSize: true,
+    collectUsageStats: true,
     debug: false
 };
+
+export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
+    collectUsageStats: false,
+    debug: true
+});
 
 export const FloatingTabPadding = 50;
 export const MinimumFloatingTabSideLength = 300;

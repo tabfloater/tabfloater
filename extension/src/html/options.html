@@ -129,6 +129,13 @@ limitations under the License.
                         target="_blank"></a>
                 </div>
             </div>
+
+            <div hidden>
+                <div id="companionStatusHiddenField"></div>
+                <div id="companionVersionHiddenField"></div>
+                <div id="companionOsHiddenField"></div>
+                <div id="companionErrorMessageHiddenField"></div>
+            </div>
         </div>
 
         <div class="uk-container uk-container-small uk-margin-small">
@@ -368,9 +375,26 @@ limitations under the License.
         </div>
 
         <div class="uk-container uk-container-small uk-margin-small">
-            <h3>Help</h3>
+            <h3>Miscellaneous</h3>
 
             <div class="uk-margin-left uk-grid-match" uk-grid>
+                <div class="uk-flex-middle">
+                    <div>
+                        Send anonymous usage statistics
+                    </div>
+                </div>
+                <div class="uk-width-expand"></div>
+                <div class="uk-width-auto">
+                    <div>
+                        <label class="uk-switch" for="collectUsageStatsCheckbox">
+                            <input type="checkbox" id="collectUsageStatsCheckbox">
+                            <div class="uk-switch-slider"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-flex-middle">
                     <div>
                         Enable debugging
@@ -402,7 +426,9 @@ limitations under the License.
                                             debugging enabled.</p>
                                         <p>It is recommended to only enable this option if you need to troubleshoot a
                                             problem
-                                            with the application.</p>
+                                            with the application. The application never sends the logs automatically
+                                            anywhere, they stay on your machine.
+                                        </p>
                                     </span>
                                 </div>
                             </div>
@@ -447,7 +473,7 @@ limitations under the License.
             <div class="uk-margin-left uk-margin-small-top uk-grid-match" uk-grid>
                 <div class="uk-flex-middle">
                     <a href="https://github.com/tabfloater/tabfloater/issues/new" target="_blank">Report a
-                        problem...</a>
+                        problem / request a feature...</a>
                 </div>
                 <div class="uk-width-expand"></div>
             </div>
