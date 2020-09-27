@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="addon">
+  <!-- This file is not used for now - pending fix of https://github.com/AppImage/AppImageKit/issues/856 -->
+  <id>io.github.tabfloater.companion</id>
+  <extends>io.github.tabfloater</extends>
+  <name>TabFloater Companion</name>
+  <summary>Companion application for the TabFloater browser extension</summary>
+  <url type="homepage">https://www.tabfloater.io/</url>
+  <url type="bugtracker">https://github.com/tabfloater/tabfloater</url>
+  <url type="faq">https://github.com/tabfloater/tabfloater</url>
+  <url type="help">https://github.com/tabfloater/tabfloater</url>
+  <url type="contact">https://github.com/tabfloater/tabfloater</url>
+  <metadata_license>MIT</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <developer_name>Balazs Gyurak</developer_name>
+
+  <releases>
+    <release version="1.2" date="2015-02-16" />
+  </releases>
+</component>
+
