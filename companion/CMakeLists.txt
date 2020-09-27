@@ -61,106 +61,132 @@ if(UNIX)
     target_link_libraries(${MAIN_TARGET} X11)
 endif()
 
-# Configure native messaging host manifests for development
-set(COMPANION_EXECUTABLE "${PROJECT_BINARY_DIR}/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json")
+if(DEV_BUILD)
+    # Configure native messaging host manifests for development
+    set(COMPANION_EXECUTABLE "${PROJECT_BINARY_DIR}/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json")
 
-# Custom target to install/clean manifests for development
-if(WIN32)
-    add_custom_target(install_manifests
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-        COMMAND REG ADD HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\io.github.tabfloater.companion /f /ve /d "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json"
-        COMMAND REG ADD HKCU\\Software\\Mozilla\\NativeMessagingHosts\\io.github.tabfloater.companion /f /ve /d "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json"
-        COMMENT "Install native messaging host manifests..."
-    )
-    add_custom_target(clean_manifests
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-        COMMAND REG DELETE HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\io.github.tabfloater.companion /f
-        COMMAND REG DELETE HKCU\\Software\\Mozilla\\NativeMessagingHosts\\io.github.tabfloater.companion /f
-        COMMENT "Cleaning native messaging host manifests..."
-    )
+    # Custom target to install/clean manifests for development
+    if(WIN32)
+        add_custom_target(install_manifests
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            COMMAND REG ADD HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\io.github.tabfloater.companion /f /ve /d "${PROJECT_BINARY_DIR}/manifest_chrome_dev.json"
+            COMMAND REG ADD HKCU\\Software\\Mozilla\\NativeMessagingHosts\\io.github.tabfloater.companion /f /ve /d "${PROJECT_BINARY_DIR}/manifest_firefox_dev.json"
+            COMMENT "Install native messaging host manifests..."
+        )
+        add_custom_target(clean_manifests
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            COMMAND REG DELETE HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\io.github.tabfloater.companion /f
+            COMMAND REG DELETE HKCU\\Software\\Mozilla\\NativeMessagingHosts\\io.github.tabfloater.companion /f
+            COMMENT "Cleaning native messaging host manifests..."
+        )
+    endif()
+
+    if(UNIX)
+        add_custom_target(install_manifests
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            COMMAND trap 'test -d $ENV{HOME}/.config/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+            COMMAND trap 'test -d $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+            COMMAND trap 'test -d $ENV{HOME}/.mozilla/native-messaging-hosts && cp ${PROJECT_BINARY_DIR}/manifest_firefox_dev.json $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
+            COMMENT "Install native messaging host manifests..."
+        )
+        add_custom_target(clean_manifests
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            COMMAND trap 'test -f $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+            COMMAND trap 'test -f $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
+            COMMAND trap 'test -f $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
+            COMMENT "Cleaning native messaging host manifests..."
+        )
+    endif()
+
+else()
+
+    # Packaging
+    set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
+
+    if(WIN32)
+        # Windows installer
+
+        set(CPACK_PACKAGE_NAME "TabFloater Companion")
+        set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
+
+        # Configure native messaging host manifests for Windows. The executable can be a relative path.
+        set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
+
+        set(WINDOWS_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows")
+
+        # Configure license text and README.txt to replace the version number
+        configure_file("${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/README.txt" "${PROJECT_BINARY_DIR}")
+        configure_file("${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/license.rtf" "${PROJECT_BINARY_DIR}")
+
+        set(CPACK_GENERATOR WIX ZIP)
+
+        # Wix properties
+        set(CPACK_WIX_PRODUCT_GUID "BCF1D253-9DDA-4531-9831-4069633335D6")
+        set(CPACK_WIX_UPGRADE_GUID "E6DE015D-5A6B-481D-A32C-AFCF5ED4F8C0")
+        set(CPACK_WIX_PATCH_FILE "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/registry_patch.xml")
+        set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_BINARY_DIR}/license.rtf")
+        set(CPACK_WIX_PRODUCT_ICON "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/tabfloater.ico")
+        set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/banner.bmp")
+        set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/dialog.bmp")
+
+        # Set WixUI explicitly to InstallDir, so the component chooser screen is not shown
+        set(CPACK_WIX_UI_REF "WixUI_InstallDir")
+
+        # The Wix installer should only contain core. The ZIP generator should include all components.
+        set(CPACK_COMPONENTS_ALL core)
+        set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
+
+        install(TARGETS ${MAIN_TARGET} COMPONENT core)
+        install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION "." COMPONENT core)
+        install(FILES "${PROJECT_BINARY_DIR}/manifest_firefox.json" DESTINATION "." COMPONENT core)
+
+        install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/register_manifests.bat" DESTINATION "." COMPONENT portable)
+        install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/unregister_manifests.bat" DESTINATION "." COMPONENT portable)
+        install(FILES "${PROJECT_BINARY_DIR}/README.txt" DESTINATION "." COMPONENT portable)
+    endif()
+
+    if(UNIX)
+        # Linux packaging
+
+        set(LINUX_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux")
+
+        # AppImage generation
+
+        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/appimage/generate_appimage.sh" DESTINATION "${PROJECT_BINARY_DIR}")
+        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/appimage/tabfloater-companion.desktop" DESTINATION "${PROJECT_BINARY_DIR}")
+        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/appimage/tabfloater-companion.svg" DESTINATION "${PROJECT_BINARY_DIR}")
+
+        add_custom_target(generate_appimage
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            COMMAND chmod +x ./generate_appimage.sh
+            COMMAND ./generate_appimage.sh ${MAIN_TARGET} ${PROJECT_VERSION} tabfloater-companion.desktop tabfloater-companion.svg
+        )
+
+
+        # --- TODO other distribution formats ---
+        # TODO Configure native messaging host manifests for Linux. The executable has to be an absolute path.
+        #set(COMPANION_EXECUTABLE "${MAIN_TARGET}")
+        #configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
+        #configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
+
+        # Install targets for makefile
+        #install(TARGETS ${MAIN_TARGET})
+        # install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION "$ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json")
+
+        # Source pack generation
+        #set(CPACK_SOURCE_GENERATOR "TGZ")
+        #set(CPACK_SOURCE_IGNORE_FILES
+        #    build/
+        #    dist/
+        #    packaging/
+        #    build.*
+        #)
+    endif()
+
+    include(CPack)
+
 endif()
-
-if(UNIX)
-    add_custom_target(install_manifests
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-        COMMAND trap 'test -d $ENV{HOME}/.config/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
-        COMMAND trap 'test -d $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
-        COMMAND trap 'test -d $ENV{HOME}/.mozilla/native-messaging-hosts && cp ${PROJECT_BINARY_DIR}/manifest_firefox_dev.json $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
-        COMMENT "Install native messaging host manifests..."
-    )
-    add_custom_target(clean_manifests
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-        COMMAND trap 'test -f $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
-        COMMAND trap 'test -f $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
-        COMMAND trap 'test -f $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
-        COMMENT "Cleaning native messaging host manifests..."
-    )
-endif()
-
-# Packaging
-set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
-
-if(WIN32)
-    # Windows installer
-
-    set(CPACK_PACKAGE_NAME "TabFloater Companion")
-    set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
-
-    # Configure native messaging host manifests for Windows. The executable can be a relative path.
-    set(COMPANION_EXECUTABLE "./bin/${MAIN_TARGET}${CMAKE_EXECUTABLE_SUFFIX}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
-
-    set(WINDOWS_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/windows")
-
-    # Configure license text and README.txt to replace the version number
-    configure_file("${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/README.txt" "${PROJECT_BINARY_DIR}")
-    configure_file("${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/license.rtf" "${PROJECT_BINARY_DIR}")
-
-    set(CPACK_GENERATOR WIX ZIP)
-
-    # Wix properties
-    set(CPACK_WIX_PRODUCT_GUID "BCF1D253-9DDA-4531-9831-4069633335D6")
-    set(CPACK_WIX_UPGRADE_GUID "E6DE015D-5A6B-481D-A32C-AFCF5ED4F8C0")
-    set(CPACK_WIX_PATCH_FILE "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/registry_patch.xml")
-    set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_BINARY_DIR}/license.rtf")
-    set(CPACK_WIX_PRODUCT_ICON "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/tabfloater.ico")
-    set(CPACK_WIX_UI_BANNER "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/banner.bmp")
-    set(CPACK_WIX_UI_DIALOG "${WINDOWS_PACKAGE_RESOURCES_DIR}/installer/dialog.bmp")
-
-    # Set WixUI explicitly to InstallDir, so the component chooser screen is not shown
-    set(CPACK_WIX_UI_REF "WixUI_InstallDir")
-
-    # The Wix installer should only contain core. The ZIP generator should include all components.
-    set(CPACK_COMPONENTS_ALL core)
-    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
-
-    install(TARGETS ${MAIN_TARGET} COMPONENT core)
-    install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION "." COMPONENT core)
-    install(FILES "${PROJECT_BINARY_DIR}/manifest_firefox.json" DESTINATION "." COMPONENT core)
-
-    install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/register_manifests.bat" DESTINATION "." COMPONENT portable)
-    install(FILES "${WINDOWS_PACKAGE_RESOURCES_DIR}/portable/unregister_manifests.bat" DESTINATION "." COMPONENT portable)
-    install(FILES "${PROJECT_BINARY_DIR}/README.txt" DESTINATION "." COMPONENT portable)
-endif()
-
-if(UNIX)
-    # Linux packaging
-
-    # TODO Configure native messaging host manifests for Windows. The executable has to be an absolute path.
-    set(COMPANION_EXECUTABLE "${MAIN_TARGET}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
-
-    set(CPACK_SOURCE_GENERATOR "TGZ")
-    set(CPACK_SOURCE_IGNORE_FILES
-        build/
-        dist/
-        packaging/
-        build.*
-    )
-endif()
-
-include(CPack)
