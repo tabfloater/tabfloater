@@ -63,5 +63,13 @@ async function sendEventAsync(category, action, label, extraData) {
         "env": environment
     }, extraData);
 
+    convertAllPropertiesToString(data);
+
     analyticsImpl.sendEvent(data);
+}
+
+function convertAllPropertiesToString(obj) {
+    Object.keys(obj).forEach(key => {
+        obj[key] = `${obj[key]}`;
+      });
 }
