@@ -32,6 +32,7 @@ message("DEV_BUILD: ${DEV_BUILD}")
 
 if(UNIX)
     list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/logutil_linux.cpp")
+    list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/interactive_linux.cpp")
     list(APPEND SOURCE_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/windowhandler_linux.cpp")
 endif()
 

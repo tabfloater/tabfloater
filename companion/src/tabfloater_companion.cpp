@@ -15,6 +15,7 @@
  */
 
 #include "logutil.h"
+#include "interactive.h"
 #include "windowhandler.h"
 #include "../libs/loguru/src/loguru.hpp"
 #include <iostream>
@@ -172,8 +173,7 @@ void sendStatus(std::string status)
     sendMessage(statusJson);
 }
 
-int main(int argc, char *argv[])
-{
+int startCompanionMode(int argc, char *argv[]) {
     loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
     std::string logFilePath = constructLogFilePath(DEV_BUILD);
 
@@ -186,11 +186,12 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        // See https://developer.chrome.com/extensions/nativeMessaging
-        // As described in the Chrome native messaging protocol, the JSON message
+        // See https://developer.chrome.com/extensions/nativeMessaging and
+        // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging
+        // As described in the native messaging protocol, the JSON message
         // is preceded with the message length in the first 4 bytes. We need to
         // read that, and then read that many characters that will make up the message.
-        // If the message length is 0, Chrome has closed the message port and we can
+        // If the message length is 0, the browser has closed the message port and we can
         // stop reading.
 
         unsigned int messageLength = readFirstFourBytesFromStdIn();
@@ -242,4 +243,29 @@ int main(int argc, char *argv[])
     }
 
     return returnValue;
+}
+
+bool shouldRunInInteractiveMode(int argc, char *argv[]) {
+    // Chrome and Chromium passes one argument with the extension ID
+    bool invokedByChrome = argc == 2 && std::string(argv[1]).rfind("chrome-extension://", 0) == 0;
+    // Firefox passes two arguments, the second one is the extension ID
+    bool invokedByFirefox = argc == 3 && std::string(argv[2]).compare("tabfloater@tabfloater.io") == 0;
+
+    return !invokedByChrome && !invokedByFirefox;
+}
+
+int main(int argc, char *argv[])
+{
+#ifdef _WIN32
+    return startCompanionMode(argc, argv);
+#endif
+
+#ifdef linux
+    if (shouldRunInInteractiveMode(argc, argv))  {
+        return startInteractiveMode(getVersion(), argc, argv);
+    } else {
+        return startCompanionMode(argc, argv);
+    }
+#endif
+
 }
