@@ -182,7 +182,7 @@ int startCompanionMode(int argc, char *argv[]) {
     setBinaryMode(stdout, logFilePath);
 #endif
 
-    int returnValue = 0;
+    int returnValue = EXIT_SUCCESS;
 
     while (1)
     {
@@ -237,7 +237,7 @@ int startCompanionMode(int argc, char *argv[]) {
             {
                 LOG_F(ERROR, "An error occurred while manipulating window: %s", ex.what());
                 sendStatus("error");
-                returnValue = 1;
+                returnValue = EXIT_FAILURE;
             }
         }
     }
