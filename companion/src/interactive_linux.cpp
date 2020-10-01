@@ -1,0 +1,384 @@
+/*
+ * Copyright 2020 Balazs Gyurak
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "interactive.h"
+#include <iomanip>
+#include <iostream>
+#include <stdio.h>
+#include <fstream>
+#include <sstream>
+#include <linux/limits.h>
+#include <pwd.h>
+#include <unistd.h>
+
+#define EXECUTABLE_CHROMIUM "chromium-browser"
+#define EXECUTABLE_CHROMIUM_SNAP "chromium"
+#define EXECUTABLE_CHROME "google-chrome"
+#define EXECUTABLE_FIREFOX "firefogx"
+
+#define MANIFEST_FILE_NAME "io.github.tabfloater.companion.json"
+#define MANIFEST_PATH_CHROMIUM "/.config/chromium/NativeMessagingHosts/" + MANIFEST_FILE_NAME
+#define MANIFEST_PATH_CHROMIUM_SNAP "/snap/chromium/common/chromium/NativeMessagingHosts/" + MANIFEST_FILE_NAME
+#define MANIFEST_PATH_CHROME "/.config/google-chrome/NativeMessagingHosts/" + MANIFEST_FILE_NAME
+#define MANIFEST_PATH_FIREFOX "/.mozilla/native-messaging-hosts/" + MANIFEST_FILE_NAME
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+const std::string WHITESPACE = " \n\r\t\f\v";
+
+std::string trim(const std::string& str)
+{
+    size_t first = str.find_first_not_of(WHITESPACE);
+    if (std::string::npos == first)
+    {
+        return str;
+    }
+    size_t last = str.find_last_not_of(WHITESPACE);
+    return str.substr(first, (last - first + 1));
+}
+
+std::string getHomeDirectory() {
+    const char *homeDir;
+
+    if ((homeDir = getenv("HOME")) == NULL) {
+        homeDir = getpwuid(getuid())->pw_dir;
+    }
+
+    return std::string(homeDir);
+}
+
+std::string readStringFromFile(std::string filePath) {
+    std::ifstream in(filePath);
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+    return buffer.str();
+}
+
+void writeStringToFile(std::string filePath, std::string contents) {
+    std::ofstream out(filePath);
+    out << contents;
+    out.close();
+}
+
+std::string getCurrentExecutablePath( )
+{
+    char path[PATH_MAX + 1] = {0};
+    readlink("/proc/self/exe", path, sizeof(path));
+    return std::string(path);
+}
+
+bool isBrowserInstalled(std::string executable) {
+    return system(std::string("which " + executable + " > /dev/null").c_str()) == 0;
+}
+
+std::string buildChromeManifest(std::string executablePath) {
+    return std::string(R"({
+  "name": "io.github.tabfloater.companion",
+  "description": "Tabfloater Companion",
+  "path": ")" + executablePath + R"(",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://iojgbjjdoanmhcmmihbapiejfbbadhjd/"
+  ]
+})");
+}
+
+std::string buildFirefoxManifest(std::string executablePath) {
+    return std::string(R"({
+  "name": "io.github.tabfloater.companion",
+  "description": "Tabfloater Companion",
+  "path": ")" + executablePath + R"(",
+  "type": "stdio",
+  "allowed_extensions": [
+    "tabfloater@tabfloater.io"
+  ]
+})");
+}
+
+bool isManifestRegistered(std::string manifestPath, std::string expectedManifestContent) {
+    if (access(manifestPath.c_str(), 0) == 0) {
+        std::string fileContents = trim(readStringFromFile(manifestPath));
+        if (fileContents.compare(expectedManifestContent) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::string getManifestStatus(std::string browserExecutable, std::string manifestPath, std::string expectedManifestContent) {
+    bool manifestRegistered = isManifestRegistered(manifestPath, expectedManifestContent);
+
+    return isBrowserInstalled(browserExecutable)
+        ? (manifestRegistered ? "registered ✓" : "unregistered")
+        : (manifestRegistered ? "registered (browser not found)" : "(browser not found)");
+}
+
+
+
+void printOption(std::string option, std::string description) {
+    std::cout << std::left << std::setw(4) << std::setfill(' ') << " ";
+    std::cout << std::left << std::setw(15) << std::setfill(' ') << option;
+    std::cout << std::left << std::setw(65) << std::setfill(' ') << description;
+    std::cout << std::endl;
+}
+
+void printStatusRow(std::string col1, std::string col2) {
+    std::cout << std::left << std::setw(2) << std::setfill(' ') << " ";
+    std::cout << std::left << std::setw(20) << std::setfill(' ') << col1;
+    std::cout << std::left << std::setw(25) << std::setfill(' ') << col2 << std::endl;
+}
+
+void printStatus() {
+    std::string homeDirectory = getHomeDirectory();
+    std::string executablePath = getCurrentExecutablePath();
+    std::string chromeManifest = buildChromeManifest(executablePath);
+    std::string firefoxManifest = buildFirefoxManifest(executablePath);
+
+    std::cout << std::endl;
+    printStatusRow("BROWSER", "TABFLOATER STATUS");
+    std::cout << std::endl;
+    printStatusRow("Chromium", getManifestStatus(EXECUTABLE_CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM, chromeManifest));
+    printStatusRow("Chromium (Snap)", getManifestStatus(EXECUTABLE_CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP, chromeManifest));
+    printStatusRow("Chrome", getManifestStatus(EXECUTABLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME, chromeManifest));
+    printStatusRow("Firefox", getManifestStatus(EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX, firefoxManifest));
+    std::cout << std::endl;
+    std::cout << "Note: on Ubuntu 19.10 and up, Chromium is available only via Snap. On these systems, 'Chromium'" << std::endl;
+    std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
+    std::cout << std::endl;
+}
+
+bool registerManifestForSingleBrowser(std::string browserName, std::string browserExecutable, std::string manifestPath, bool force, bool useFirefoxManifest = false) {
+    if (!force && !isBrowserInstalled(browserExecutable)) {
+        std::cout << browserName + " not found, no changes were made." << std::endl;
+        return false;
+    }
+
+    std::string executablePath = getCurrentExecutablePath();
+    std::string manifest = useFirefoxManifest ? buildFirefoxManifest(executablePath) : buildChromeManifest(executablePath);
+
+    if (!force && isManifestRegistered(manifestPath, manifest)) {
+        std::cout << "TabFloater Companion for " + browserName + " is already registered, no changes were made." << std::endl;
+        return false;
+    }
+
+    //TODO check overwrite
+    writeStringToFile(manifestPath, manifest);
+    std::cout << "Registered TabFloater Companion for " << browserName << "." << std::endl;
+    return true;
+}
+
+bool registerManifestForAllBrowsers(std::string homeDirectory, bool force) {
+    bool registeredChromium = false;
+    bool registeredChromiumSnap = false;
+    bool registeredChrome = false;
+    bool registeredFirefox = false;
+    bool atLeastOneOperationOccurred = false;
+
+    if (force || isBrowserInstalled(EXECUTABLE_CHROMIUM)) {
+        registeredChromium = registerManifestForSingleBrowser("Chromium", EXECUTABLE_CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM, force);
+        atLeastOneOperationOccurred = true;
+    }
+    if (force || isBrowserInstalled(EXECUTABLE_CHROMIUM_SNAP)) {
+        registeredChromiumSnap = registerManifestForSingleBrowser("Chromium (Snap)", EXECUTABLE_CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP, force);
+        atLeastOneOperationOccurred = true;
+    }
+    if (force || isBrowserInstalled(EXECUTABLE_CHROME)) {
+        registeredChrome = registerManifestForSingleBrowser("Google Chrome", EXECUTABLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME, force);
+        atLeastOneOperationOccurred = true;
+    }
+    if (force || isBrowserInstalled(EXECUTABLE_FIREFOX)) {
+        registeredFirefox = registerManifestForSingleBrowser("Firefox", EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX, force, true);
+        atLeastOneOperationOccurred = true;
+    }
+
+    if (!atLeastOneOperationOccurred) {
+        std::cout << "No installed browsers found." << std::endl;
+    }
+
+    return registeredChromium || registeredChromiumSnap || registeredChrome || registeredFirefox;
+}
+
+void printRegisterUsage(std::string executableName) {
+    std::cout << std::endl;
+    std::cout << "Usage: " << executableName << " register BROWSER [--force]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Register TabFloater Companion for your browsers." << std::endl;
+    std::cout << "For quick setup, run '" + executableName + " register all'." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Supported browsers: " << std::endl;
+    printOption("all", "Register for all installed browsers");
+    printOption("chromium", "Register for Chromium");
+    printOption("chromium-snap", "Register for Chromium (Snap)");
+    printOption("chrome", "Register for Google Chrome");
+    printOption("firefox", "Register for Firefox");
+    std::cout << std::endl;
+    std::cout << "Options: " << std::endl;
+    printOption("--force", "Register even if browser is not installed; overwrite existing file");
+    std::cout << std::endl;
+    std::cout << "Note: on Ubuntu 19.10 and up, Chromium is available only via Snap. On these systems," << std::endl;
+    std::cout << "registering for 'chromium' has no effect." << std::endl;
+    std::cout << std::endl;
+}
+
+void registerManifest(int argc, char *argv[]) {
+    if (argc > 2) {
+        std::string subCommand(argv[2]);
+        std::string homeDirectory = getHomeDirectory();
+        bool force = argc > 3 && std::string(argv[3]).compare("--force") == 0;
+        bool operationSucceeded;
+
+        if (subCommand.compare("all") == 0) {
+            operationSucceeded = registerManifestForAllBrowsers(homeDirectory, force);
+        } else if (subCommand.compare("chromium") == 0) {
+            operationSucceeded = registerManifestForSingleBrowser("Chromium", EXECUTABLE_CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM, force);
+        } else if (subCommand.compare("chromium-snap") == 0) {
+            operationSucceeded = registerManifestForSingleBrowser("Chromium (Snap)", EXECUTABLE_CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP, force);
+        } else if (subCommand.compare("chrome") == 0) {
+            operationSucceeded = registerManifestForSingleBrowser("Google Chrome", EXECUTABLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME, force);
+        } else if (subCommand.compare("firefox") == 0) {
+            operationSucceeded = registerManifestForSingleBrowser("Firefox", EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX, force, true);
+        } else {
+            std::cout << argv[0] << ": '" << subCommand << "' is not a command." << std::endl;
+            printRegisterUsage(argv[0]);
+            return;
+        }
+
+        std::cout << std::endl;
+        if (operationSucceeded) {
+            std::cout << "To undo this operation, run '" + std::string(argv[0]) + " unregister " + subCommand + "'." << std::endl;
+            std::cout << "If you rename this executable or move it to another location, you need to register TabFloater Companion again." << std::endl;
+            std::cout << std::endl;
+        }
+    } else {
+        printRegisterUsage(argv[0]);
+    }
+}
+
+void unregisterManifestFromSingleBrowser(std::string browserName, std::string manifestPath) {
+    if (access(manifestPath.c_str(), 0) == 0) {
+        remove(manifestPath.c_str());
+        std::cout << "Unregistered TabFloater Companion from " << browserName << "." << std::endl;
+    } else {
+        std::cout << "TabFloater companion is not registered for " << browserName << ", no changes were made." << std::endl;
+    }
+}
+
+void unregisterManifestFromAllBrowsers(std::string homeDirectory) {
+    unregisterManifestFromSingleBrowser("Chromium", homeDirectory + MANIFEST_PATH_CHROMIUM);
+    unregisterManifestFromSingleBrowser("Chromium (Snap)", homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP);
+    unregisterManifestFromSingleBrowser("Google Chrome", homeDirectory + MANIFEST_PATH_CHROME);
+    unregisterManifestFromSingleBrowser("Firefox", homeDirectory + MANIFEST_PATH_FIREFOX);
+}
+
+void printUnregisterUsage(std::string executableName) {
+    std::cout << std::endl;
+    std::cout << "Usage: " << executableName << " unregister BROWSER" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Unregister TabFloater Companion from browsers." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Supported browsers: " << std::endl;
+    printOption("all", "Unregister from all browsers");
+    printOption("chromium", "Unregister from Chromium");
+    printOption("chromium-snap", "Unregister from Chromium (Snap)");
+    printOption("chrome", "Unregister from Google Chrome");
+    printOption("firefox", "Unregister from Firefox");
+    std::cout << std::endl;
+}
+
+void unregisterManifest(int argc, char *argv[]) {
+    if (argc > 2) {
+        std::string subCommand(argv[2]);
+        std::string homeDirectory = getHomeDirectory();
+
+        if (subCommand.compare("all") == 0) {
+            unregisterManifestFromAllBrowsers(homeDirectory);
+        } else if (subCommand.compare("chromium") == 0) {
+            unregisterManifestFromSingleBrowser("Chromium", homeDirectory + MANIFEST_PATH_CHROMIUM);
+        } else if (subCommand.compare("chromium-snap") == 0) {
+            unregisterManifestFromSingleBrowser("Chromium (Snap)", homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP);
+        } else if (subCommand.compare("chrome") == 0) {
+            unregisterManifestFromSingleBrowser("Google Chrome", homeDirectory + MANIFEST_PATH_CHROME);
+        } else if (subCommand.compare("firefox") == 0) {
+            unregisterManifestFromSingleBrowser("Firefox", homeDirectory + MANIFEST_PATH_FIREFOX);
+        } else {
+            std::cout << argv[0] << ": '" << subCommand << "' is not a command." << std::endl;
+            printUnregisterUsage(argv[0]);
+            return;
+        }
+        std::cout << std::endl;
+    } else {
+        printUnregisterUsage(argv[0]);
+    }
+}
+
+void printVersion(std::string version) {
+    std::cout << "TabFloater Companion version " << version << std::endl;
+    std::cout << std::endl;
+    std::cout << "Homepage: https://www.tabfloater.io/" << std::endl;
+    std::cout << "Bug reports: https://github.com/tabfloater/tabfloater/" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Copyright (C) 2020 Balazs Gyurak" << std::endl;
+    std::cout << "Apache License 2.0" << std::endl;
+    std::cout << std::endl;
+}
+
+void printMainUsage(std::string executableName) {
+    std::cout << std::endl;
+    std::cout << "Usage: " << executableName << " COMMAND" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Companion application for the TabFloater browser extension. Learn more about TabFloater at https://www.tabfloater.io/" << std::endl;
+    std::cout << "The command line use of this application is only intended to register the Companion for your preferred browsers." << std::endl;
+    std::cout << "Once registered, the TabFloater browser extension will work with the Companion seamlessly." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Commands: " << std::endl;
+    printOption("register", "Register TabFloater Companion for your browsers");
+    printOption("status", "Print registration status information for all supported browsers");
+    printOption("unregister", "Unregister TabFloater Companion from your browsers");
+    printOption("version", "Print version information");
+    std::cout << std::endl;
+    std::cout << "To start using TabFloater, run '" + executableName + " register' and choose your preferred browser." << std::endl;
+    std::cout << std::endl;
+}
+
+int startInteractiveMode(std::string version, int argc, char *argv[]) {
+    // TODO error handling and proper return values for all
+
+    int retValue = 0;
+    if (argc > 1) {
+        std::string command(argv[1]);
+
+        if (command.compare("status") == 0) {
+            printStatus();
+        } else if (command.compare("register") == 0) {
+            registerManifest(argc, argv);
+        } else if (command.compare("unregister") == 0) {
+            unregisterManifest(argc, argv);
+        } else if (command.compare("version") == 0) {
+            printVersion(version);
+        } else {
+            std::cout << argv[0] << ": '" << command << "' is not a command." << std::endl;
+            printMainUsage(argv[0]);
+            retValue = 1;
+        }
+    } else {
+        printMainUsage(argv[0]);
+    }
+
+    return retValue;
+}
