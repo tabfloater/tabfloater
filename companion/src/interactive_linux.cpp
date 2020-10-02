@@ -172,7 +172,7 @@ void printStatus()
     printStatusRow("Chrome", getManifestStatus(EXECUTABLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME, chromeManifest));
     printStatusRow("Firefox", getManifestStatus(EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX, firefoxManifest));
     std::cout << std::endl;
-    std::cout << "Note: on Ubuntu 19.10 and up, Chromium is available only via Snap. On these systems, 'Chromium'" << std::endl;
+    std::cout << "Note: on Ubuntu 19.10 and up, Chromium is only available via Snap. On these systems, 'Chromium'" << std::endl;
     std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
     std::cout << std::endl;
 }
