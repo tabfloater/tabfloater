@@ -18,7 +18,6 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <linux/limits.h>
 #include <pwd.h>
 #include <unistd.h>
@@ -71,9 +70,10 @@ std::string getCurrentExecutablePath()
 std::string readStringFromFile(std::string filePath)
 {
     std::ifstream in(filePath);
-    std::stringstream buffer;
-    buffer << in.rdbuf();
-    return buffer.str();
+    std::string str((std::istreambuf_iterator<char>(in)),
+                    std::istreambuf_iterator<char>());
+
+    return str;
 }
 
 bool writeStringToFile(std::string filePath, std::string contents)
