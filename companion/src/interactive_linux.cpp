@@ -119,27 +119,31 @@ std::string buildFirefoxManifest(std::string executablePath)
 })");
 }
 
-bool isManifestRegistered(std::string manifestPath, std::string expectedManifestContent)
+bool doesManifestExist(std::string manifestPath)
 {
-    if (access(manifestPath.c_str(), 0) == 0)
-    {
-        std::string fileContents = trim(readStringFromFile(manifestPath));
-        if (fileContents.compare(expectedManifestContent) == 0)
-        {
-            return true;
-        }
-    }
+    return access(manifestPath.c_str(), 0) == 0;
+}
 
-    return false;
+bool isManifestCorrect(std::string manifestPath, std::string expectedManifestContent)
+{
+    std::string fileContents = trim(readStringFromFile(manifestPath));
+    return fileContents.compare(expectedManifestContent) == 0;
 }
 
 std::string getManifestStatus(std::string browserExecutable, std::string manifestPath, std::string expectedManifestContent)
 {
-    bool manifestRegistered = isManifestRegistered(manifestPath, expectedManifestContent);
+    bool browserInstalled = isBrowserInstalled(browserExecutable);
+    bool manifestExists = doesManifestExist(manifestPath);
+    bool manifestCorrect = isManifestCorrect(manifestPath, expectedManifestContent);
 
-    return isBrowserInstalled(browserExecutable)
-               ? (manifestRegistered ? "registered ✓" : "unregistered")
-               : (manifestRegistered ? "registered (browser not found)" : "(browser not found)");
+    if (manifestExists)
+    {
+        return browserInstalled
+                   ? (manifestCorrect ? "registered ✓" : "corrupted !")
+                   : (manifestCorrect ? "registered (browser not found)" : "corrupted (browser not found)");
+    }
+
+    return browserInstalled ? "unregistered" : "(browser not found)";
 }
 
 void printOption(std::string option, std::string description)
@@ -188,7 +192,7 @@ bool registerManifestForSingleBrowser(std::string browserName, std::string brows
     std::string executablePath = getCurrentExecutablePath();
     std::string manifest = useFirefoxManifest ? buildFirefoxManifest(executablePath) : buildChromeManifest(executablePath);
 
-    if (!force && isManifestRegistered(manifestPath, manifest))
+    if (!force && doesManifestExist(manifestPath) && isManifestCorrect(manifestPath, manifest))
     {
         std::cout << "TabFloater Companion for " + browserName + " is already registered, no changes were made." << std::endl;
         return false;
@@ -316,7 +320,7 @@ void registerManifest(int argc, char *argv[])
 
 void unregisterManifestFromSingleBrowser(std::string browserName, std::string manifestPath)
 {
-    if (access(manifestPath.c_str(), 0) == 0)
+    if (doesManifestExist(manifestPath))
     {
         if (remove(manifestPath.c_str()) == 0)
         {
