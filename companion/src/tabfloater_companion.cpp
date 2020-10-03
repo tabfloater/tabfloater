@@ -15,7 +15,6 @@
  */
 
 #include "logutil.h"
-#include "interactive.h"
 #include "windowhandler.h"
 #include "../libs/loguru/src/loguru.hpp"
 #include <iostream>
@@ -35,6 +34,7 @@
     #define OS "Windows"
 #endif
 #ifdef linux
+    #include "interactive.h"
     #define OS "Linux"
 #endif
 
