@@ -48,6 +48,16 @@ std::string trim(const std::string &str)
     return str.substr(first, (last - first + 1));
 }
 
+const char *getAppImageEnvVarValue()
+{
+    return getenv("APPIMAGE");
+}
+
+bool isRunningAsAppImage()
+{
+    return getAppImageEnvVarValue() != NULL;
+}
+
 std::string getHomeDirectory()
 {
     const char *homeDir;
@@ -62,6 +72,12 @@ std::string getHomeDirectory()
 
 std::string getCurrentExecutablePath()
 {
+    const char *appImagePath;
+    if ((appImagePath = getAppImageEnvVarValue()) != NULL)
+    {
+        return std::string(appImagePath);
+    }
+
     char path[PATH_MAX + 1] = {0};
     readlink("/proc/self/exe", path, sizeof(path));
     return std::string(path);
@@ -161,6 +177,13 @@ void printStatusRow(std::string col1, std::string col2)
     std::cout << std::left << std::setw(25) << std::setfill(' ') << col2 << std::endl;
 }
 
+void printAppImageWarning()
+{
+    std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap Chromium." << std::endl;
+    std::cout << "To learn more about alternatives, visit TODO" << std::endl;
+    std::cout << std::endl;
+}
+
 void printStatus()
 {
     std::string homeDirectory = getHomeDirectory();
@@ -179,6 +202,11 @@ void printStatus()
     std::cout << "Note: on Ubuntu 19.10 and up, Chromium is only available via Snap. On these systems, 'Chromium'" << std::endl;
     std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
     std::cout << std::endl;
+
+    if (isRunningAsAppImage())
+    {
+        printAppImageWarning();
+    }
 }
 
 bool registerManifestForSingleBrowser(std::string browserName, std::string browserExecutable, std::string manifestPath, bool force, bool useFirefoxManifest = false)
@@ -205,6 +233,13 @@ bool registerManifestForSingleBrowser(std::string browserName, std::string brows
     }
 
     std::cout << "Registered TabFloater Companion for " << browserName << "." << std::endl;
+
+    if (browserExecutable.compare(EXECUTABLE_CHROMIUM_SNAP) == 0 && isRunningAsAppImage())
+    {
+        std::cout << std::endl;
+        printAppImageWarning();
+    }
+
     return true;
 }
 
@@ -266,6 +301,11 @@ void printRegisterUsage(std::string executableName)
     std::cout << "Note: on Ubuntu 19.10 and up, Chromium is available only via Snap. On these systems," << std::endl;
     std::cout << "registering for 'chromium' has no effect." << std::endl;
     std::cout << std::endl;
+
+    if (isRunningAsAppImage())
+    {
+        printAppImageWarning();
+    }
 }
 
 void registerManifest(int argc, char *argv[])
