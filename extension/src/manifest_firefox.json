@@ -15,7 +15,6 @@
           "id": "tabfloater@tabfloater.io"
         }
     },
-    "content_security_policy": "script-src 'self' https://www.googletagmanager.com/gtm.js https://www.google-analytics.com/analytics.js; object-src 'self'",
     "background": {
         "page": "html/background.html"
     },

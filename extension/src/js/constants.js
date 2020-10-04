@@ -20,8 +20,6 @@ export const CompanionLatestVersions = {
     Windows: "0.7.0"
 };
 
-export const GoogleTagManagerId = "GTM-5FR22RR";
-
 export const CommandToPositionMapping = {
     "topLeft,moveDown": "bottomLeft",
     "topLeft,moveRight": "topRight",
@@ -49,5 +47,24 @@ export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
     debug: true
 });
 
+export const GoogleAnalyticsTrackingId = {
+    Production: "UA-175107528-2",
+    Development: "UA-175107528-1"
+};
+
 export const FloatingTabPadding = 50;
 export const MinimumFloatingTabSideLength = 300;
+
+export const UsageDataToCustomDimensionMapping = {
+    positioningStrategy: "cd1",
+    fixedPosition: "cd2",
+    fixedTabSize: "cd3",
+    viewportTopOffset: "cd4",
+    smartPositioningFollowTabSwitches: "cd5",
+    smartPositioningRestrictMaxFloatingTabSize: "cd6",
+    debug: "cd7",
+    companionStatus: "cd8",
+    companionVersion: "cd9",
+    companionOs: "cd10",
+    companionErrorMessage: "cd11"
+};
