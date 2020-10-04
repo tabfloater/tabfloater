@@ -71,5 +71,5 @@ async function sendEventAsync(category, action, label, extraData) {
 function convertAllPropertiesToString(obj) {
     Object.keys(obj).forEach(key => {
         obj[key] = `${obj[key]}`;
-      });
+    });
 }

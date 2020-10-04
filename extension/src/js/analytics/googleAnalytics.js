@@ -28,14 +28,14 @@ j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src=
 export const GoogleAnalytics = {
     sendEventAsync: async function (data) {
         const clientId = await getClientIdAsync();
-        console.log(`Client ID: ${clientId}`);
+        logger.info(`Client ID: ${clientId}`);
         logger.info(`Sending the following data to Google Analytics: '${JSON.stringify(data)}'`);
         dataLayer.push(data); // eslint-disable-line no-undef
     }
 };
 
 export async function generateClientIdAsync() {
-    await browser.storage.local.set({ googleAnalyticsClientId: uuidv4() });
+    await browser.storage.local.set({ googleAnalyticsClientId: uuidv4() }); // eslint-disable-line no-undef
 }
 
 async function getClientIdAsync() {
