@@ -19,7 +19,7 @@ import * as env from "./environment.js";
 import * as floater from "./floater.js";
 import { getCompanionInfoAsync } from "./companion.js";
 import * as analytics from "./analytics/analytics.js";
-import { GoogleAnalytics } from "./analytics/googleAnalytics.js";
+import * as googleAnalytics from "./analytics/googleAnalytics.js";
 import { NullAnalytics } from "./analytics/nullAnalytics.js";
 import * as logger from "./logging/logger.js";
 import { ConsoleLogger } from "./logging/consoleLogger.js";
@@ -53,7 +53,7 @@ function initLogger(debug) {
 }
 
 function initAnalytics(collectUsageStats) {
-    analytics.setAnalyticsImpl(collectUsageStats ? GoogleAnalytics : NullAnalytics);
+    analytics.setAnalyticsImpl(collectUsageStats ? googleAnalytics.GoogleAnalytics : NullAnalytics);
 }
 
 async function startupAsync() {
@@ -90,6 +90,7 @@ browser.runtime.onInstalled.addListener(async details => {
     const isDevelopment = await env.isDevelopmentAsync();
 
     await setDefaultOptionsAsync(isDevelopment);
+    await googleAnalytics.generateClientIdAsync();
     await startupAsync();
 
     if (!isDevelopment) {
