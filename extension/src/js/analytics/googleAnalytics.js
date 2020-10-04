@@ -26,8 +26,19 @@ j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src=
 /* eslint-enable */
 
 export const GoogleAnalytics = {
-    sendEvent: function (data) {
+    sendEventAsync: async function (data) {
+        const clientId = await getClientIdAsync();
+        logger.info(`Client ID: ${clientId}`);
         logger.info(`Sending the following data to Google Analytics: '${JSON.stringify(data)}'`);
         dataLayer.push(data); // eslint-disable-line no-undef
     }
 };
+
+export async function generateClientIdAsync() {
+    await browser.storage.local.set({ googleAnalyticsClientId: uuidv4() }); // eslint-disable-line no-undef
+}
+
+async function getClientIdAsync() {
+    const clientIdData = await browser.storage.local.get(["googleAnalyticsClientId"]);
+    return clientIdData.googleAnalyticsClientId;
+}

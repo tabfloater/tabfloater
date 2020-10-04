@@ -65,11 +65,11 @@ async function sendEventAsync(category, action, label, extraData) {
 
     convertAllPropertiesToString(data);
 
-    analyticsImpl.sendEvent(data);
+    await analyticsImpl.sendEventAsync(data);
 }
 
 function convertAllPropertiesToString(obj) {
     Object.keys(obj).forEach(key => {
         obj[key] = `${obj[key]}`;
-      });
+    });
 }
