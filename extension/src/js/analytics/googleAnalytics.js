@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-import { GoogleTagManagerId } from "../constants.js";
+import { GoogleAnalyticsTrackingId, UsageDataToCustomDimensionMapping } from "../constants.js";
+import * as env from "../environment.js";
 import * as logger from "../logging/logger.js";
 
-/* eslint-disable */
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src=
-"https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,"script","dataLayer", GoogleTagManagerId);
-/* eslint-enable */
-
 export const GoogleAnalytics = {
-    sendEventAsync: async function (data) {
+    sendEventAsync: async function (category, action, label, data) {
+        logger.info(`Sending the following data to Google Analytics:
+            Category: '${category}'
+            Action: '${action}'
+            Label: '${label}'
+            Extra data: '${data ? JSON.stringify(data) : "n/a"}'`
+        );
+
+        const trackingId = (await env.isDevelopmentAsync())
+                            ? GoogleAnalyticsTrackingId.Development
+                            : GoogleAnalyticsTrackingId.Production;
         const clientId = await getClientIdAsync();
-        logger.info(`Client ID: ${clientId}`);
-        logger.info(`Sending the following data to Google Analytics: '${JSON.stringify(data)}'`);
-        dataLayer.push(data); // eslint-disable-line no-undef
+        const requestObject = buildRequestObject(trackingId, clientId, category, action, label, data);
+        const message = new URLSearchParams(requestObject).toString();
+
+        const request = new XMLHttpRequest();
+        request.open("POST", "https://www.google-analytics.com/collect", true);
+        request.send(message);
     }
 };
 
@@ -41,4 +47,30 @@ export async function generateClientIdAsync() {
 async function getClientIdAsync() {
     const clientIdData = await browser.storage.local.get(["googleAnalyticsClientId"]);
     return clientIdData.googleAnalyticsClientId;
+}
+
+function buildRequestObject(trackingId, clientId, category, action, label, data) {
+    const requestObject = {
+        v: "1",
+        aip: 1,  // anonymize IP - see https://support.google.com/analytics/answer/2763052?hl=en
+        t: "event",
+        ds: "add-on",
+        tid: trackingId,
+        cid: clientId,
+        ec: category || "n/a",
+        ea: action || "n/a",
+        el: label || "n/a"
+    };
+
+    if (data) {
+        Object.keys(data).forEach(usageDataKey => {
+            if (usageDataKey in UsageDataToCustomDimensionMapping) {
+                const customDimensionKey = UsageDataToCustomDimensionMapping[usageDataKey];
+                requestObject[customDimensionKey] = data[usageDataKey];
+            }
+
+        });
+    }
+
+    return requestObject;
 }

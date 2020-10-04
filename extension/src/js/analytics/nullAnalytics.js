@@ -17,7 +17,12 @@
 import * as logger from "../logging/logger.js";
 
 export const NullAnalytics = {
-    sendEventAsync: async function (data) {
-        logger.info(`Not sending usage statistics, because it's disabled. Would send the following data: '${JSON.stringify(data)}'`);
+    sendEventAsync: async function (category, action, label, data) {
+        logger.info(`Not sending usage statistics, because it's disabled. Would send the following:
+            Category: '${category}'
+            Action: '${action}'
+            Label: '${label}'
+            Extra data: '${data ? JSON.stringify(data) : "n/a"}'`
+        );
     }
 };

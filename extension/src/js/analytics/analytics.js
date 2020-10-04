@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as env from "../environment.js";
-
 const LifeCycleCategory = "lifeCycle";
 const UsageCategory = "usage";
 const OptionsCategory = "options";
@@ -50,26 +48,6 @@ export async function reportOptionsEventAsync(data) {
     await sendEventAsync(OptionsCategory, "optionsClosed", undefined, data);
 }
 
-async function sendEventAsync(category, action, label, extraData) {
-    const environment = (await env.isDevelopmentAsync())
-        ? "development"
-        : "production";
-
-    const data = Object.assign({
-        "event": "TabFloaterEvent",
-        "category": category,
-        "action": action,
-        "label": label || "n/a",
-        "env": environment
-    }, extraData);
-
-    convertAllPropertiesToString(data);
-
-    await analyticsImpl.sendEventAsync(data);
-}
-
-function convertAllPropertiesToString(obj) {
-    Object.keys(obj).forEach(key => {
-        obj[key] = `${obj[key]}`;
-    });
+async function sendEventAsync(category, action, label, data) {
+    await analyticsImpl.sendEventAsync(category, action, label, data);
 }
