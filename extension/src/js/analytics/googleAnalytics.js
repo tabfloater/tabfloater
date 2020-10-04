@@ -17,6 +17,7 @@
 import { GoogleAnalyticsTrackingId, UsageDataToCustomDimensionMapping } from "../constants.js";
 import * as env from "../environment.js";
 import * as logger from "../logging/logger.js";
+//TODO remove manifest perms
 
 export const GoogleAnalytics = {
     sendEventAsync: async function (category, action, label, data) {
@@ -28,8 +29,8 @@ export const GoogleAnalytics = {
         );
 
         const trackingId = (await env.isDevelopmentAsync())
-                            ? GoogleAnalyticsTrackingId.Development
-                            : GoogleAnalyticsTrackingId.Production;
+            ? GoogleAnalyticsTrackingId.Development
+            : GoogleAnalyticsTrackingId.Production;
         const clientId = await getClientIdAsync();
         const requestObject = buildRequestObject(trackingId, clientId, category, action, label, data);
         const message = new URLSearchParams(requestObject).toString();
