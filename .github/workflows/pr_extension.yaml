@@ -21,6 +21,7 @@ jobs:
       run: |
         ls ./src/css/generated/uk-tabfloater.css
         ls ./src/libs/uikit/uikit.min.js
+        ls ./src/libs/uuid/uuidv4.min.js
         ls ./src/libs/webextension-polyfill/browser-polyfill.min.js
     - name: Lint
       run: npm run lint
