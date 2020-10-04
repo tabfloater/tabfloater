@@ -43,7 +43,7 @@ export const DefaultOptions = {
 };
 
 export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
-    collectUsageStats: true,  //TODO set to false
+    collectUsageStats: false,
     debug: true
 });
 

@@ -17,7 +17,6 @@
 import { GoogleAnalyticsTrackingId, UsageDataToCustomDimensionMapping } from "../constants.js";
 import * as env from "../environment.js";
 import * as logger from "../logging/logger.js";
-//TODO remove manifest perms
 
 export const GoogleAnalytics = {
     sendEventAsync: async function (category, action, label, data) {
