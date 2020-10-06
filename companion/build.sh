@@ -40,7 +40,7 @@ if [[ "$_MODE" == "-p" || "$_MODE" == "--package" ]]; then
         rm -rf dist
     fi
     cmake -S . -B dist
-    cmake --build dist --target install generate_appimage
+    cmake --build dist --target tabfloater-companion package_source #generate_appimage
     exit
 fi
 
