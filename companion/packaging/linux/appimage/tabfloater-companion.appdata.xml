@@ -5,7 +5,7 @@
   <extends>io.github.tabfloater</extends>
   <name>TabFloater Companion</name>
   <summary>Companion application for the TabFloater browser extension</summary>
-  <url type="homepage">https://www.tabfloater.io/</url>
+  <url type="homepage">https://tabfloater.io/</url>
   <url type="bugtracker">https://github.com/tabfloater/tabfloater</url>
   <url type="faq">https://github.com/tabfloater/tabfloater</url>
   <url type="help">https://github.com/tabfloater/tabfloater</url>

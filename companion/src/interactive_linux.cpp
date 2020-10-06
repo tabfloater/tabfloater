@@ -446,7 +446,7 @@ void printVersion(std::string version)
 {
     std::cout << "TabFloater Companion version " << version << std::endl;
     std::cout << std::endl;
-    std::cout << "Homepage: https://www.tabfloater.io/" << std::endl;
+    std::cout << "Homepage: https://tabfloater.io/" << std::endl;
     std::cout << "Bug reports: https://github.com/tabfloater/tabfloater/" << std::endl;
     std::cout << std::endl;
     std::cout << "Copyright (C) 2020 Balazs Gyurak" << std::endl;
@@ -459,7 +459,7 @@ void printMainUsage(std::string executableName)
     std::cout << std::endl;
     std::cout << "Usage: " << executableName << " COMMAND" << std::endl;
     std::cout << std::endl;
-    std::cout << "Companion application for the TabFloater browser extension. Learn more about TabFloater at https://www.tabfloater.io/" << std::endl;
+    std::cout << "Companion application for the TabFloater browser extension. Learn more about TabFloater at https://tabfloater.io/" << std::endl;
     std::cout << "The command line use of this application is only intended to register the Companion for your preferred browsers." << std::endl;
     std::cout << "Once registered, the TabFloater browser extension will work with the Companion seamlessly." << std::endl;
     std::cout << std::endl;
