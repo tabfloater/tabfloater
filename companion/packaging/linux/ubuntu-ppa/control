@@ -3,10 +3,9 @@ Section: x11
 Priority: optional
 Maintainer: Balazs Gyurak <ba32107@gmail.com>
 Build-Depends: cmake,
-               debhelper (>=9),
+               debhelper-compat (= 12),
                libx11-dev,
                libc6-dev,
-               libstdc++-6-dev,
                libgcc1,
                libgcc-s1
 Standards-Version: 4.5.0.3
@@ -20,4 +19,4 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Companion application for the TabFloater browser extension
  TabFloater Companion is a complementer application for TabFloater, a
  browser extension that allows extracting any browser tab into
- Picture-in-Picture mode. 
+ Picture-in-Picture mode.

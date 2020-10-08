@@ -1,5 +1,11 @@
-tabfloater-companion (0.7.0) unstable; urgency=medium
+tabfloater-companion (0.7.1) focal; urgency=medium
 
-  * Initial Release.
+  * Fix attempt
 
- -- Balazs <ba32107@gmail.com>  Tue, 06 Oct 2020 08:08:20 +0100
+ -- Balazs Gyurak <ba32107@gmail.com>  Tue, 07 Oct 2020 22:35:10 +0100
+
+tabfloater-companion (0.7.0) focal; urgency=medium
+
+  * Beta release - testing.
+
+ -- Balazs Gyurak <ba32107@gmail.com>  Tue, 06 Oct 2020 08:08:20 +0100

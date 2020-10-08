@@ -172,13 +172,25 @@ else()
 
         # Source pack generation - do we need this?
         set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Balazs Gyurak")
-        set(CPACK_SOURCE_GENERATOR "DEB")
+        set(CPACK_SOURCE_GENERATOR "TGZ")
         set(CPACK_SOURCE_IGNORE_FILES
             build/
             dist/
             packaging/
             build.*
         )
+
+
+        # TODO
+        # upload: dput ppa:ba32107/tabfloater tabfloater-companion_0.7.1_source.changes
+        # build: debuild -S
+        #
+        # remove packaging dependencies from the build process
+        # create separate build script independent from cmake. CMAKE should only generate the tarball
+        # one that creates appimage, the other that creates and uploads the deb package
+        # separate package for snap?
+        # should we register TFC by default?
+        # how to handle changelist automatically?
 
     endif()
 
