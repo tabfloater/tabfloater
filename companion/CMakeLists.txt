@@ -20,13 +20,15 @@ if(WIN32)
     add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
-project(tabfloater-companion VERSION 0.7.0 DESCRIPTION "Companion application for the TabFloater browser extension")
-
 # Variables
-set(CMAKE_CXX_STANDARD 11)
-set(MAIN_TARGET "tabfloater-companion")
-set(SOURCE_LIST)
+set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
+set(VERSION "0.7.0" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
+
+project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
+
+set(CMAKE_CXX_STANDARD 11)
+set(SOURCE_LIST)
 
 message("DEV_BUILD: ${DEV_BUILD}")
 
@@ -153,39 +155,23 @@ else()
     if(UNIX)
         # Linux packaging
 
-        set(LINUX_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux")
-
-        # AppImage generation
-
-        configure_file("${LINUX_PACKAGE_RESOURCES_DIR}/appimage/generate_appimage.sh" "${PROJECT_BINARY_DIR}")
-        configure_file("${LINUX_PACKAGE_RESOURCES_DIR}/appimage/tabfloater-companion.desktop" "${PROJECT_BINARY_DIR}")
-        configure_file("${LINUX_PACKAGE_RESOURCES_DIR}/appimage/tabfloater-companion.svg" "${PROJECT_BINARY_DIR}")
-
-        add_custom_target(generate_appimage
-            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-            COMMAND chmod +x ./generate_appimage.sh
-            COMMAND ./generate_appimage.sh ${MAIN_TARGET} ${PROJECT_VERSION} tabfloater-companion.desktop tabfloater-companion.svg
-        )
-
         # Install targets for DEB package
         install(TARGETS ${MAIN_TARGET})
 
         # Source pack generation - do we need this?
-        set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Balazs Gyurak")
         set(CPACK_SOURCE_GENERATOR "TGZ")
         set(CPACK_SOURCE_IGNORE_FILES
             build/
             dist/
+            manifests/
             packaging/
             build.*
         )
-
 
         # TODO
         # upload: dput ppa:ba32107/tabfloater tabfloater-companion_0.7.1_source.changes
         # build: debuild -S
         #
-        # remove packaging dependencies from the build process
         # create separate build script independent from cmake. CMAKE should only generate the tarball
         # one that creates appimage, the other that creates and uploads the deb package
         # separate package for snap?
