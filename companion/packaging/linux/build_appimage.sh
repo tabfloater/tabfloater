@@ -10,11 +10,7 @@ _BUILD_DIR=$_COMPANION_DIR/dist
 
 cd $_COMPANION_DIR
 
-if [ -e $_BUILD_DIR ]; then
-    echo "Cleaning existing build directory..."
-    rm -rf $_BUILD_DIR
-fi
-
+rm -rf $_BUILD_DIR
 cmake -S . -B $_BUILD_DIR
 cmake --build $_BUILD_DIR
 
