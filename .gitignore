@@ -13,6 +13,7 @@ key.pem
 bin/
 build/
 dist/
+dist_ppa/
 obj/
 
 # VS Code
