@@ -22,9 +22,11 @@ if "%mode%" == "--help" (
     echo When invoked without arguments, the script performs a full build and manifest installation if no build
     echo directory exists. A normal build is performed otherwise, without manifest installation.
     echo.
-    echo Usage: %0 [-c ^| --clean] [-p ^| --package] [-r ^| --rebuild]
+    echo Usage: %0 [options]
     echo.
+    echo Options:
     echo   -c  --clean      Deletes the build directory and removes the manifest registry entries. The dist directory is kept.
+    echo   -h  --help       Displays this information.
     echo   -p  --package    Packages the companion into the dist directory. The directory is cleaned first.
     echo   -r  --rebuild    Performs a full rebuild. Same as '--clean', then performing a build.
     echo.

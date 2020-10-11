@@ -22,7 +22,7 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.7.0" CACHE STRING "Application version")
+set(VERSION "0.7.3" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
@@ -177,6 +177,7 @@ else()
         # separate package for snap?
         # should we register TFC by default?
         # how to handle changelist automatically?
+        # can I remove libgcc deps?
 
     endif()
 

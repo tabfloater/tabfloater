@@ -21,10 +21,12 @@ if [[ "$_MODE" == "-h" || "$_MODE" == "--help" ]]; then
     echo "When invoked without arguments, the script performs a full build and manifest installation if no build"
     echo "directory exists. A normal build is performed otherwise, without manifest installation."
     echo
-    echo "Usage: $0 [-c | --clean] [-r | --rebuild]"
+    echo "Usage: $0 [options]"
     echo
-    echo "  -c  --clean      Deletes the build directory and removes the manifests."
-    echo "  -r  --rebuild    Performs a full rebuild. Same as '--clean', then performing a build."
+    echo "Options:"
+    echo "  -c  --clean      Deletes the build directory and removes the manifests"
+    echo "  -h  --help       Displays this information"
+    echo "  -r  --rebuild    Performs a full rebuild (same as '--clean', then performing a build)"
     echo
     exit
 fi

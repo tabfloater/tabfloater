@@ -5,7 +5,6 @@ Maintainer: Balazs Gyurak <balazs@tabfloater.io>
 Build-Depends: cmake,
                debhelper-compat (= 12),
                libx11-dev,
-               libc6-dev,
                libgcc1,
                libgcc-s1
 Standards-Version: 4.5.0.3
