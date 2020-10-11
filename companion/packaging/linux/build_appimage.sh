@@ -32,9 +32,7 @@ chmod +x ./linuxdeploy-x86_64.AppImage
 echo "Generating AppImage..."
 export VERSION=$_VERSION && ./linuxdeploy-x86_64.AppImage --appdir AppDir --executable ./$_EXECUTABLE_NAME --desktop-file $_DESKTOP_FILE --icon-file $_ICON_FILE --output appimage
 
-if [[ $? -eq 0 ]]; then
-    _APPIMAGE_FILENAME=$_BUILD_DIR/$(ls tabfloater-companion*.AppImage)
-    echo
-    echo "Successfully built:"
-    echo $_APPIMAGE_FILENAME
-fi
+_APPIMAGE_FILENAME=$_BUILD_DIR/$(ls tabfloater-companion*.AppImage)
+echo
+echo "Successfully built:"
+echo $_APPIMAGE_FILENAME

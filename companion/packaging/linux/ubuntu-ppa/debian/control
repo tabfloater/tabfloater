@@ -1,7 +1,7 @@
 Source: tabfloater-companion
 Section: x11
 Priority: optional
-Maintainer: Balazs Gyurak <ba32107@gmail.com>
+Maintainer: Balazs Gyurak <balazs@tabfloater.io>
 Build-Depends: cmake,
                debhelper-compat (= 12),
                libx11-dev,
