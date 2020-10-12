@@ -1,3 +1,15 @@
+tabfloater-companion (0.7.5-SERIES1) SERIES; urgency=medium
+
+  * Change required debhelper version
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Mon, 12 Oct 2020 08:13:04 +0100
+
+tabfloater-companion (0.7.4-SERIES1) SERIES; urgency=medium
+
+  * Remove libgcc1 dep to see if it works
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Mon, 12 Oct 2020 07:59:49 +0100
+
 tabfloater-companion (0.7.3-SERIES1) SERIES; urgency=medium
 
   * Updated build script

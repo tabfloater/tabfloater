@@ -22,7 +22,7 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.7.3" CACHE STRING "Application version")
+set(VERSION "0.7.5" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
@@ -172,12 +172,12 @@ else()
         # upload: dput ppa:ba32107/tabfloater tabfloater-companion_0.7.1_source.changes
         # build: debuild -S
         #
-        # create separate build script independent from cmake. CMAKE should only generate the tarball
         # one that creates appimage, the other that creates and uploads the deb package
         # separate package for snap?
         # should we register TFC by default?
         # how to handle changelist automatically?
         # can I remove libgcc deps?
+        # versioning doesn't work properly
 
     endif()
 

@@ -3,10 +3,8 @@ Section: x11
 Priority: optional
 Maintainer: Balazs Gyurak <balazs@tabfloater.io>
 Build-Depends: cmake,
-               debhelper-compat (= 12),
-               libx11-dev,
-               libgcc1,
-               libgcc-s1
+               debhelper (>= 9),
+               libx11-dev
 Standards-Version: 4.5.0.3
 Homepage: https://tabfloater.io/
 Vcs-Browser: https://github.com/tabfloater/tabfloater
