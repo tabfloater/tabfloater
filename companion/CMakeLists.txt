@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10.2)
+cmake_minimum_required(VERSION 3.15.7)
 
 if(WIN32)
     set(CMAKE_C_COMPILER gcc)
@@ -20,13 +20,15 @@ if(WIN32)
     add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
-project(tabfloater-companion VERSION 0.7.0 DESCRIPTION "Companion application for the TabFloater browser extension")
-
 # Variables
-set(CMAKE_CXX_STANDARD 11)
-set(MAIN_TARGET "tabfloater-companion")
-set(SOURCE_LIST)
+set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
+set(VERSION "0.7.7" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
+
+project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
+
+set(CMAKE_CXX_STANDARD 11)
+set(SOURCE_LIST)
 
 message("DEV_BUILD: ${DEV_BUILD}")
 
@@ -153,41 +155,18 @@ else()
     if(UNIX)
         # Linux packaging
 
-        set(LINUX_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux")
+        # Install target for DEB package
+        install(TARGETS ${MAIN_TARGET})
 
-        # AppImage generation
-
-        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/appimage/generate_appimage.sh" DESTINATION "${PROJECT_BINARY_DIR}")
-        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/appimage/tabfloater-companion.desktop" DESTINATION "${PROJECT_BINARY_DIR}")
-        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/appimage/tabfloater-companion.svg" DESTINATION "${PROJECT_BINARY_DIR}")
-
-        add_custom_target(generate_appimage
-            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-            COMMAND chmod +x ./generate_appimage.sh
-            COMMAND ./generate_appimage.sh ${MAIN_TARGET} ${PROJECT_VERSION} tabfloater-companion.desktop tabfloater-companion.svg
+        set(CPACK_SOURCE_GENERATOR "TGZ")
+        set(CPACK_SOURCE_IGNORE_FILES
+            build/
+            dist/
+            manifests/
+            packaging/
+            build.*
         )
-
-
-        # --- TODO other distribution formats ---
-        # TODO Configure native messaging host manifests for Linux. The executable has to be an absolute path.
-        #set(COMPANION_EXECUTABLE "${MAIN_TARGET}")
-        #configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_chrome.json" "${PROJECT_BINARY_DIR}")
-        #configure_file("${CMAKE_CURRENT_SOURCE_DIR}/manifests/manifest_firefox.json" "${PROJECT_BINARY_DIR}")
-
-        # Install targets for makefile
-        #install(TARGETS ${MAIN_TARGET})
-        # install(FILES "${PROJECT_BINARY_DIR}/manifest_chrome.json" DESTINATION "$ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json")
-
-        # Source pack generation
-        #set(CPACK_SOURCE_GENERATOR "TGZ")
-        #set(CPACK_SOURCE_IGNORE_FILES
-        #    build/
-        #    dist/
-        #    packaging/
-        #    build.*
-        #)
     endif()
 
     include(CPack)
-
 endif()
