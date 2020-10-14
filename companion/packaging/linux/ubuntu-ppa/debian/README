@@ -1,6 +1,9 @@
-The Debian Package tabfloater-companion
+TabFloater Companion
 ----------------------------
 
-Comments regarding the Package
+TabFloater Companion is a complementer application for TabFloater, a browser extension that allows extracting any browser tab into Picture-in-Picture mode.
+
+To learn more about the application, visit https://tabfloater.io/ and https://github.com/tabfloater/tabfloater.
+
 
  -- Balazs Gyurak <balazs@tabfloater.io>  Tue, 06 Oct 2020 08:08:20 +0100
