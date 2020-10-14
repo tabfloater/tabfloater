@@ -5,7 +5,7 @@ set -e
 export DEBFULLNAME="Balazs Gyurak"
 export DEBEMAIL="balazs@tabfloater.io"
 _PPA_HOST="ppa:ba32107/tabfloater"
-_SERIES_LIST="focal,bionic,xenial"
+_SERIES_LIST="focal"
 
 _COMPANION_DIR=$(git rev-parse --show-toplevel)/companion
 _PPA_RESOURCES_DIR=$_COMPANION_DIR/packaging/linux/ubuntu-ppa

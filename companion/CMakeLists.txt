@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10.2)
+cmake_minimum_required(VERSION 3.15.7)
 
 if(WIN32)
     set(CMAKE_C_COMPILER gcc)
@@ -22,7 +22,7 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.7.5" CACHE STRING "Application version")
+set(VERSION "0.7.6" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
