@@ -22,7 +22,7 @@ if "%mode%" == "--help" (
     echo When invoked without arguments, the script performs a full build and manifest installation if no build
     echo directory exists. A normal build is performed otherwise, without manifest installation.
     echo.
-    echo Usage: %0 [options]
+    echo Usage: %0 [option]
     echo.
     echo Options:
     echo   -c  --clean      Deletes the build directory and removes the manifest registry entries. The dist directory is kept.

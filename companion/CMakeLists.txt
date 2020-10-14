@@ -155,10 +155,9 @@ else()
     if(UNIX)
         # Linux packaging
 
-        # Install targets for DEB package
+        # Install target for DEB package
         install(TARGETS ${MAIN_TARGET})
 
-        # Source pack generation - do we need this?
         set(CPACK_SOURCE_GENERATOR "TGZ")
         set(CPACK_SOURCE_IGNORE_FILES
             build/
@@ -168,19 +167,10 @@ else()
             build.*
         )
 
-        # TODO
-        # upload: dput ppa:ba32107/tabfloater tabfloater-companion_0.7.1_source.changes
-        # build: debuild -S
-        #
-        # one that creates appimage, the other that creates and uploads the deb package
         # separate package for snap?
         # should we register TFC by default?
-        # how to handle changelist automatically?
-        # can I remove libgcc deps?
-        # versioning doesn't work properly
 
     endif()
 
     include(CPack)
-
 endif()

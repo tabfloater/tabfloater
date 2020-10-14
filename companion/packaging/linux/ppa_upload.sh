@@ -79,6 +79,7 @@ function upload_to_launchpad() {
     cd $_PPA_BUILD_DIR/$_series
     local _changes_file=$(ls ./*.changes)
 
+    dput -lo $_changes_file
     dput $_simulate_option $_PPA_HOST $_changes_file
 }
 
@@ -132,5 +133,5 @@ print_stage "Uploading to Launchpad ${_DRY_RUN:+-- DRY RUN}"
 
 for _series in $(echo $_SERIES_LIST | sed "s/,/ /g")
 do
-    upload_to_launchpad $_series $_DRY_RUN
+    upload_to_launchpad $_series
 done

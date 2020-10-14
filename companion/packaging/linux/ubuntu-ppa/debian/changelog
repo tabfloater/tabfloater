@@ -1,3 +1,9 @@
+tabfloater-companion (0.7.6~SERIES4) SERIES; urgency=medium
+
+  * Change debhelper compat level
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Wed, 14 Oct 2020 07:54:13 +0100
+
 tabfloater-companion (0.7.6~SERIES3) SERIES; urgency=medium
 
   * Remove non-focal distros
