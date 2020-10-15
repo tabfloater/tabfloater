@@ -1,0 +1,17 @@
+name: Release companion
+
+on:
+  release:
+    types: [ created ]
+
+defaults:
+  run:
+    working-directory: companion
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: echo "::debug::Set the Octocat variable"
