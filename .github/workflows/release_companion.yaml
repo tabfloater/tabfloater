@@ -13,12 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: source ./build_appimage.sh
+      run: |
+        source ./build_appimage.sh
+        echo ::set-env name=_appimage_full_path::$_APPIMAGE_FILENAME
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: $_APPIMAGE_FILENAME
+        file: $_appimage_full_path
         asset_name: mything
         overwrite: true
         tag: ${{ github.ref }}  
