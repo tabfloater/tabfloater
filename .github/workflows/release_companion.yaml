@@ -19,12 +19,12 @@ jobs:
         echo "blah=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
     - name: Build2
       run: |
-        echo "dfdf $blah"
+        echo "dfdf ${{ blah }}"
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: "$blah"
+        file: "${{ blah }}
         asset_name: mything
         overwrite: true
         tag: ${{ github.ref }}  
