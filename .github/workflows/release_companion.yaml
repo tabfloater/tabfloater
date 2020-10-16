@@ -15,13 +15,14 @@ jobs:
     - name: Build
       run: |
         source ./packaging/linux/build_appimage.sh
-        echo "blah=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
+        echo "appimage_filename=$(basename $_APPIMAGE_FILENAME)" >> $GITHUB_ENV
+        echo "appimage_fullpath=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ env.blah }}
-        asset_name: mything
+        file: ${{ env.appimage_fullpath }}
+        asset_name: ${{ env.appimage_filename }}
         overwrite: true
         tag: ${{ github.ref }}  
         body: "This is my release text"
