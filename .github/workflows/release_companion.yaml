@@ -15,7 +15,9 @@ jobs:
     - name: Build
       run: |
         source ./build_appimage.sh
+        echo $_APPIMAGE_FILENAME
         echo ::set-env name=_appimage_full_path::$_APPIMAGE_FILENAME
+        echo $_appimage_full_path
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
