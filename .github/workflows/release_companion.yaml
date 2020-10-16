@@ -1,8 +1,7 @@
 name: Release companion
 
 on:
-  release:
-    types: [ published ]
+  workflow_dispatch
 
 defaults:
   run:
