@@ -25,4 +25,3 @@ jobs:
         asset_name: ${{ env.appimage_filename }}
         overwrite: true
         tag: ${{ github.ref }}  
-        body: "This is my release text"
