@@ -5,7 +5,7 @@ on:
 
 defaults:
   run:
-    working-directory: companion/packaging/linux
+    working-directory: companion/
 
 jobs:
   build-linux:
@@ -13,18 +13,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: |
-        source ./build_appimage.sh
-        echo $_APPIMAGE_FILENAME
-        echo "blah=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
-    - name: Build2
-      run: |
-        echo "dfdf ${{ blah }}"
+      run: ./packaging/linux/build_appimage.sh
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: "${{ blah }}"
+        file: ./dist/*.AppImage
         asset_name: mything
         overwrite: true
         tag: ${{ github.ref }}  
