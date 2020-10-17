@@ -61,5 +61,5 @@ jobs:
         V2: ${{ env.WIN_INSTALLER_FILENAME }}
         V3: ${{ env.WIN_PORTABLE_FULL_PATH }}
         V4: ${{ env.WIN_PORTABLE_FILENAME }}
-      run: echo "v1: $V1"; echo "v2: $V2"; echo "v3: $V3"; echo "v4: $V4"
+      run: echo $V1; echo $V2; echo $V3; echo $V4
 
