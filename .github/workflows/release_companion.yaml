@@ -36,6 +36,7 @@ jobs:
         sudo apt-get install debhelper devscripts build-essential lintian
         cmake --version
         cd ./packaging/linux/ubuntu-ppa
+        which cmake
         dpkg-checkbuilddeps
         ./packaging/linux/ppa_upload.sh --dry-run
 
