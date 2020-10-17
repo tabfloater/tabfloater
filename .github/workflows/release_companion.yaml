@@ -76,5 +76,9 @@ jobs:
         echo "g2 - ${{ env.WIN_INSTALLER_FILENAME }}"
         echo "g3 - ${{ env.WIN_PORTABLE_FULL_PATH }}"
         echo "g4 - ${{ env.WIN_PORTABLE_FILENAME }}"
-        
+        echo "h1 - $WIN_INSTALLER_FULL_PATH"
+        echo "h2 - $WIN_INSTALLER_FILENAME"
+        echo "h3 - $WIN_PORTABLE_FULL_PATH"
+        echo "h4 - $WIN_PORTABLE_FILENAME"
+
 
