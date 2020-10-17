@@ -65,5 +65,16 @@ jobs:
         V2: ${{ env.WIN_INSTALLER_FILENAME }}
         V3: ${{ env.WIN_PORTABLE_FULL_PATH }}
         V4: ${{ env.WIN_PORTABLE_FILENAME }}
-      run: echo $V1; echo $V2; echo $V3; echo $V4
+      run: |
+        $myvar = "testvar"
+        echo "mine $myvar"
+        echo "he1 - $V1"
+        echo "he2 - $V2"
+        echo "he3 - $V3"
+        echo "he4 - $V4"
+        echo "g1 - ${{ env.WIN_INSTALLER_FULL_PATH }}"
+        echo "g2 - ${{ env.WIN_INSTALLER_FILENAME }}"
+        echo "g3 - ${{ env.WIN_PORTABLE_FULL_PATH }}"
+        echo "g4 - ${{ env.WIN_PORTABLE_FILENAME }}"
+        
 
