@@ -37,7 +37,7 @@ jobs:
     - name: Import GPG key
       env:
         GPG_KEY: ${{ secrets.TEST_KEY }}
-      run: gpg --version
+      run: echo $GPG_KEY | gpg --import--verbose
         # echo $GPG_KEY > mykey
         # ls
         # cat mykey
