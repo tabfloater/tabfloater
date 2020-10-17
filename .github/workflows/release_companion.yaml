@@ -1,23 +1,25 @@
-name: Release companion
+name: Package companion
 
 on:
-  workflow_dispatch
+  push:
+    tags:
+      - 'v*_companion'
 
 defaults:
   run:
-    working-directory: companion/
+    working-directory: companion
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build-appimage-linux:
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - name: Build
+    - name: Build AppImage
       run: |
         source ./packaging/linux/build_appimage.sh
         echo "appimage_filename=$(basename $_APPIMAGE_FILENAME)" >> $GITHUB_ENV
         echo "appimage_fullpath=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
-    - name: Upload binaries to release
+    - name: Upload AppImage to Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -25,3 +27,11 @@ jobs:
         asset_name: ${{ env.appimage_filename }}
         overwrite: true
         tag: ${{ github.ref }}
+  upload-ppa-linux:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build DEB package and upload to PPA
+      run: |
+        ./packaging/linux/ppa_upload.sh --dry-run
+
