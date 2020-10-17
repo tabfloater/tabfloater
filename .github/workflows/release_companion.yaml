@@ -38,13 +38,14 @@ jobs:
       env:
         GPG_KEY: ${{ secrets.TEST_KEY }}
       run: |
-        echo $GPG_KEY > mykey
-        ls
-        cat mykey
+        gpg --version
+        # echo $GPG_KEY > mykey
+        # ls
+        # cat mykey
 
-        gpg --import mykey
-        echo test > test
-        gpg --sign test
+        # gpg --import mykey
+        # echo test > test
+        # gpg --sign test
     # - name: Build DEB package and upload to PPA
     #   run: ./packaging/linux/ppa_upload.sh --dry-run
 
