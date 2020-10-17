@@ -10,35 +10,33 @@ defaults:
     working-directory: companion
 
 jobs:
-  # build-appimage-linux:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Build AppImage
-  #     run: |
-  #       source ./packaging/linux/build_appimage.sh
-  #       echo "APPIMAGE_FILENAME=$(basename $_APPIMAGE_FILENAME)" >> $GITHUB_ENV
-  #       echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
-  #   - name: Upload AppImage to Release
-  #     uses: svenstaro/upload-release-action@v2
-  #     with:
-  #       repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #       file: ${{ env.APPIMAGE_FULL_PATH }}
-  #       asset_name: ${{ env.APPIMAGE_FILENAME }}
-  #       overwrite: true
-  #       tag: ${{ github.ref }}
-  # upload-ppa-linux:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Install dependencies
-  #     run: sudo apt-get install cmake debhelper devscripts
-  #   - name: Import GPG key
-  #     env:
-  #       GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
-  #     run: echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
-  #   - name: Build DEB package and upload to PPA
-  #     run: ./packaging/linux/ppa_upload.sh -d
+  build-appimage-linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build AppImage
+      run: |
+        source ./packaging/linux/build_appimage.sh
+        echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
+    - name: Upload AppImage to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ env.APPIMAGE_FULL_PATH }}
+        overwrite: true
+        tag: ${{ github.ref }}
+  upload-ppa-linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: sudo apt-get install cmake debhelper devscripts
+    - name: Import GPG key
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
+      run: echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
+    - name: Build DEB package and upload to PPA
+      run: ./packaging/linux/ppa_upload.sh
   build-windows-packages:
     runs-on: windows-2019
     steps:
