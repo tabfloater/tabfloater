@@ -45,45 +45,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build packages
-      run: |
-        ./build.bat --package
-        $WIN_INSTALLER_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.msi").Fullname
-        $WIN_INSTALLER_FILENAME = (Get-ChildItem -Path dist -Filter "*.msi").Name
-        $WIN_PORTABLE_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.zip").Fullname
-        $WIN_PORTABLE_FILENAME = (Get-ChildItem -Path dist -Filter "*.zip").Name
-        echo "mypath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        echo "WIN_INSTALLER_FULL_PATH=$WIN_INSTALLER_FULL_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "WIN_INSTALLER_FILENAME=$WIN_INSTALLER_FILENAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "WIN_PORTABLE_FULL_PATH=$WIN_PORTABLE_FULL_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "WIN_PORTABLE_FILENAME=$WIN_PORTABLE_FILENAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-    - name: Test env vars
-      env:
-        V1: ${{ env.WIN_INSTALLER_FULL_PATH }}
-        V2: ${{ env.WIN_INSTALLER_FILENAME }}
-        V3: ${{ env.WIN_PORTABLE_FULL_PATH }}
-        V4: ${{ env.WIN_PORTABLE_FILENAME }}
-      run: |
-        $myvar = "testvar"
-        echo "mine $myvar"
-        echo "he1 - $V1"
-        echo "he2 - $V2"
-        echo "he3 - $V3"
-        echo "he4 - $V4"
-        echo "g1 - ${{ env.WIN_INSTALLER_FULL_PATH }}"
-        echo "g2 - ${{ env.WIN_INSTALLER_FILENAME }}"
-        echo "g3 - ${{ env.WIN_PORTABLE_FULL_PATH }}"
-        echo "g4 - ${{ env.WIN_PORTABLE_FILENAME }}"
-        echo "h1 - $WIN_INSTALLER_FULL_PATH"
-        echo "h2 - $WIN_INSTALLER_FILENAME"
-        echo "h3 - $WIN_PORTABLE_FULL_PATH"
-        echo "h4 - $WIN_PORTABLE_FILENAME"
-        echo "he1 - $env:V1"
-        echo "he2 - $env:V2"
-        echo "he3 - $env:V3"
-        echo "he4 - $env:V4"
-        echo "h1 - $env:WIN_INSTALLER_FULL_PATH"
-        echo "h2 - $env:WIN_INSTALLER_FILENAME"
-        echo "h3 - $env:WIN_PORTABLE_FULL_PATH"
-        echo "h4 - $env:WIN_PORTABLE_FILENAME"
-
-
+      run: ./build.bat --package
+    - name: Upload installer to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./dist/*.msi
+        overwrite: true
+        tag: ${{ github.ref }}
+    - name: Upload portable package to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./dist/*.zip
+        overwrite: true
+        tag: ${{ github.ref }}
