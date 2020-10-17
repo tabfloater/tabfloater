@@ -36,8 +36,9 @@ jobs:
       run: sudo apt-get install cmake debhelper devscripts
     - name: Import GPG key
       env:
-        GPG_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
+        GPG_KEY: ${{ secrets.TEST_KEY }}
       run: |
+        echo $GPG_KEY
         echo $GPG_KEY | gpg --import
         echo test > test
         gpg --sign test
