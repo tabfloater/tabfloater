@@ -12,13 +12,25 @@ defaults:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Build
       run: ./build.sh
-    - name: Test packaging
-      run: ./build.sh --package
+  build-appimage-linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build AppImage
+      run: ./packaging/linux/build_appimage.sh
+  build-deb-linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: sudo apt-get install cmake debhelper devscripts
+    - name: Build DEB package
+      run: ./packaging/linux/ppa_upload.sh --dry-run
   build-windows:
     runs-on: windows-2019
     steps:

@@ -12,7 +12,7 @@ defaults:
 
 jobs:
   # build-appimage-linux:
-  #   runs-on: ubuntu-18.04
+  #   runs-on: ubuntu-20.04
   #   steps:
   #   - uses: actions/checkout@v2
   #   - name: Build AppImage
@@ -34,6 +34,13 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install dependencies
       run: sudo apt-get install cmake debhelper devscripts
-    - name: Build DEB package and upload to PPA
-      run: ./packaging/linux/ppa_upload.sh --dry-run
+    - name: Import GPG key
+      env:
+        GPG_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
+      run: |
+        echo $GPG_KEY | gpg --import
+        echo test > test
+        gpg --sign test
+    # - name: Build DEB package and upload to PPA
+    #   run: ./packaging/linux/ppa_upload.sh --dry-run
 
