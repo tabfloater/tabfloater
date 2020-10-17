@@ -33,7 +33,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      run: sudo apt-get install cmake debhelper build-essential lintian
+      run: sudo apt-get install cmake devscripts build-essential lintian
     - name: Build DEB package and upload to PPA
       run: ./packaging/linux/ppa_upload.sh --dry-run
 
