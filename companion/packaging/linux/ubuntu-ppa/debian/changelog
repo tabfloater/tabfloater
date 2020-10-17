@@ -1,3 +1,9 @@
+tabfloater-companion (0.7.8~SERIES1) SERIES; urgency=medium
+
+  * Test package upload from GitHub
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 17 Oct 2020 18:30:12 +0100
+
 tabfloater-companion (0.7.7~SERIES2) SERIES; urgency=medium
 
   * Changed upload script
