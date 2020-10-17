@@ -1,33 +1,32 @@
 name: Package companion
 
 on:
-  workflow_dispatch
-  # push:
-  #   tags:
-  #     - 'v*_companion'
+  push:
+    tags:
+      - 'v*_companion'
 
 defaults:
   run:
     working-directory: companion
 
 jobs:
-  # build-appimage-linux:
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Build AppImage
-  #     run: |
-  #       source ./packaging/linux/build_appimage.sh
-  #       echo "appimage_filename=$(basename $_APPIMAGE_FILENAME)" >> $GITHUB_ENV
-  #       echo "appimage_fullpath=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
-  #   - name: Upload AppImage to Release
-  #     uses: svenstaro/upload-release-action@v2
-  #     with:
-  #       repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #       file: ${{ env.appimage_fullpath }}
-  #       asset_name: ${{ env.appimage_filename }}
-  #       overwrite: true
-  #       tag: ${{ github.ref }}
+  build-appimage-linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build AppImage
+      run: |
+        source ./packaging/linux/build_appimage.sh
+        echo "APPIMAGE_FILENAME=$(basename $_APPIMAGE_FILENAME)" >> $GITHUB_ENV
+        echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
+    - name: Upload AppImage to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ env.APPIMAGE_FULL_PATH }}
+        asset_name: ${{ env.APPIMAGE_FILENAME }}
+        overwrite: true
+        tag: ${{ github.ref }}
   upload-ppa-linux:
     runs-on: ubuntu-20.04
     steps:
@@ -36,15 +35,7 @@ jobs:
       run: sudo apt-get install cmake debhelper devscripts
     - name: Import GPG key
       env:
-        GPG_KEY: ${{ secrets.TEST_KEY }}
-      run: gpg --version
-        # echo $GPG_KEY > mykey
-        # ls
-        # cat mykey
-
-        # gpg --import mykey
-        # echo test > test
-        # gpg --sign test
-    # - name: Build DEB package and upload to PPA
-    #   run: ./packaging/linux/ppa_upload.sh --dry-run
-
+        GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
+      run: echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
+    - name: Build DEB package and upload to PPA
+      run: ./packaging/linux/ppa_upload.sh
