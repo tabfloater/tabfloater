@@ -32,12 +32,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: sudo apt-get install cmake debhelper devscripts
+    # - name: Install dependencies
+    #   run: sudo apt-get install cmake debhelper devscripts
     - name: Import GPG key
       env:
         GPG_KEY: ${{ secrets.TEST_KEY }}
-      run: echo $GPG_KEY | gpg --import--verbose
+      run: echo $GPG_KEY | gpg --import --verbose
         # echo $GPG_KEY > mykey
         # ls
         # cat mykey
