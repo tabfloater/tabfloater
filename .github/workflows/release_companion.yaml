@@ -33,6 +33,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build DEB package and upload to PPA
       run: |
-        sudo apt-get install devscripts build-essential lintian
+        sudo apt-get install debhelper devscripts build-essential lintian
         ./packaging/linux/ppa_upload.sh --dry-run
 
