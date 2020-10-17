@@ -28,7 +28,7 @@ jobs:
         overwrite: true
         tag: ${{ github.ref }}
   upload-ppa-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Build DEB package and upload to PPA
