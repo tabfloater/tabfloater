@@ -47,14 +47,14 @@ jobs:
     - name: Build packages
       run: |
         ./build.bat --package
-        for /F "delims=" %I in ('dir /B dist\*.msi') do set WIN_INSTALLER_FULL_PATH=%cd%\dist\%I
-        for /F "delims=" %I in ('dir /B dist\*.msi') do set WIN_INSTALLER_FILENAME=%I
-        for /F "delims=" %I in ('dir /B dist\*.zip') do set WIN_PORTABLE_FULL_PATH=%cd%\dist\%I
-        for /F "delims=" %I in ('dir /B dist\*.zip') do set WIN_PORTABLE_FILENAME=%I
-        echo "WIN_INSTALLER_FULL_PATH=%WIN_INSTALLER_FULL_PATH%" >> $GITHUB_ENV
-        echo "WIN_INSTALLER_FILENAME=%WIN_INSTALLER_FILENAME%" >> $GITHUB_ENV
-        echo "WIN_PORTABLE_FULL_PATH=%WIN_PORTABLE_FULL_PATH%" >> $GITHUB_ENV
-        echo "WIN_PORTABLE_FILENAME=%WIN_PORTABLE_FILENAME%" >> $GITHUB_ENV
+        $WIN_INSTALLER_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.msi").Fullname
+        $WIN_INSTALLER_FILENAME = (Get-ChildItem -Path dist -Filter "*.msi").Name
+        $WIN_PORTABLE_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.zip").Fullname
+        $WIN_PORTABLE_FILENAME = (Get-ChildItem -Path dist -Filter "*.zip").Name
+        echo "WIN_INSTALLER_FULL_PATH=$WIN_INSTALLER_FULL_PATH" >> $GITHUB_ENV
+        echo "WIN_INSTALLER_FILENAME=$WIN_INSTALLER_FILENAME" >> $GITHUB_ENV
+        echo "WIN_PORTABLE_FULL_PATH=$WIN_PORTABLE_FULL_PATH" >> $GITHUB_ENV
+        echo "WIN_PORTABLE_FILENAME=$WIN_PORTABLE_FILENAME" >> $GITHUB_ENV
     - name: Test env vars
       env:
         V1: ${{ env.WIN_INSTALLER_FULL_PATH }}
