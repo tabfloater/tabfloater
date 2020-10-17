@@ -1,12 +1,11 @@
 name: Release companion
 
 on:
-  release:
-    types: [ created ]
+  workflow_dispatch
 
 defaults:
   run:
-    working-directory: companion
+    working-directory: companion/
 
 jobs:
   build-linux:
@@ -14,4 +13,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: echo "::debug::Set the Octocat variable"
+      run: |
+        source ./packaging/linux/build_appimage.sh
+        echo "appimage_filename=$(basename $_APPIMAGE_FILENAME)" >> $GITHUB_ENV
+        echo "appimage_fullpath=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ env.appimage_fullpath }}
+        asset_name: ${{ env.appimage_filename }}
+        overwrite: true
+        tag: ${{ github.ref }}
