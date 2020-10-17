@@ -1,10 +1,9 @@
 name: Release companion
 
 on:
-  workflow_dispatch
-  # push:
-  #   tags:
-  #     - 'v*_companion'
+  push:
+    tags:
+      - 'v*_companion'
 
 defaults:
   run:
