@@ -62,8 +62,8 @@ jobs:
         V3: ${{ env.WIN_PORTABLE_FULL_PATH }}
         V4: ${{ env.WIN_PORTABLE_FILENAME }}
       run: |
-        echo %V1%
-        echo %V2%
-        echo %V3%
-        echo %V4%
+        echo $V1
+        echo $V2
+        echo $V3
+        echo $V4
 
