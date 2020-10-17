@@ -37,7 +37,8 @@ jobs:
     - name: Import GPG key
       env:
         GPG_KEY: ${{ secrets.TEST_KEY }}
-      run: echo $GPG_KEY | gpg2 --batch --import
+      run: echo $GPG_KEY | base64
+      #gpg --batch --import
         # echo $GPG_KEY > mykey
         # ls
         # cat mykey
