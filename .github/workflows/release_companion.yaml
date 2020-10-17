@@ -37,15 +37,11 @@ jobs:
     - name: Import GPG key
       env:
         GPG_KEY: ${{ secrets.TEST_KEY }}
-      run: echo $GPG_KEY | base64
-      #gpg --batch --import
-        # echo $GPG_KEY > mykey
-        # ls
-        # cat mykey
-
-        # gpg --import mykey
-        # echo test > test
-        # gpg --sign test
+      run: |
+        echo $GPG_KEY | base64 -d | gpg --batch --import
+        echo test > test
+        gpg --sign test
+        ls
     # - name: Build DEB package and upload to PPA
     #   run: ./packaging/linux/ppa_upload.sh --dry-run
 
