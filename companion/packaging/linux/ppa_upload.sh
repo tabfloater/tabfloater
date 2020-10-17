@@ -23,7 +23,7 @@ function print_usage() {
     echo
     echo "Options:"
     echo "  -c   --clean      Cleans up build files and directories"
-    echo "  -d   --dry-run    Build the packages, but only simulate upload"
+    echo "  -d   --dry-run    Build the packages, but only simulate upload. Packages won't be signed."
     echo "  -h   --help       Displays this information"
     echo "  -s   --series     Comma-separated Ubuntu series to upload for (default: \"$_SERIES_LIST\")"
     echo
@@ -52,6 +52,12 @@ function clean() {
 
 function build_deb_source_package() {
     local _series=$1
+    local _no_sign_options=""
+
+    if [ "$_DRY_RUN" = true ]; then
+        _no_sign_options="--unsigned-source --unsigned-changes"
+    fi
+
     print_step "Building for $_series"
 
     cd $_PPA_BUILD_DIR
@@ -63,15 +69,15 @@ function build_deb_source_package() {
     cp -r $_PPA_RESOURCES_DIR/* .
     sed -i "s/SERIES/$_series/g" ./debian/changelog
 
-    debuild --no-tgz-check -S
+    debuild --no-tgz-check -S $_no_sign_options
 }
 
 function upload_to_launchpad() {
     local _series=$1
-    local _simulate_option=""
+    local _dry_run_flags=""
 
     if [ "$_DRY_RUN" = true ]; then
-        _simulate_option="-s"
+        _dry_run_flags="--simulate --unchecked"
     fi
 
     print_step "Uploading for $_series"
@@ -79,8 +85,7 @@ function upload_to_launchpad() {
     cd $_PPA_BUILD_DIR/$_series
     local _changes_file=$(ls ./*.changes)
 
-    dput -lo $_changes_file
-    dput $_simulate_option $_PPA_HOST $_changes_file
+    dput --lintian $_dry_run_flags $_PPA_HOST $_changes_file
 }
 
 
@@ -122,7 +127,7 @@ _TARBALL=$(ls $_BUILD_DIR/*.tar.gz)
 
 mkdir $_PPA_BUILD_DIR
 
-print_stage "Building source packages"
+print_stage "Building source packages ${_DRY_RUN:+-- DRY RUN}"
 
 for _series in $(echo $_SERIES_LIST | sed "s/,/ /g")
 do
