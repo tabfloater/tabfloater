@@ -2,8 +2,8 @@ name: Release companion
 
 on:
   push:
-   tags:
-     - 'v*_companion'
+    tags:
+      - 'v*_companion'
 
 defaults:
   run:
