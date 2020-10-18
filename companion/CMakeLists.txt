@@ -22,7 +22,7 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.7.9" CACHE STRING "Application version")
+set(VERSION "0.7.10" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE STRING "If true, the application is built for development.")
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
@@ -155,16 +155,24 @@ else()
     if(UNIX)
         # Linux packaging
 
+        include(GNUInstallDirs)
+        set(LINUX_PACKAGE_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packaging/linux/install-resources")
+
         # Install target for DEB package
         install(TARGETS ${MAIN_TARGET})
+        install(FILES "${LINUX_PACKAGE_RESOURCES_DIR}/bash_completion.sh"
+                DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/bash-completion/completions"
+                RENAME ${MAIN_TARGET})
 
         set(CPACK_SOURCE_GENERATOR "TGZ")
         set(CPACK_SOURCE_IGNORE_FILES
-            build/
-            dist/
-            manifests/
-            packaging/
-            build.*
+            build
+            dist.*
+            manifests
+            packaging\/linux\/appimage
+            packaging\/linux\/ubuntu-ppa
+            packaging\/linux\/[^\/]*$
+            packaging\/windows\/
         )
     endif()
 
