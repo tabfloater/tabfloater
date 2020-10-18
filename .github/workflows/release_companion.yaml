@@ -34,7 +34,11 @@ jobs:
     - name: Import GPG key
       env:
         GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
-      run: echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
+      run: |
+        echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
+        FINGERPRINT=$(gpg --batch --fingerprint --with-colons | grep "pub" --after-context=1 | tail -1 | cut -d ':' -f 10)
+        echo "Fingerprint: $FINGERPRINT"
+        echo "$FINGERPRINT:6:" | gpg --import-ownertrust
     - name: Build DEB package and upload to PPA
       run: ./packaging/linux/ppa_upload.sh
   build-windows-packages:
