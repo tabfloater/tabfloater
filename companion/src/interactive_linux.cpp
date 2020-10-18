@@ -497,6 +497,10 @@ int startInteractiveMode(std::string version, int argc, char *argv[])
             {
                 printVersion(version);
             }
+            else if (command.compare("--help") == 0)
+            {
+                printMainUsage(argv[0]);
+            }
             else
             {
                 std::cout << argv[0] << ": '" << command << "' is not a command." << std::endl;
