@@ -114,8 +114,7 @@ std::string buildChromeManifest(std::string executablePath)
     return std::string(R"({
   "name": "io.github.tabfloater.companion",
   "description": "Tabfloater Companion",
-  "path": ")" + executablePath +
-                       R"(",
+  "path": ")" + executablePath + R"(",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://iojgbjjdoanmhcmmihbapiejfbbadhjd/"
@@ -128,8 +127,7 @@ std::string buildFirefoxManifest(std::string executablePath)
     return std::string(R"({
   "name": "io.github.tabfloater.companion",
   "description": "Tabfloater Companion",
-  "path": ")" + executablePath +
-                       R"(",
+  "path": ")" + executablePath + R"(",
   "type": "stdio",
   "allowed_extensions": [
     "tabfloater@tabfloater.io"
