@@ -470,6 +470,13 @@ void printMainUsage(std::string executableName)
     printOption("version", "Print version information");
     std::cout << std::endl;
     std::cout << "To start using TabFloater, run '" + executableName + " register' and choose your preferred browser." << std::endl;
+
+    if (getAppImageEnvVarValue() == NULL)
+    {
+        std::cout << std::endl;
+        std::cout << "To learn more, run 'man tabfloater-companion'." << std::endl;
+    }
+
     std::cout << std::endl;
 }
 
