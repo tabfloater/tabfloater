@@ -114,7 +114,8 @@ std::string buildChromeManifest(std::string executablePath)
     return std::string(R"({
   "name": "io.github.tabfloater.companion",
   "description": "Tabfloater Companion",
-  "path": ")" + executablePath + R"(",
+  "path": ")" + executablePath +
+                       R"(",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://iojgbjjdoanmhcmmihbapiejfbbadhjd/"
@@ -127,7 +128,8 @@ std::string buildFirefoxManifest(std::string executablePath)
     return std::string(R"({
   "name": "io.github.tabfloater.companion",
   "description": "Tabfloater Companion",
-  "path": ")" + executablePath + R"(",
+  "path": ")" + executablePath +
+                       R"(",
   "type": "stdio",
   "allowed_extensions": [
     "tabfloater@tabfloater.io"
@@ -470,6 +472,13 @@ void printMainUsage(std::string executableName)
     printOption("version", "Print version information");
     std::cout << std::endl;
     std::cout << "To start using TabFloater, run '" + executableName + " register' and choose your preferred browser." << std::endl;
+
+    if (getAppImageEnvVarValue() == NULL)
+    {
+        std::cout << std::endl;
+        std::cout << "To learn more, run 'man tabfloater-companion'." << std::endl;
+    }
+
     std::cout << std::endl;
 }
 

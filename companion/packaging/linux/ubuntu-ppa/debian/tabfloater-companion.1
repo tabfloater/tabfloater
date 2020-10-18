@@ -1,0 +1,120 @@
+.TH tabfloater-companion 1
+
+.SH NAME
+tabfloater-companion \- command line interface for \fBTabFloater Companion\fP, an auxiliary application for the \fBTabFloater\fP browser extension.
+
+.SH SYNOPSIS
+.B tabfloater-companion
+.I command
+.B [
+options
+.B ]
+
+.SH DESCRIPTION
+\fBTabFloater\fP is a browser extension that can put any tab into a Picture-in-Picture mode. This is done by extracting the tab into its own window, then positioning that window
+accordingly and setting it as always on top. However, since browser APIs do not offer a way to set a window as always-on-top, this is achieved by a mechanism called 'native messaging'.
+The browser can send messages to native applications, present on the user's computer. \fBTabFloater Companion\fP is the native application for \fBTabFloater\fP, and it is
+responsible for setting a window as always on top.
+
+In order for the browser to use the native application, it must be registered. This is done by placing a JSON file with the appropriate metadata to a directory specific to the browser.
+The metadata contains the path to the native application.
+
+\fBTabFloater Companion\fP serves both as the native application (the one that communicates with the browser), and the mechanism by which the application is registered to the browser. The command
+line interface is intended for the latter.
+
+\'Registering the manifest\' means writing the JSON metadata file to the correct directory. \'Unregistering the manifest\' means deleting that file. Since the metadata contains an absolute path
+to the executable, if you move or rename this application, the registration will no longer be valid.
+
+.SH COMMANDS
+
+.IP "register \fIbrowser\fP \fB[\fP options \fB]\fP"
+Generates a native messaging host manifest file and writes it the chosen browser's configuration directory. Refer to the \'Supported browsers\' section to see what value to supply for \fIbrowser\fP.
+
+.IP "status"
+.br
+Prints status information for all supported browsers. The status can be one of the following:
+.br
+- \'registered': the manifest is present in the browsers's config directory, has the correct contents, and points to this executable
+.br
+- \'unregistered': the manifest is not found in the browser's config directory
+.br
+- \'corrupted': the manifest is present, but has the wrong contents. This could happen if you moved the executable to another location, and now the path is different. Simply re-register the
+manifest if this happens.
+.br
+- \'(browser not found)\': this browser's executable is not on your path, therefore most likely not installed. You can still register the manifest with --force.
+
+.IP "unregister \fIbrowser\fP"
+Removes the native messaging host manifest file from the chosen browser's configuration directory.
+
+.IP "version"
+Prints application version information.
+
+.SH OPTIONS
+
+.SS "General options"
+
+.IP "--help"
+.br
+Prints the synopsis and the list commands.
+
+.SS "Register options"
+
+.IP "--force"
+Forces manifest registration. The manifest file will be registered for all supported browsers, regardless of whether or not the browser is installed.
+Already existing files are overwritten. This option is useful if you are planning to install a browser at a later point, but want to pre-register
+the manifest. Once the browser is installed, the manifest will already be registered.
+
+.SH SUPPORTED BROWSERS
+The supported browsers, with their corresponding \fIbrowser\fP commands are the following:
+.br
+- Chromium: \fIchromium\fP
+.br
+- Chromium (installed as Snap): \fIchromium-snap\fP
+.br
+- Google Chrome: \fIchrome\fP
+.br
+- Firefox: \fIfirefox\fP
+.br
+The command \fIall\fP can be used for all browsers.
+
+.SH MANIFEST FILE LOCATIONS
+The manifest files are stored in the home directory. The exact locations are:
+.br
+- Chromium: ~/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json
+.br
+- Chromium (installed as Snap): ~/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json
+.br
+- Google Chrome: ~/.config/google-chrome/NativeMessagingHosts/io.github.tabfloater.companion.json
+.br
+- Firefox: ~/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json
+
+Read more about manifest file formats and locations here:
+.br
+https://developer.chrome.com/extensions/nativeMessaging#native-messaging-host-location
+.br
+https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#Manifest_location
+
+.SH EXAMPLES
+Register for firefox:
+.br
+$ tabfloater-companion register firefox
+
+Unregister from Chromium (Snap):
+.br
+$ tabfloater-companion unregister chromium-snap
+
+Register for all browsers, even if not installed:
+.br
+$ tabfloater-companion register all --force
+
+.SH AUTHOR
+\fBTabFloater\fP and \fBTabFloater Companion\fP is developed and maintained by Balazs Gyurak <balazs@tabfloater.io>
+
+Homepage: https://tabfloater.io/
+.br
+Copyright (C) 2020 Balazs Gyurak
+.br
+Apache License 2.0
+
+.SH REPORTING BUGS
+Please report bugs and feature requests on GitHub: https://github.com/tabfloater/tabfloater
