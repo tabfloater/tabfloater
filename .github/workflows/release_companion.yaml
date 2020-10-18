@@ -21,7 +21,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./dist/*.AppImage
-        file_glob: "true"
+        file_glob: true
         overwrite: true
         tag: ${{ github.ref }}
 #   upload-ppa-linux:
@@ -47,7 +47,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: dist\*.msi
-        file_glob: "true"
+        file_glob: true
         overwrite: true
         tag: ${{ github.ref }}
     - name: Upload portable package to Release
@@ -55,6 +55,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: dist\*.zip
-        file_glob: "true" 
+        file_glob: true
         overwrite: true
         tag: ${{ github.ref }}
