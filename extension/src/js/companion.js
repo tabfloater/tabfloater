@@ -99,7 +99,7 @@ function isOutdatedVersion(companionInfo) {
         return true;
     }
 
-    if (currentMajor == latestMajor) {
+    if (currentMajor === latestMajor) {
         const currentMinor = getMinorVersion(current);
         const latestMinor = getMinorVersion(latest);
 
@@ -107,7 +107,7 @@ function isOutdatedVersion(companionInfo) {
             return true;
         }
 
-        if (currentMinor == latestMinor) {
+        if (currentMinor === latestMinor) {
             const currentPatch = getPatchVersion(current);
             const latestPatch = getPatchVersion(latest);
 
