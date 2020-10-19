@@ -20,11 +20,8 @@
 #include <fstream>
 #include <linux/limits.h>
 #include <pwd.h>
-#include <unistd.h>
-
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <filesystem>
+#include <unistd.h>
 
 #define EXECUTABLE_CHROMIUM "chromium-browser"
 #define EXECUTABLE_CHROMIUM_SNAP "chromium"
