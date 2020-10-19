@@ -87,12 +87,37 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
 }
 
 function isOutdatedVersion(companionInfo) {
-    const companionVersion = companionInfo.version.replace("-dev", "");
-    return companionVersion !== getLatestCompanionVersion(companionInfo);
-}
+    const current = companionInfo.version.replace("-dev", "");
+    const latest = getLatestCompanionVersion(companionInfo);
 
-function latestVersionHasBreakingChanges(companionInfo) {
-    return getMajorVersion(companionInfo.version) < getMajorVersion(getLatestCompanionVersion(companionInfo));
+    logger.info(`Companion version check. Current version: ${current}, lastest version: ${latest}`);
+
+    const currentMajor = getMajorVersion(current);
+    const latestMajor = getMajorVersion(latest);
+
+    if (currentMajor < latestMajor) {
+        return true;
+    }
+
+    if (currentMajor == latestMajor) {
+        const currentMinor = getMinorVersion(current);
+        const latestMinor = getMinorVersion(latest);
+
+        if (currentMinor < latestMinor) {
+            return true;
+        }
+
+        if (currentMinor == latestMinor) {
+            const currentPatch = getPatchVersion(current);
+            const latestPatch = getPatchVersion(latest);
+
+            if (currentPatch < latestPatch) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 function getLatestCompanionVersion(companionInfo) {
@@ -103,8 +128,20 @@ function getLatestCompanionVersion(companionInfo) {
     }
 }
 
+function latestVersionHasBreakingChanges(companionInfo) {
+    return getMajorVersion(companionInfo.version) < getMajorVersion(getLatestCompanionVersion(companionInfo));
+}
+
 function getMajorVersion(version) {
     return parseInt(version.substring(0, version.indexOf(".")));
+}
+
+function getMinorVersion(version) {
+    return parseInt(version.substring(version.indexOf(".") + 1, version.lastIndexOf(".")));
+}
+
+function getPatchVersion(version) {
+    return parseInt(version.substring(version.lastIndexOf(".") + 1, version.length));
 }
 
 async function isDebuggingEnabledAsync() {
