@@ -12,7 +12,7 @@ options
 
 .SH DESCRIPTION
 \fBTabFloater\fP is a browser extension that can put any tab into a Picture-in-Picture mode. This is done by extracting the tab into its own window, then positioning that window
-accordingly and setting it as always on top. However, since browser APIs do not offer a way to set a window as always-on-top, this is achieved by a mechanism called 'native messaging'.
+accordingly and setting it as always on top. However, since browser APIs do not offer a way to set a window as always-on-top, this is achieved by a mechanism called native messaging.
 The browser can send messages to native applications, present on the user's computer. \fBTabFloater Companion\fP is the native application for \fBTabFloater\fP, and it is
 responsible for setting a window as always on top.
 
@@ -22,26 +22,26 @@ The metadata contains the path to the native application.
 \fBTabFloater Companion\fP serves both as the native application (the one that communicates with the browser), and the mechanism by which the application is registered to the browser. The command
 line interface is intended for the latter.
 
-\'Registering the manifest\' means writing the JSON metadata file to the correct directory. \'Unregistering the manifest\' means deleting that file. Since the metadata contains an absolute path
+Registering the manifest means writing the JSON metadata file to the correct directory. Unregistering the manifest means deleting that file. Since the metadata contains an absolute path
 to the executable, if you move or rename this application, the registration will no longer be valid.
 
 .SH COMMANDS
 
 .IP "register \fIbrowser\fP \fB[\fP options \fB]\fP"
-Generates a native messaging host manifest file and writes it the chosen browser's configuration directory. Refer to the \'Supported browsers\' section to see what value to supply for \fIbrowser\fP.
+Generates a native messaging host manifest file and writes it the chosen browser's configuration directory. Refer to the "Supported browsers" section to see what value to supply for \fIbrowser\fP.
 
 .IP "status"
 .br
 Prints status information for all supported browsers. The status can be one of the following:
 .br
-- \'registered': the manifest is present in the browsers's config directory, has the correct contents, and points to this executable
+- "registered": the manifest is present in the browsers's config directory, has the correct contents, and points to this executable
 .br
-- \'unregistered': the manifest is not found in the browser's config directory
+- "unregistered": the manifest is not found in the browser's config directory
 .br
-- \'corrupted': the manifest is present, but has the wrong contents. This could happen if you moved the executable to another location, and now the path is different. Simply re-register the
+- "corrupted": the manifest is present, but has the wrong contents. This could happen if you moved the executable to another location, and now the path is different. Simply re-register the
 manifest if this happens.
 .br
-- \'(browser not found)\': this browser's executable is not on your path, therefore most likely not installed. You can still register the manifest with --force.
+- "(browser not found)": this browser's executable is not on your path, therefore most likely not installed. You can still register the manifest with --force.
 
 .IP "unregister \fIbrowser\fP"
 Removes the native messaging host manifest file from the chosen browser's configuration directory.
