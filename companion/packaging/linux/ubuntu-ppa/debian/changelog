@@ -1,3 +1,9 @@
+tabfloater-companion (0.7.11~SERIES2) SERIES; urgency=medium
+
+  * Add postinstall, pre-remove scripts
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Tue, 20 Oct 2020 07:35:32 +0100
+
 tabfloater-companion (0.7.11~SERIES1) SERIES; urgency=medium
 
   * Add manpage
