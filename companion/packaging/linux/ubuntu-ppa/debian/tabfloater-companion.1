@@ -77,6 +77,17 @@ The supported browsers, with their corresponding \fIbrowser\fP commands are the 
 .br
 The command \fIall\fP can be used for all browsers.
 
+.SS "Support for Chromium as Snap"
+On Ubuntu 19.10 and up, Chromium is only available via the Snap package manager. Due to Snap's confinement rules, Chromium is not able to invoke every
+executable on the machine. The only binaries allowed to be invoked are the ones that are located somewhere within the user's home directory. Therefore,
+to use \fBTabFloater Companion\fP with Chromium Snap, you need to copy it to your home directory, run it from there and register for Chromum Snap.
+Note that if you copy the executable to a hidden directory (e.g. "~/.tabfloater-companion/"), Chromium Snap will not be able to use it. The application
+must reside in a regular, non-hidden directory.
+
+Example:
+.br
+mkdir ~/bin && cp `which tabfloater-companion` ~/bin
+
 .SH MANIFEST FILE LOCATIONS
 The manifest files are stored in the home directory. The exact locations are:
 .br

@@ -1,3 +1,10 @@
+tabfloater-companion (0.7.12~SERIES1) SERIES; urgency=medium
+
+  * Add more warnings for Chromium Snap
+  * Remove postinstall, pre-remove scripts
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Wed, 21 Oct 2020 22:10:46 +0100
+
 tabfloater-companion (0.7.11~SERIES2) SERIES; urgency=medium
 
   * Add postinstall, pre-remove scripts

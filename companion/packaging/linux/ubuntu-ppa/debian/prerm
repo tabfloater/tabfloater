@@ -1,6 +1,0 @@
-#!/bin/sh
-
-set -e
-
-echo PREREMOVE
-tabfloater-companion unregister all
