@@ -88,6 +88,14 @@ std::string getCurrentExecutablePath()
     return std::string(path);
 }
 
+bool isCurrentExecutableInHomeDirectory()
+{
+    std::string currentExecutablePath = getCurrentExecutablePath();
+    std::string homeDirectoryPath = getHomeDirectory();
+
+    return currentExecutablePath.rfind(homeDirectoryPath, 0) == 0;
+}
+
 bool directoryExists(std::string path)
 {
     struct stat info;
@@ -193,11 +201,21 @@ void printStatusRow(std::string col1, std::string col2)
     std::cout << std::left << std::setw(25) << std::setfill(' ') << col2 << std::endl;
 }
 
-void printAppImageWarning()
+void printChromiumSnapWarning()
 {
-    std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap Chromium." << std::endl;
-    std::cout << "To learn more about alternatives, visit TODO" << std::endl;
-    std::cout << std::endl;
+    if (isRunningAsAppImage())
+    {
+        std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap Chromium." << std::endl;
+        std::cout << "To learn more about alternatives, visit TODO" << std::endl;
+        std::cout << std::endl;
+    }
+    else if (!isCurrentExecutableInHomeDirectory())
+    {
+        std::cout << "Warning: this executable is not in your home directory. Snap Chromium will not be able to communicate with it." << std::endl;
+        std::cout << "In order to use TabFloater Companion with Snap Chromium, copy this executable to your home directory," << std::endl;
+        std::cout << "run it from there and register Snap Chromium." << std::endl;
+        std::cout << std::endl;
+    }
 }
 
 void printStatus()
@@ -219,10 +237,7 @@ void printStatus()
     std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
     std::cout << std::endl;
 
-    if (isRunningAsAppImage())
-    {
-        printAppImageWarning();
-    }
+    printChromiumSnapWarning();
 }
 
 bool registerManifestForSingleBrowser(std::string browserName, std::string browserExecutable, std::string manifestDirectory,
@@ -261,10 +276,10 @@ bool registerManifestForSingleBrowser(std::string browserName, std::string brows
 
     std::cout << "Registered TabFloater Companion for " << browserName << "." << std::endl;
 
-    if (browserExecutable.compare(EXECUTABLE_CHROMIUM_SNAP) == 0 && isRunningAsAppImage())
+    if (browserExecutable.compare(EXECUTABLE_CHROMIUM_SNAP) == 0)
     {
         std::cout << std::endl;
-        printAppImageWarning();
+        printChromiumSnapWarning();
     }
 
     return true;
@@ -329,10 +344,7 @@ void printRegisterUsage(std::string executableName)
     std::cout << "registering for 'chromium' has no effect." << std::endl;
     std::cout << std::endl;
 
-    if (isRunningAsAppImage())
-    {
-        printAppImageWarning();
-    }
+    printChromiumSnapWarning();
 }
 
 void registerManifest(int argc, char *argv[])
@@ -491,14 +503,14 @@ void printMainUsage(std::string executableName)
     std::cout << "Once registered, the TabFloater browser extension will work with the Companion seamlessly." << std::endl;
     std::cout << std::endl;
     std::cout << "Commands: " << std::endl;
-    printOption("register", "Register TabFloater Companion for your browsers");
     printOption("status", "Print registration status information for all supported browsers");
+    printOption("register", "Register TabFloater Companion for your browsers");
     printOption("unregister", "Unregister TabFloater Companion from your browsers");
     printOption("version", "Print version information");
     std::cout << std::endl;
     std::cout << "To start using TabFloater, run '" + executableName + " register' and choose your preferred browser." << std::endl;
 
-    if (getAppImageEnvVarValue() == NULL)
+    if (!isRunningAsAppImage())
     {
         std::cout << std::endl;
         std::cout << "To learn more, run 'man tabfloater-companion'." << std::endl;
