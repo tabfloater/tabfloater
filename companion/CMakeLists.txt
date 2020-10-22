@@ -111,6 +111,8 @@ else()
     if(WIN32)
         # Windows installer
 
+        set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/CPackOptions_win.txt")
+
         set(CPACK_PACKAGE_NAME "TabFloater Companion")
         set(CPACK_PACKAGE_DESCRIPTION "TabFloater Companion Installer")
 
