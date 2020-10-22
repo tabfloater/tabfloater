@@ -213,7 +213,7 @@ void printChromiumSnapWarning()
     {
         std::cout << "Warning: this executable is not in your home directory. Snap Chromium will not be able to communicate with it." << std::endl;
         std::cout << "In order to use TabFloater Companion with Snap Chromium, copy this executable to your home directory," << std::endl;
-        std::cout << "run it from there and register Snap Chromium." << std::endl;
+        std::cout << "run it from there and register Snap Chromium. Learn more by running 'man tabfloater-companion'." << std::endl;
         std::cout << std::endl;
     }
 }
