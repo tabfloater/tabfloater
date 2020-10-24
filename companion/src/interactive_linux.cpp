@@ -34,13 +34,15 @@ const std::string BROWSER_NAMES[] = {
     "Chromium",
     "Chromium (Snap)",
     "Google Chrome",
-    "Firefox"};
+    "Firefox"
+};
 
 const std::string MANIFEST_PATHS[] = {
     "/.config/chromium/NativeMessagingHosts/",
     "/snap/chromium/common/chromium/NativeMessagingHosts/",
     "/.config/google-chrome/NativeMessagingHosts/",
-    "/.mozilla/native-messaging-hosts/"};
+    "/.mozilla/native-messaging-hosts/"
+};
 
 const std::string WHITESPACE = " \n\r\t\f\v";
 
