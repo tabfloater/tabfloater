@@ -23,20 +23,26 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define EXECUTABLE_CHROMIUM "chromium-browser"
-#define EXECUTABLE_CHROMIUM_SNAP "chromium"
-#define EXECUTABLE_CHROME "google-chrome"
-#define EXECUTABLE_FIREFOX "firefox"
-
 #define MANIFEST_FILE_NAME "io.github.tabfloater.companion.json"
-#define MANIFEST_DIR_CHROMIUM "/.config/chromium/NativeMessagingHosts/"
-#define MANIFEST_DIR_CHROMIUM_SNAP "/snap/chromium/common/chromium/NativeMessagingHosts/"
-#define MANIFEST_DIR_CHROME "/.config/google-chrome/NativeMessagingHosts/"
-#define MANIFEST_DIR_FIREFOX "/.mozilla/native-messaging-hosts/"
-#define MANIFEST_PATH_CHROMIUM MANIFEST_DIR_CHROMIUM + MANIFEST_FILE_NAME
-#define MANIFEST_PATH_CHROMIUM_SNAP MANIFEST_DIR_CHROMIUM_SNAP + MANIFEST_FILE_NAME
-#define MANIFEST_PATH_CHROME MANIFEST_DIR_CHROME + MANIFEST_FILE_NAME
-#define MANIFEST_PATH_FIREFOX MANIFEST_DIR_FIREFOX + MANIFEST_FILE_NAME
+
+#define CHROMIUM 0
+#define CHROMIUM_SNAP 1
+#define GOOGLE_CHROME 2
+#define FIREFOX 3
+
+const std::string BROWSER_NAMES[] = {
+    "Chromium",
+    "Chromium (Snap)",
+    "Google Chrome",
+    "Firefox"
+};
+
+const std::string MANIFEST_PATHS[] = {
+    "/.config/chromium/NativeMessagingHosts/",
+    "/snap/chromium/common/chromium/NativeMessagingHosts/",
+    "/.config/google-chrome/NativeMessagingHosts/",
+    "/.mozilla/native-messaging-hosts/"
+};
 
 const std::string WHITESPACE = " \n\r\t\f\v";
 
@@ -60,14 +66,14 @@ const char *getAppImageEnvVarValue()
 
 bool isRunningAsAppImage()
 {
-    return getAppImageEnvVarValue() != NULL;
+    return getAppImageEnvVarValue() != nullptr;
 }
 
 std::string getHomeDirectory()
 {
     const char *homeDir;
 
-    if ((homeDir = getenv("HOME")) == NULL)
+    if ((homeDir = getenv("HOME")) == nullptr)
     {
         homeDir = getpwuid(getuid())->pw_dir;
     }
@@ -78,7 +84,7 @@ std::string getHomeDirectory()
 std::string getCurrentExecutablePath()
 {
     const char *appImagePath;
-    if ((appImagePath = getAppImageEnvVarValue()) != NULL)
+    if ((appImagePath = getAppImageEnvVarValue()) != nullptr)
     {
         return std::string(appImagePath);
     }
@@ -128,9 +134,76 @@ bool writeStringToFile(std::string filePath, std::string contents)
     return true;
 }
 
-bool isBrowserInstalled(std::string executable)
+std::string executeCommandAndGetStdOut(std::string command)
 {
-    return system(std::string("which " + executable + " > /dev/null").c_str()) == 0;
+    char buffer[128];
+    std::string result = "";
+    FILE *pipe = popen((command + " 2> /dev/null").c_str(), "r");
+    if (!pipe)
+    {
+        throw std::runtime_error("Unable to open process");
+    }
+    try
+    {
+        while (fgets(buffer, sizeof buffer, pipe) != nullptr)
+        {
+            result += buffer;
+        }
+    }
+    catch (...)
+    {
+        pclose(pipe);
+        throw;
+    }
+    pclose(pipe);
+    return result;
+}
+
+bool isSnapPath(std::string path)
+{
+    return path.find("snap") != std::string::npos;
+}
+
+bool isBrowserInstalled(int browserId)
+{
+    try
+    {
+        switch (browserId)
+        {
+        case CHROMIUM:
+        {
+            if (!executeCommandAndGetStdOut("which chromium-browser").empty())
+            {
+                return true;
+            }
+
+            std::string stdOut = executeCommandAndGetStdOut("which chromium");
+            return !stdOut.empty() && !isSnapPath(stdOut);
+        }
+        case CHROMIUM_SNAP:
+        {
+            std::string stdOut = executeCommandAndGetStdOut("which chromium");
+            return !stdOut.empty() && isSnapPath(stdOut);
+        }
+        case GOOGLE_CHROME:
+        {
+            return !executeCommandAndGetStdOut("which google-chrome").empty();
+        }
+        case FIREFOX:
+        {
+            return !executeCommandAndGetStdOut("which firefox").empty();
+        }
+        default:
+        {
+            throw std::runtime_error("Unknown browser ID: " + browserId);
+        }
+        }
+    }
+    catch (...)
+    {
+        std::cerr << "An error occurred while checking if " + BROWSER_NAMES[browserId] + " is installed, will assume it is not." << std::endl;
+        return false;
+    }
 }
 
 std::string buildChromeManifest(std::string executablePath)
@@ -170,9 +243,10 @@ bool isManifestCorrect(std::string manifestPath, std::string expectedManifestCon
     return fileContents.compare(expectedManifestContent) == 0;
 }
 
-std::string getManifestStatus(std::string browserExecutable, std::string manifestPath, std::string expectedManifestContent)
+std::string getManifestStatus(int browserId, std::string homeDirectory, std::string expectedManifestContent)
 {
-    bool browserInstalled = isBrowserInstalled(browserExecutable);
+    std::string manifestPath = homeDirectory + MANIFEST_PATHS[browserId] + MANIFEST_FILE_NAME;
+    bool browserInstalled = isBrowserInstalled(browserId);
     bool manifestExists = doesManifestExist(manifestPath);
     bool manifestCorrect = isManifestCorrect(manifestPath, expectedManifestContent);
 
@@ -205,12 +279,14 @@ void printChromiumSnapWarning()
 {
     if (isRunningAsAppImage())
     {
+        std::cout << std::endl;
         std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap Chromium." << std::endl;
         std::cout << "To learn more about alternatives, visit TODO" << std::endl;
         std::cout << std::endl;
     }
     else if (!isCurrentExecutableInHomeDirectory())
     {
+        std::cout << std::endl;
         std::cout << "Warning: this executable is not in your home directory. Snap Chromium will not be able to communicate with it." << std::endl;
         std::cout << "In order to use TabFloater Companion with Snap Chromium, copy this executable to your home directory," << std::endl;
         std::cout << "run it from there and register Snap Chromium. Learn more by running 'man tabfloater-companion'." << std::endl;
@@ -228,10 +304,10 @@ void printStatus()
     std::cout << std::endl;
     printStatusRow("BROWSER", "TABFLOATER STATUS");
     std::cout << std::endl;
-    printStatusRow("Chromium", getManifestStatus(EXECUTABLE_CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM, chromeManifest));
-    printStatusRow("Chromium (Snap)", getManifestStatus(EXECUTABLE_CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP, chromeManifest));
-    printStatusRow("Chrome", getManifestStatus(EXECUTABLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME, chromeManifest));
-    printStatusRow("Firefox", getManifestStatus(EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX, firefoxManifest));
+    printStatusRow(BROWSER_NAMES[CHROMIUM], getManifestStatus(CHROMIUM, homeDirectory, chromeManifest));
+    printStatusRow(BROWSER_NAMES[CHROMIUM_SNAP], getManifestStatus(CHROMIUM_SNAP, homeDirectory, chromeManifest));
+    printStatusRow(BROWSER_NAMES[GOOGLE_CHROME], getManifestStatus(GOOGLE_CHROME, homeDirectory, chromeManifest));
+    printStatusRow(BROWSER_NAMES[FIREFOX], getManifestStatus(FIREFOX, homeDirectory, firefoxManifest));
     std::cout << std::endl;
     std::cout << "Note: on Ubuntu 19.10 and up, Chromium is only available via Snap. On these systems, 'Chromium'" << std::endl;
     std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
@@ -240,10 +316,10 @@ void printStatus()
     printChromiumSnapWarning();
 }
 
-bool registerManifestForSingleBrowser(std::string browserName, std::string browserExecutable, std::string manifestDirectory,
-                                      bool force, bool useFirefoxManifest = false)
+bool registerManifestForSingleBrowser(int browserId, bool force, bool useFirefoxManifest = false)
 {
-    if (!force && !isBrowserInstalled(browserExecutable))
+    std::string browserName = BROWSER_NAMES[browserId];
+    if (!force && !isBrowserInstalled(browserId))
     {
         std::cout << browserName + " not found, no changes were made." << std::endl;
         return false;
@@ -251,6 +327,7 @@ bool registerManifestForSingleBrowser(std::string browserName, std::string brows
 
     std::string executablePath = getCurrentExecutablePath();
     std::string manifest = useFirefoxManifest ? buildFirefoxManifest(executablePath) : buildChromeManifest(executablePath);
+    std::string manifestDirectory = getHomeDirectory() + MANIFEST_PATHS[browserId];
     std::string manifestFullPath = manifestDirectory + MANIFEST_FILE_NAME;
 
     if (!force && doesManifestExist(manifestFullPath) && isManifestCorrect(manifestFullPath, manifest))
@@ -276,16 +353,15 @@ bool registerManifestForSingleBrowser(std::string browserName, std::string brows
 
     std::cout << "Registered TabFloater Companion for " << browserName << "." << std::endl;
 
-    if (browserExecutable.compare(EXECUTABLE_CHROMIUM_SNAP) == 0)
+    if (browserId == CHROMIUM_SNAP)
     {
-        std::cout << std::endl;
         printChromiumSnapWarning();
     }
 
     return true;
 }
 
-bool registerManifestForAllBrowsers(std::string homeDirectory, bool force)
+bool registerManifestForAllBrowsers(bool force)
 {
     bool registeredChromium = false;
     bool registeredChromiumSnap = false;
@@ -293,24 +369,24 @@ bool registerManifestForAllBrowsers(std::string homeDirectory, bool force)
     bool registeredFirefox = false;
     bool atLeastOneOperationOccurred = false;
 
-    if (force || isBrowserInstalled(EXECUTABLE_CHROMIUM))
+    if (force || isBrowserInstalled(CHROMIUM))
     {
-        registeredChromium = registerManifestForSingleBrowser("Chromium", EXECUTABLE_CHROMIUM, homeDirectory + MANIFEST_DIR_CHROMIUM, force);
+        registeredChromium = registerManifestForSingleBrowser(CHROMIUM, force);
         atLeastOneOperationOccurred = true;
     }
-    if (force || isBrowserInstalled(EXECUTABLE_CHROMIUM_SNAP))
+    if (force || isBrowserInstalled(CHROMIUM_SNAP))
     {
-        registeredChromiumSnap = registerManifestForSingleBrowser("Chromium (Snap)", EXECUTABLE_CHROMIUM_SNAP, homeDirectory + MANIFEST_DIR_CHROMIUM_SNAP, force);
+        registeredChromiumSnap = registerManifestForSingleBrowser(CHROMIUM_SNAP, force);
         atLeastOneOperationOccurred = true;
     }
-    if (force || isBrowserInstalled(EXECUTABLE_CHROME))
+    if (force || isBrowserInstalled(GOOGLE_CHROME))
     {
-        registeredChrome = registerManifestForSingleBrowser("Google Chrome", EXECUTABLE_CHROME, homeDirectory + MANIFEST_DIR_CHROME, force);
+        registeredChrome = registerManifestForSingleBrowser(GOOGLE_CHROME, force);
         atLeastOneOperationOccurred = true;
     }
-    if (force || isBrowserInstalled(EXECUTABLE_FIREFOX))
+    if (force || isBrowserInstalled(FIREFOX))
     {
-        registeredFirefox = registerManifestForSingleBrowser("Firefox", EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_DIR_FIREFOX, force, true);
+        registeredFirefox = registerManifestForSingleBrowser(FIREFOX, force, true);
         atLeastOneOperationOccurred = true;
     }
 
@@ -332,10 +408,10 @@ void printRegisterUsage(std::string executableName)
     std::cout << std::endl;
     std::cout << "Supported browsers: " << std::endl;
     printOption("all", "Register for all installed browsers");
-    printOption("chromium", "Register for Chromium");
-    printOption("chromium-snap", "Register for Chromium (Snap)");
-    printOption("chrome", "Register for Google Chrome");
-    printOption("firefox", "Register for Firefox");
+    printOption("chromium", "Register for " + BROWSER_NAMES[CHROMIUM]);
+    printOption("chromium-snap", "Register for " + BROWSER_NAMES[CHROMIUM_SNAP]);
+    printOption("chrome", "Register for " + BROWSER_NAMES[GOOGLE_CHROME]);
+    printOption("firefox", "Register for " + BROWSER_NAMES[FIREFOX]);
     std::cout << std::endl;
     std::cout << "Options: " << std::endl;
     printOption("--force", "Register even if browser is not installed; overwrite existing file");
@@ -352,29 +428,28 @@ void registerManifest(int argc, char *argv[])
     if (argc > 2)
     {
         std::string subCommand(argv[2]);
-        std::string homeDirectory = getHomeDirectory();
         bool force = argc > 3 && std::string(argv[3]).compare("--force") == 0;
         bool operationSucceeded = false;
 
         if (subCommand.compare("all") == 0)
         {
-            operationSucceeded = registerManifestForAllBrowsers(homeDirectory, force);
+            operationSucceeded = registerManifestForAllBrowsers(force);
         }
         else if (subCommand.compare("chromium") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser("Chromium", EXECUTABLE_CHROMIUM, homeDirectory + MANIFEST_DIR_CHROMIUM, force);
+            operationSucceeded = registerManifestForSingleBrowser(CHROMIUM, force);
         }
         else if (subCommand.compare("chromium-snap") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser("Chromium (Snap)", EXECUTABLE_CHROMIUM_SNAP, homeDirectory + MANIFEST_DIR_CHROMIUM_SNAP, force);
+            operationSucceeded = registerManifestForSingleBrowser(CHROMIUM_SNAP, force);
         }
         else if (subCommand.compare("chrome") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser("Google Chrome", EXECUTABLE_CHROME, homeDirectory + MANIFEST_DIR_CHROME, force);
+            operationSucceeded = registerManifestForSingleBrowser(GOOGLE_CHROME, force);
         }
         else if (subCommand.compare("firefox") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser("Firefox", EXECUTABLE_FIREFOX, homeDirectory + MANIFEST_DIR_FIREFOX, force, true);
+            operationSucceeded = registerManifestForSingleBrowser(FIREFOX, force, true);
         }
         else
         {
@@ -397,8 +472,10 @@ void registerManifest(int argc, char *argv[])
     }
 }
 
-void unregisterManifestFromSingleBrowser(std::string browserName, std::string manifestPath)
+void unregisterManifestFromSingleBrowser(int browserId)
 {
+    std::string browserName = BROWSER_NAMES[browserId];
+    std::string manifestPath = getHomeDirectory() + MANIFEST_PATHS[browserId] + MANIFEST_FILE_NAME;
     if (doesManifestExist(manifestPath))
     {
         if (remove(manifestPath.c_str()) == 0)
@@ -416,14 +493,6 @@ void unregisterManifestFromSingleBrowser(std::string browserName, std::string ma
     }
 }
 
-void unregisterManifestFromAllBrowsers(std::string homeDirectory)
-{
-    unregisterManifestFromSingleBrowser("Chromium", homeDirectory + MANIFEST_PATH_CHROMIUM);
-    unregisterManifestFromSingleBrowser("Chromium (Snap)", homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP);
-    unregisterManifestFromSingleBrowser("Google Chrome", homeDirectory + MANIFEST_PATH_CHROME);
-    unregisterManifestFromSingleBrowser("Firefox", homeDirectory + MANIFEST_PATH_FIREFOX);
-}
-
 void printUnregisterUsage(std::string executableName)
 {
     std::cout << std::endl;
@@ -433,10 +502,10 @@ void printUnregisterUsage(std::string executableName)
     std::cout << std::endl;
     std::cout << "Supported browsers: " << std::endl;
     printOption("all", "Unregister from all browsers");
-    printOption("chromium", "Unregister from Chromium");
-    printOption("chromium-snap", "Unregister from Chromium (Snap)");
-    printOption("chrome", "Unregister from Google Chrome");
-    printOption("firefox", "Unregister from Firefox");
+    printOption("chromium", "Unregister from " + BROWSER_NAMES[CHROMIUM]);
+    printOption("chromium-snap", "Unregister from " + BROWSER_NAMES[CHROMIUM_SNAP]);
+    printOption("chrome", "Unregister from " + BROWSER_NAMES[GOOGLE_CHROME]);
+    printOption("firefox", "Unregister from " + BROWSER_NAMES[FIREFOX]);
     std::cout << std::endl;
 }
 
@@ -449,23 +518,26 @@ void unregisterManifest(int argc, char *argv[])
 
         if (subCommand.compare("all") == 0)
         {
-            unregisterManifestFromAllBrowsers(homeDirectory);
+            unregisterManifestFromSingleBrowser(CHROMIUM);
+            unregisterManifestFromSingleBrowser(CHROMIUM_SNAP);
+            unregisterManifestFromSingleBrowser(GOOGLE_CHROME);
+            unregisterManifestFromSingleBrowser(FIREFOX);
         }
         else if (subCommand.compare("chromium") == 0)
         {
-            unregisterManifestFromSingleBrowser("Chromium", homeDirectory + MANIFEST_PATH_CHROMIUM);
+            unregisterManifestFromSingleBrowser(CHROMIUM);
         }
         else if (subCommand.compare("chromium-snap") == 0)
         {
-            unregisterManifestFromSingleBrowser("Chromium (Snap)", homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP);
+            unregisterManifestFromSingleBrowser(CHROMIUM_SNAP);
         }
         else if (subCommand.compare("chrome") == 0)
         {
-            unregisterManifestFromSingleBrowser("Google Chrome", homeDirectory + MANIFEST_PATH_CHROME);
+            unregisterManifestFromSingleBrowser(GOOGLE_CHROME);
         }
         else if (subCommand.compare("firefox") == 0)
         {
-            unregisterManifestFromSingleBrowser("Firefox", homeDirectory + MANIFEST_PATH_FIREFOX);
+            unregisterManifestFromSingleBrowser(FIREFOX);
         }
         else
         {

@@ -34,7 +34,7 @@ std::string getCurrentWorkingDirectory()
 std::string getTabFloaterDirectoryInHome() {
     const char *homeDir;
 
-    if ((homeDir = getenv("HOME")) == NULL) {
+    if ((homeDir = getenv("HOME")) == nullptr) {
         homeDir = getpwuid(getuid())->pw_dir;
     }
 
