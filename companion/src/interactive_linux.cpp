@@ -23,27 +23,24 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#define MANIFEST_FILE_NAME "io.github.tabfloater.companion.json"
+
 #define CHROMIUM 0
 #define CHROMIUM_SNAP 1
 #define GOOGLE_CHROME 2
 #define FIREFOX 3
 
-#define MANIFEST_FILE_NAME "io.github.tabfloater.companion.json"
-#define MANIFEST_DIR_CHROMIUM "/.config/chromium/NativeMessagingHosts/"
-#define MANIFEST_DIR_CHROMIUM_SNAP "/snap/chromium/common/chromium/NativeMessagingHosts/"
-#define MANIFEST_DIR_CHROME "/.config/google-chrome/NativeMessagingHosts/"
-#define MANIFEST_DIR_FIREFOX "/.mozilla/native-messaging-hosts/"
-#define MANIFEST_PATH_CHROMIUM MANIFEST_DIR_CHROMIUM + MANIFEST_FILE_NAME
-#define MANIFEST_PATH_CHROMIUM_SNAP MANIFEST_DIR_CHROMIUM_SNAP + MANIFEST_FILE_NAME
-#define MANIFEST_PATH_CHROME MANIFEST_DIR_CHROME + MANIFEST_FILE_NAME
-#define MANIFEST_PATH_FIREFOX MANIFEST_DIR_FIREFOX + MANIFEST_FILE_NAME
-
 const std::string BROWSER_NAMES[] = {
     "Chromium",
     "Chromium (Snap)",
     "Google Chrome",
-    "Firefox"
-};
+    "Firefox"};
+
+const std::string MANIFEST_PATHS[] = {
+    "/.config/chromium/NativeMessagingHosts/",
+    "/snap/chromium/common/chromium/NativeMessagingHosts/",
+    "/.config/google-chrome/NativeMessagingHosts/",
+    "/.mozilla/native-messaging-hosts/"};
 
 const std::string WHITESPACE = " \n\r\t\f\v";
 
@@ -135,18 +132,24 @@ bool writeStringToFile(std::string filePath, std::string contents)
     return true;
 }
 
-std::string executeCommandAndGetStdOut(std::string command) {
+std::string executeCommandAndGetStdOut(std::string command)
+{
     char buffer[128];
     std::string result = "";
-    FILE* pipe = popen((command + " 2> /dev/null").c_str(), "r");
-    if (!pipe) {
+    FILE *pipe = popen((command + " 2> /dev/null").c_str(), "r");
+    if (!pipe)
+    {
         throw std::runtime_error("Unable to open process");
     }
-    try {
-        while (fgets(buffer, sizeof buffer, pipe) != nullptr) {
+    try
+    {
+        while (fgets(buffer, sizeof buffer, pipe) != nullptr)
+        {
             result += buffer;
         }
-    } catch (...) {
+    }
+    catch (...)
+    {
         pclose(pipe);
         throw;
     }
@@ -154,37 +157,48 @@ std::string executeCommandAndGetStdOut(std::string command) {
     return result;
 }
 
-bool isSnapPath(std::string path) {
+bool isSnapPath(std::string path)
+{
     return path.find("snap") != std::string::npos;
 }
 
 bool isBrowserInstalled(int browserId)
 {
-    try {
-        switch (browserId) {
-            case CHROMIUM: {
-                if (!executeCommandAndGetStdOut("which chromium-browser").empty()) {
-                    return true;
-                }
+    try
+    {
+        switch (browserId)
+        {
+        case CHROMIUM:
+        {
+            if (!executeCommandAndGetStdOut("which chromium-browser").empty())
+            {
+                return true;
+            }
 
-                std::string stdOut = executeCommandAndGetStdOut("which chromium");
-                return !stdOut.empty() && !isSnapPath(stdOut);
-            }
-            case CHROMIUM_SNAP: {
-                std::string stdOut = executeCommandAndGetStdOut("which chromium");
-                return !stdOut.empty() && isSnapPath(stdOut);
-            }
-            case GOOGLE_CHROME: {
-                return !executeCommandAndGetStdOut("which google-chrome").empty();
-            }
-            case FIREFOX: {
-                return !executeCommandAndGetStdOut("which firefox").empty();
-            }
-            default: {
-                throw std::runtime_error("Unknown browser ID: " + browserId);
-            }
+            std::string stdOut = executeCommandAndGetStdOut("which chromium");
+            return !stdOut.empty() && !isSnapPath(stdOut);
         }
-    } catch (...) {
+        case CHROMIUM_SNAP:
+        {
+            std::string stdOut = executeCommandAndGetStdOut("which chromium");
+            return !stdOut.empty() && isSnapPath(stdOut);
+        }
+        case GOOGLE_CHROME:
+        {
+            return !executeCommandAndGetStdOut("which google-chrome").empty();
+        }
+        case FIREFOX:
+        {
+            return !executeCommandAndGetStdOut("which firefox").empty();
+        }
+        default:
+        {
+            throw std::runtime_error("Unknown browser ID: " + browserId);
+        }
+        }
+    }
+    catch (...)
+    {
         std::cerr << "An error occurred while checking if " + BROWSER_NAMES[browserId] + " is installed, will assume it is not." << std::endl;
         return false;
     }
@@ -227,8 +241,9 @@ bool isManifestCorrect(std::string manifestPath, std::string expectedManifestCon
     return fileContents.compare(expectedManifestContent) == 0;
 }
 
-std::string getManifestStatus(int browserId, std::string manifestPath, std::string expectedManifestContent)
+std::string getManifestStatus(int browserId, std::string homeDirectory, std::string expectedManifestContent)
 {
+    std::string manifestPath = homeDirectory + MANIFEST_PATHS[browserId] + MANIFEST_FILE_NAME;
     bool browserInstalled = isBrowserInstalled(browserId);
     bool manifestExists = doesManifestExist(manifestPath);
     bool manifestCorrect = isManifestCorrect(manifestPath, expectedManifestContent);
@@ -285,10 +300,10 @@ void printStatus()
     std::cout << std::endl;
     printStatusRow("BROWSER", "TABFLOATER STATUS");
     std::cout << std::endl;
-    printStatusRow(BROWSER_NAMES[CHROMIUM], getManifestStatus(CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM, chromeManifest));
-    printStatusRow(BROWSER_NAMES[CHROMIUM_SNAP], getManifestStatus(CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP, chromeManifest));
-    printStatusRow(BROWSER_NAMES[GOOGLE_CHROME], getManifestStatus(GOOGLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME, chromeManifest));
-    printStatusRow(BROWSER_NAMES[FIREFOX], getManifestStatus(FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX, firefoxManifest));
+    printStatusRow(BROWSER_NAMES[CHROMIUM], getManifestStatus(CHROMIUM, homeDirectory, chromeManifest));
+    printStatusRow(BROWSER_NAMES[CHROMIUM_SNAP], getManifestStatus(CHROMIUM_SNAP, homeDirectory, chromeManifest));
+    printStatusRow(BROWSER_NAMES[GOOGLE_CHROME], getManifestStatus(GOOGLE_CHROME, homeDirectory, chromeManifest));
+    printStatusRow(BROWSER_NAMES[FIREFOX], getManifestStatus(FIREFOX, homeDirectory, firefoxManifest));
     std::cout << std::endl;
     std::cout << "Note: on Ubuntu 19.10 and up, Chromium is only available via Snap. On these systems, 'Chromium'" << std::endl;
     std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
@@ -297,7 +312,7 @@ void printStatus()
     printChromiumSnapWarning();
 }
 
-bool registerManifestForSingleBrowser(int browserId, std::string manifestDirectory, bool force, bool useFirefoxManifest = false)
+bool registerManifestForSingleBrowser(int browserId, bool force, bool useFirefoxManifest = false)
 {
     std::string browserName = BROWSER_NAMES[browserId];
     if (!force && !isBrowserInstalled(browserId))
@@ -308,6 +323,7 @@ bool registerManifestForSingleBrowser(int browserId, std::string manifestDirecto
 
     std::string executablePath = getCurrentExecutablePath();
     std::string manifest = useFirefoxManifest ? buildFirefoxManifest(executablePath) : buildChromeManifest(executablePath);
+    std::string manifestDirectory = getHomeDirectory() + MANIFEST_PATHS[browserId];
     std::string manifestFullPath = manifestDirectory + MANIFEST_FILE_NAME;
 
     if (!force && doesManifestExist(manifestFullPath) && isManifestCorrect(manifestFullPath, manifest))
@@ -342,7 +358,7 @@ bool registerManifestForSingleBrowser(int browserId, std::string manifestDirecto
     return true;
 }
 
-bool registerManifestForAllBrowsers(std::string homeDirectory, bool force)
+bool registerManifestForAllBrowsers(bool force)
 {
     bool registeredChromium = false;
     bool registeredChromiumSnap = false;
@@ -352,22 +368,22 @@ bool registerManifestForAllBrowsers(std::string homeDirectory, bool force)
 
     if (force || isBrowserInstalled(CHROMIUM))
     {
-        registeredChromium = registerManifestForSingleBrowser(CHROMIUM, homeDirectory + MANIFEST_DIR_CHROMIUM, force);
+        registeredChromium = registerManifestForSingleBrowser(CHROMIUM, force);
         atLeastOneOperationOccurred = true;
     }
     if (force || isBrowserInstalled(CHROMIUM_SNAP))
     {
-        registeredChromiumSnap = registerManifestForSingleBrowser(CHROMIUM_SNAP, homeDirectory + MANIFEST_DIR_CHROMIUM_SNAP, force);
+        registeredChromiumSnap = registerManifestForSingleBrowser(CHROMIUM_SNAP, force);
         atLeastOneOperationOccurred = true;
     }
     if (force || isBrowserInstalled(GOOGLE_CHROME))
     {
-        registeredChrome = registerManifestForSingleBrowser(GOOGLE_CHROME, homeDirectory + MANIFEST_DIR_CHROME, force);
+        registeredChrome = registerManifestForSingleBrowser(GOOGLE_CHROME, force);
         atLeastOneOperationOccurred = true;
     }
     if (force || isBrowserInstalled(FIREFOX))
     {
-        registeredFirefox = registerManifestForSingleBrowser(FIREFOX, homeDirectory + MANIFEST_DIR_FIREFOX, force, true);
+        registeredFirefox = registerManifestForSingleBrowser(FIREFOX, force, true);
         atLeastOneOperationOccurred = true;
     }
 
@@ -409,29 +425,28 @@ void registerManifest(int argc, char *argv[])
     if (argc > 2)
     {
         std::string subCommand(argv[2]);
-        std::string homeDirectory = getHomeDirectory();
         bool force = argc > 3 && std::string(argv[3]).compare("--force") == 0;
         bool operationSucceeded = false;
 
         if (subCommand.compare("all") == 0)
         {
-            operationSucceeded = registerManifestForAllBrowsers(homeDirectory, force);
+            operationSucceeded = registerManifestForAllBrowsers(force);
         }
         else if (subCommand.compare("chromium") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser(CHROMIUM, homeDirectory + MANIFEST_DIR_CHROMIUM, force);
+            operationSucceeded = registerManifestForSingleBrowser(CHROMIUM, force);
         }
         else if (subCommand.compare("chromium-snap") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser(CHROMIUM_SNAP, homeDirectory + MANIFEST_DIR_CHROMIUM_SNAP, force);
+            operationSucceeded = registerManifestForSingleBrowser(CHROMIUM_SNAP, force);
         }
         else if (subCommand.compare("chrome") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser(GOOGLE_CHROME, homeDirectory + MANIFEST_DIR_CHROME, force);
+            operationSucceeded = registerManifestForSingleBrowser(GOOGLE_CHROME, force);
         }
         else if (subCommand.compare("firefox") == 0)
         {
-            operationSucceeded = registerManifestForSingleBrowser(FIREFOX, homeDirectory + MANIFEST_DIR_FIREFOX, force, true);
+            operationSucceeded = registerManifestForSingleBrowser(FIREFOX, force, true);
         }
         else
         {
@@ -454,9 +469,10 @@ void registerManifest(int argc, char *argv[])
     }
 }
 
-void unregisterManifestFromSingleBrowser(int browserId, std::string manifestPath)
+void unregisterManifestFromSingleBrowser(int browserId)
 {
     std::string browserName = BROWSER_NAMES[browserId];
+    std::string manifestPath = getHomeDirectory() + MANIFEST_PATHS[browserId] + MANIFEST_FILE_NAME;
     if (doesManifestExist(manifestPath))
     {
         if (remove(manifestPath.c_str()) == 0)
@@ -472,14 +488,6 @@ void unregisterManifestFromSingleBrowser(int browserId, std::string manifestPath
     {
         std::cout << "TabFloater companion is not registered for " << browserName << ", no changes were made." << std::endl;
     }
-}
-
-void unregisterManifestFromAllBrowsers(std::string homeDirectory)
-{
-    unregisterManifestFromSingleBrowser(CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM);
-    unregisterManifestFromSingleBrowser(CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP);
-    unregisterManifestFromSingleBrowser(GOOGLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME);
-    unregisterManifestFromSingleBrowser(FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX);
 }
 
 void printUnregisterUsage(std::string executableName)
@@ -507,23 +515,26 @@ void unregisterManifest(int argc, char *argv[])
 
         if (subCommand.compare("all") == 0)
         {
-            unregisterManifestFromAllBrowsers(homeDirectory);
+            unregisterManifestFromSingleBrowser(CHROMIUM);
+            unregisterManifestFromSingleBrowser(CHROMIUM_SNAP);
+            unregisterManifestFromSingleBrowser(GOOGLE_CHROME);
+            unregisterManifestFromSingleBrowser(FIREFOX);
         }
         else if (subCommand.compare("chromium") == 0)
         {
-            unregisterManifestFromSingleBrowser(CHROMIUM, homeDirectory + MANIFEST_PATH_CHROMIUM);
+            unregisterManifestFromSingleBrowser(CHROMIUM);
         }
         else if (subCommand.compare("chromium-snap") == 0)
         {
-            unregisterManifestFromSingleBrowser(CHROMIUM_SNAP, homeDirectory + MANIFEST_PATH_CHROMIUM_SNAP);
+            unregisterManifestFromSingleBrowser(CHROMIUM_SNAP);
         }
         else if (subCommand.compare("chrome") == 0)
         {
-            unregisterManifestFromSingleBrowser(GOOGLE_CHROME, homeDirectory + MANIFEST_PATH_CHROME);
+            unregisterManifestFromSingleBrowser(GOOGLE_CHROME);
         }
         else if (subCommand.compare("firefox") == 0)
         {
-            unregisterManifestFromSingleBrowser(FIREFOX, homeDirectory + MANIFEST_PATH_FIREFOX);
+            unregisterManifestFromSingleBrowser(FIREFOX);
         }
         else
         {
@@ -579,20 +590,6 @@ void printMainUsage(std::string executableName)
 
 int startInteractiveMode(std::string version, int argc, char *argv[])
 {
-
-    try {
-        std::string qq = executeCommandAndGetStdOut("find -q");
-        std::cout << "kub: " << qq << " tah" << std::endl;
-    } catch (...) {
-        std::cerr << "failed" << std::endl;
-    }
-
-
-    std::cout << "chromium: " << BROWSER_NAMES[CHROMIUM] << std::endl;
-    std::cout << "chromium snap: " << BROWSER_NAMES[CHROMIUM_SNAP] << std::endl;
-    std::cout << "chrome: " << BROWSER_NAMES[GOOGLE_CHROME] << std::endl;
-    std::cout << "firefox: " << BROWSER_NAMES[FIREFOX] << std::endl;
-
     try
     {
         if (argc > 1)
