@@ -279,12 +279,14 @@ void printChromiumSnapWarning()
 {
     if (isRunningAsAppImage())
     {
+        std::cout << std::endl;
         std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap Chromium." << std::endl;
         std::cout << "To learn more about alternatives, visit TODO" << std::endl;
         std::cout << std::endl;
     }
     else if (!isCurrentExecutableInHomeDirectory())
     {
+        std::cout << std::endl;
         std::cout << "Warning: this executable is not in your home directory. Snap Chromium will not be able to communicate with it." << std::endl;
         std::cout << "In order to use TabFloater Companion with Snap Chromium, copy this executable to your home directory," << std::endl;
         std::cout << "run it from there and register Snap Chromium. Learn more by running 'man tabfloater-companion'." << std::endl;
@@ -353,7 +355,6 @@ bool registerManifestForSingleBrowser(int browserId, bool force, bool useFirefox
 
     if (browserId == CHROMIUM_SNAP)
     {
-        std::cout << std::endl;
         printChromiumSnapWarning();
     }
 
