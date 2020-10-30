@@ -14,7 +14,8 @@ jobs:
   build-appimage-linux:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repo
+      uses: actions/checkout@v2
     # - name: Import GPG key
     #   env:
     #     GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
@@ -34,10 +35,11 @@ jobs:
     #     file: ${{ env.APPIMAGE_FULL_PATH }}
     #     overwrite: true
     #     tag: ${{ github.ref }}
-    - name: Update download versions YAML
+    - name: Checkout GitHub Pages repo
       uses: actions/checkout@v2
       with:
-        repository: ${{ github.repository_owner	}}/${{ github.repository_owner }}.github.io
+        repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
+    - name: Update download versions YAML
       run: |
         ls -l
   # upload-ppa-linux:
