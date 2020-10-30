@@ -52,12 +52,14 @@ jobs:
         ./yq_linux_amd64 write --inplace downloads.yml companion.windows.tag wintag1
         ./yq_linux_amd64 write --inplace downloads.yml companion.windows.installer installer1
         ./yq_linux_amd64 write --inplace downloads.yml companion.windows.portable portable1
+        echo "Updated download versions YAML with contents:"
+        cat ./downloads.yml
     - name: Commit download versions YAML
       working-directory: _data
       run: |
         git config --global user.name 'TabFloater GitHub Actions'
         git config --global user.email 'github-actions@tabfloater.io'
-        git add downloads.yaml
+        git add ./downloads.yml
         git commit -m "Update download versions for release XXX"
         git push
   # upload-ppa-linux:
