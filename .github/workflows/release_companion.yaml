@@ -40,9 +40,26 @@ jobs:
       with:
         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
     - name: Update download versions YAML
-      working-directory: .
+      working-directory: _data
       run: |
-        ls -l
+        wget --no-verbose --show-progress https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        chmod +x ./yq_linux_amd64
+        ./yq_linux_amd64 write --inplace downloads.yml download_url_prefix myurl
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version linuxversion1
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.tag linuxtag1
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.appimage appimagename1
+        ./yq_linux_amd64 write --inplace downloads.yml companion.windows.version winversion1
+        ./yq_linux_amd64 write --inplace downloads.yml companion.windows.tag wintag1
+        ./yq_linux_amd64 write --inplace downloads.yml companion.windows.installer installer1
+        ./yq_linux_amd64 write --inplace downloads.yml companion.windows.portable portable1
+    - name: Commit download versions YAML
+      working-directory: _data
+      run: |
+        git config --global user.name 'TabFloater GitHub Actions'
+        git config --global user.email 'github-actions@tabfloater.io'
+        git add downloads.yaml
+        git commit -m "Update download versions for release XXX"
+        git push
   # upload-ppa-linux:
   #   runs-on: ubuntu-20.04
   #   steps:
