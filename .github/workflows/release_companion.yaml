@@ -14,7 +14,8 @@ jobs:
   build-appimage-linux:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - name: Check out TabFloater repo
+      uses: actions/checkout@v2
     # - name: Import GPG key
     #   env:
     #     GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
@@ -39,12 +40,14 @@ jobs:
       with:
         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
     - name: Update download versions YAML
+      working-directory: .
       run: |
         ls -l
   # upload-ppa-linux:
   #   runs-on: ubuntu-20.04
   #   steps:
-  #   - uses: actions/checkout@v2
+  #   - name: Check out TabFloater repo
+  #     uses: actions/checkout@v2
   #   - name: Install dependencies
   #     run: sudo apt-get install cmake debhelper devscripts
   #   - name: Import GPG key
@@ -60,7 +63,8 @@ jobs:
   # build-windows-packages:
   #   runs-on: windows-2019
   #   steps:
-  #   - uses: actions/checkout@v2
+  #   - name: Check out TabFloater repo
+  #     uses: actions/checkout@v2
   #   - name: Build packages
   #     run: |
   #       ./build.bat --package
