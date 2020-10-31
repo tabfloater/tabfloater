@@ -118,7 +118,7 @@ jobs:
         .\yq.exe write --inplace downloads.yml companion.windows.installer $INSTALLER
         .\yq.exe write --inplace downloads.yml companion.windows.portable $PORTABLE
         echo "Updated versions YAML:"
-        cat ./downloads.yml
+        cat .\downloads.yml
         git config --global user.name 'TabFloater GH Actions'
         git config --global user.email 'github-actions@tabfloater.io'
         git add ./downloads.yml
