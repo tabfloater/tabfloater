@@ -1,10 +1,9 @@
 name: Release companion
 
 on:
-  workflow_dispatch
-  # push:
-  #   tags:
-  #     - 'v*_companion'
+  push:
+    tags:
+      - 'v*_companion'
 
 defaults:
   run:
@@ -14,37 +13,55 @@ jobs:
   build-appimage-linux:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    # - name: Import GPG key
-    #   env:
-    #     GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
-    #   run: |
-    #     echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
-    #     FINGERPRINT=$(gpg --batch --fingerprint --with-colons | grep "pub" --after-context=1 | tail -1 | cut -d ':' -f 10)
-    #     echo "Fingerprint: $FINGERPRINT"
-    #     echo "$FINGERPRINT:6:" | gpg --import-ownertrust
-    # - name: Build AppImage
-    #   run: |
-    #     source ./packaging/linux/build_appimage.sh --sign
-    #     echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
-    # - name: Upload AppImage to Release
-    #   uses: svenstaro/upload-release-action@v2
-    #   with:
-    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-    #     file: ${{ env.APPIMAGE_FULL_PATH }}
-    #     overwrite: true
-    #     tag: ${{ github.ref }}
+    - name: Check out TabFloater repo
+      uses: actions/checkout@v2
+    - name: Import GPG key
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
+      run: |
+        echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
+        FINGERPRINT=$(gpg --batch --fingerprint --with-colons | grep "pub" --after-context=1 | tail -1 | cut -d ':' -f 10)
+        echo "Fingerprint: $FINGERPRINT"
+        echo "$FINGERPRINT:6:" | gpg --import-ownertrust
+    - name: Build AppImage
+      run: |
+        source ./packaging/linux/build_appimage.sh --sign
+        echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
+    - name: Upload AppImage to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ env.APPIMAGE_FULL_PATH }}
+        overwrite: true
+        tag: ${{ github.ref }}
     - name: Checkout GitHub Pages repo
       uses: actions/checkout@v2
       with:
         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
-    - name: Update download versions YAML
+        token: ${{ secrets.GH_PAGES_REPO_TOKEN }}
+    - name: Update versions YAML
+      working-directory: _data
       run: |
-        ls -l
+        wget --quiet https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+        chmod +x ./yq_linux_amd64
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version `echo "${{ github.ref }}" | sed -e "s/_companion//g"`
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.tag ${{ github.ref }}
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.appimage `basename ${{ env.APPIMAGE_FULL_PATH }}`
+        echo "Updated versions YAML:"
+        cat ./downloads.yml
+    - name: Commit versions YAML
+      working-directory: _data
+      run: |
+        git config --global user.name 'TabFloater GitHub Actions'
+        git config --global user.email 'github-actions@tabfloater.io'
+        git add ./downloads.yml
+        git commit -m "Update Linux download versions for release ${{ github.ref }}"
+        git push
   # upload-ppa-linux:
   #   runs-on: ubuntu-20.04
   #   steps:
-  #   - uses: actions/checkout@v2
+  #   - name: Check out TabFloater repo
+  #     uses: actions/checkout@v2
   #   - name: Install dependencies
   #     run: sudo apt-get install cmake debhelper devscripts
   #   - name: Import GPG key
@@ -60,7 +77,8 @@ jobs:
   # build-windows-packages:
   #   runs-on: windows-2019
   #   steps:
-  #   - uses: actions/checkout@v2
+  #   - name: Check out TabFloater repo
+  #     uses: actions/checkout@v2
   #   - name: Build packages
   #     run: |
   #       ./build.bat --package
