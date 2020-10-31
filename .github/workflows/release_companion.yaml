@@ -39,23 +39,22 @@ jobs:
       with:
         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
         token: ${{ secrets.GH_PAGES_REPO_TOKEN }}
-    - name: Update versions YAML
+    - name: Update and commit versions YAML
       working-directory: _data
       run: |
+        export TAG=$(echo "${{ github.ref }}" | sed -e "s|refs/tags/||g")
+        export VERSION=$(echo $TAG | sed -e "s/_companion//g")
         wget --quiet https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
         chmod +x ./yq_linux_amd64
-        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version `echo "${{ github.ref }}" | sed -e "s/_companion//g"`
-        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.tag ${{ github.ref }}
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version $VERSION
+        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.tag $TAG
         ./yq_linux_amd64 write --inplace downloads.yml companion.linux.appimage `basename ${{ env.APPIMAGE_FULL_PATH }}`
         echo "Updated versions YAML:"
         cat ./downloads.yml
-    - name: Commit versions YAML
-      working-directory: _data
-      run: |
-        git config --global user.name 'TabFloater GitHub Actions'
+        git config --global user.name 'TabFloater GH Actions'
         git config --global user.email 'github-actions@tabfloater.io'
         git add ./downloads.yml
-        git commit -m "Update Linux download versions for release ${{ github.ref }}"
+        git commit -m "Update Linux versions for release $VERSION"
         git push
   # upload-ppa-linux:
   #   runs-on: ubuntu-20.04
