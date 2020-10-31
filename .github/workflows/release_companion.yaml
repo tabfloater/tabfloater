@@ -51,8 +51,8 @@ jobs:
         ./yq_linux_amd64 write --inplace downloads.yml companion.linux.appimage `basename ${{ env.APPIMAGE_FULL_PATH }}`
         echo "Updated versions YAML:"
         cat ./downloads.yml
-        git config --global user.name 'TabFloater GH Actions'
-        git config --global user.email 'github-actions@tabfloater.io'
+        git config --global user.name "TabFloater GH Actions"
+        git config --global user.email "github-actions@tabfloater.io"
         git add ./downloads.yml
         git commit -m "Update Linux versions for release $VERSION"
         git push
@@ -119,8 +119,8 @@ jobs:
         .\yq.exe write --inplace downloads.yml companion.windows.portable $PORTABLE
         echo "Updated versions YAML:"
         cat .\downloads.yml
-        git config --global user.name 'TabFloater GH Actions'
-        git config --global user.email 'github-actions@tabfloater.io'
-        git add ./downloads.yml
+        git config --global user.name "TabFloater GH Actions"
+        git config --global user.email "github-actions@tabfloater.io"
+        git add .\downloads.yml
         git commit -m "Update Windows versions for release $VERSION"
         git push
