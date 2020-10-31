@@ -110,10 +110,13 @@ jobs:
         $GITHUB_REF = "${{ github.ref }}"
         $TAG = $GITHUB_REF -replace "refs/tags/",""
         $VERSION = $TAG -replace "_companion",""
+        $INSTALLER = [System.IO.Path]::GetFileName("${{ env.WIN_INSTALLER_FULL_PATH }}")
+        $PORTABLE = [System.IO.Path]::GetFileName("${{ env.WIN_PORTABLE_FULL_PATH }}")
         Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_windows_amd64.exe" -OutFile "yq.exe"
-        .\yq.exe write --inplace downloads.yml companion.linux.version $VERSION
-        .\yq.exe write --inplace downloads.yml companion.linux.tag $TAG
-        .\yq.exe write --inplace downloads.yml companion.linux.appimage `basename ${{ env.APPIMAGE_FULL_PATH }}`
+        .\yq.exe write --inplace downloads.yml companion.windows.version $VERSION
+        .\yq.exe write --inplace downloads.yml companion.windows.tag $TAG
+        .\yq.exe write --inplace downloads.yml companion.windows.installer $INSTALLER
+        .\yq.exe write --inplace downloads.yml companion.windows.portable $PORTABLE
         echo "Updated versions YAML:"
         cat ./downloads.yml
         git config --global user.name 'TabFloater GH Actions'
