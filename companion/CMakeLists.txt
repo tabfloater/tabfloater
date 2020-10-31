@@ -22,7 +22,7 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.8.0" CACHE STRING "Application version")
+set(VERSION "0.8.1" CACHE STRING "Application version")
 set(DEV_BUILD false CACHE BOOL "If true, the application is built for development.")
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
