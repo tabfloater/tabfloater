@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FloatingTabPadding, MinimumFloatingTabSideLength } from "../constants.js";
+import { FloatingTabPaddings, MinimumFloatingTabSideLength } from "../constants.js";
 import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
 import * as logger from "../logging/logger.js";
@@ -76,17 +76,18 @@ export async function calculateCoordinatesAsync() {
 
 function getFixedPositionCoordinates(parentWindow, position, options) {
     const dimensions = getFixedFloatingTabDimensions(parentWindow, options);
+    const padding = FloatingTabPaddings.fixedPositioning;
 
     logger.info(`Position: ${position}, parent window top: ${parentWindow.top}, left: ${parentWindow.left}, ` +
         `width: ${parentWindow.width}, height: ${parentWindow.height}`);
 
     dimensions.top = position.startsWith("top")
         ? parentWindow.top + options.viewportTopOffset
-        : parentWindow.top + parentWindow.height - FloatingTabPadding - dimensions.height;
+        : parentWindow.top + parentWindow.height - padding - dimensions.height;
 
     dimensions.left = position.endsWith("Left")
-        ? parentWindow.left + FloatingTabPadding
-        : parentWindow.left + parentWindow.width - FloatingTabPadding - dimensions.width;
+        ? parentWindow.left + padding
+        : parentWindow.left + parentWindow.width - padding - dimensions.width;
 
     return dimensions;
 }
@@ -98,10 +99,16 @@ async function getSmartPositionCoordinatesAsync(parentWindow, options) {
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "/libs/webextension-polyfill/browser-polyfill.min.js" });
         await browser.tabs.executeScript(parentWindowActiveTab.id, { file: "/js/positioning/areaCalculator.js" });
 
+        const padding = FloatingTabPaddings.smartPositioning;
         const coordinates = await browser.tabs.sendMessage(parentWindowActiveTab.id, {
             action: "calculateMaxEmptyArea",
             debug: options.debug
         });
+
+        coordinates.top += padding;
+        coordinates.left += padding;
+        coordinates.width -= padding * 2;
+        coordinates.height -= padding * 2;
 
         if (!coordinates) {
             throw "Unable to calculate coordinates";
@@ -145,8 +152,8 @@ function getFixedFloatingTabDimensions(parentWindow, options) {
     logger.info(`topOffset: ${topOffset}, rawWidth: ${rawWidth}, rawHeight: ${rawHeight}`);
 
     return {
-        width: rawWidth - FloatingTabPadding * 2,
-        height: rawHeight - FloatingTabPadding * 2
+        width: rawWidth - FloatingTabPaddings.fixedPositioning * 2,
+        height: rawHeight - FloatingTabPaddings.fixedPositioning * 2
     };
 }
 

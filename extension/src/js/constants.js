@@ -52,7 +52,11 @@ export const GoogleAnalyticsTrackingId = {
     Development: "UA-175107528-1"
 };
 
-export const FloatingTabPadding = 50;
+export const FloatingTabPaddings = {
+    fixedPositioning: 50,
+    smartPositioning: 25
+}
+
 export const MinimumFloatingTabSideLength = 300;
 
 export const UsageDataToCustomDimensionMapping = {
