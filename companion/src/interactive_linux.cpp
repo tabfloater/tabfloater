@@ -553,9 +553,10 @@ void unregisterManifest(int argc, char *argv[])
     }
 }
 
-void printVersion(std::string version)
+void printVersion(std::string version, std::string gitCommitHash)
 {
     std::cout << "TabFloater Companion version " << version << std::endl;
+    std::cout << "Git commit hash: " << gitCommitHash << std::endl;
     std::cout << std::endl;
     std::cout << "Homepage: https://tabfloater.io/" << std::endl;
     std::cout << "Bug reports: https://github.com/tabfloater/tabfloater/" << std::endl;
@@ -591,7 +592,7 @@ void printMainUsage(std::string executableName)
     std::cout << std::endl;
 }
 
-int startInteractiveMode(std::string version, int argc, char *argv[])
+int startInteractiveMode(std::string version, std::string gitCommitHash, int argc, char *argv[])
 {
     try
     {
@@ -613,7 +614,7 @@ int startInteractiveMode(std::string version, int argc, char *argv[])
             }
             else if (command.compare("version") == 0)
             {
-                printVersion(version);
+                printVersion(version, gitCommitHash);
             }
             else if (command.compare("--help") == 0)
             {

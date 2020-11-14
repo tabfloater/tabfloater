@@ -22,14 +22,25 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.8.3" CACHE STRING "Application version")
-set(DEV_BUILD false CACHE BOOL "If true, the application is built for development.")
+set(VERSION "0.8.4" CACHE STRING "Application version")
+set(DEV_BUILD false CACHE BOOL "If true, the application is built for development")
+
+execute_process(
+         COMMAND git rev-parse HEAD
+         COMMAND tr -d '\n'
+         RESULTS_VARIABLE GIT_COMMAND_RESULTS
+         OUTPUT_VARIABLE GIT_COMMIT_HASH)
+
+if(NOT GIT_COMMAND_RESULTS MATCHES "0;0")
+    set(GIT_COMMIT_HASH "unknown")
+endif()
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
 
 set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_LIST)
 
+message("GIT_COMMIT_HASH: ${GIT_COMMIT_HASH}")
 message("DEV_BUILD: ${DEV_BUILD}")
 
 if(UNIX)
@@ -51,7 +62,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Targets
 add_executable(${MAIN_TARGET} ${SOURCE_LIST})
-target_compile_definitions(${MAIN_TARGET} PRIVATE VERSION=\"${PROJECT_VERSION}\" PRIVATE DEV_BUILD=${DEV_BUILD})
+target_compile_definitions(${MAIN_TARGET} PRIVATE VERSION=\"${PROJECT_VERSION}\" PRIVATE GIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\" PRIVATE DEV_BUILD=${DEV_BUILD})
 
 # Libraries
 if(WIN32)

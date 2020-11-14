@@ -25,6 +25,10 @@
     #define VERSION "unknown"
 #endif
 
+#ifndef GIT_COMMIT_HASH
+    #define GIT_COMMIT_HASH "unknown"
+#endif
+
 #ifndef DEV_BUILD
     #define DEV_BUILD false
 #endif
@@ -48,7 +52,10 @@ std::string getVersion() {
 void initLogging(std::string logFilePath)
 {
     loguru::add_file(logFilePath.c_str(), loguru::Append, loguru::Verbosity_MAX);
-    std::string initMessage = std::string("TabFloater Companion started. Version: ") + getVersion() + ", OS: " + OS;
+    std::string initMessage = std::string("TabFloater Companion started. Version: ")
+                                + getVersion()
+                                + ", OS: " + OS
+                                + ", Git commit: " + GIT_COMMIT_HASH;
 
     LOG_F(INFO, initMessage.c_str());
 }
@@ -262,7 +269,7 @@ int main(int argc, char *argv[])
 
 #ifdef linux
     if (shouldRunInInteractiveMode(argc, argv))  {
-        return startInteractiveMode(getVersion(), argc, argv);
+        return startInteractiveMode(getVersion(), GIT_COMMIT_HASH, argc, argv);
     } else {
         return startCompanionMode(argc, argv);
     }
