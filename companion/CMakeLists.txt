@@ -27,6 +27,7 @@ set(GIT_COMMIT_HASH "" CACHE STRING "Git commit hash the application is being bu
 set(DEV_BUILD false CACHE BOOL "If true, the application is built for development")
 
 if (NOT GIT_COMMIT_HASH)
+    # Git commit hash was not passed as a parameter
     execute_process(
          COMMAND git rev-parse HEAD
          COMMAND tr -d '\n'
@@ -34,7 +35,13 @@ if (NOT GIT_COMMIT_HASH)
          OUTPUT_VARIABLE GIT_COMMIT_HASH)
 
     if(NOT GIT_COMMAND_RESULTS MATCHES "0;0")
-        set(GIT_COMMIT_HASH "unknown")
+        # We are not in a git repository, try and read the .gitrev file
+
+        if(EXISTS ${CMAKE_SOURCE_DIR}/.gitrev)
+            file(READ ${CMAKE_SOURCE_DIR}/.gitrev GIT_COMMIT_HASH)
+        else()
+            set(GIT_COMMIT_HASH "unknown")
+        endif()
     endif()
 endif()
 

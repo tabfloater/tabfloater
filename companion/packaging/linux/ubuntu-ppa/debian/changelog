@@ -1,3 +1,9 @@
+tabfloater-companion (0.8.5~SERIES2) SERIES; urgency=medium
+
+  * Fix git commit
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 14 Nov 2020 16:50:54 +0000
+
 tabfloater-companion (0.8.5~SERIES1) SERIES; urgency=medium
 
   * Fix versioning

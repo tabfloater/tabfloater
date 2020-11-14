@@ -67,6 +67,8 @@ function build_deb_source_package() {
     tar -xzf $_TARBALL
     cd $(basename $_TARBALL .tar.gz)
 
+    echo -n $_GIT_COMMIT_HASH > .gitrev
+
     cp -r $_PPA_RESOURCES_DIR/* .
     sed -i "s/SERIES/$_series/g" ./debian/changelog
 
@@ -120,7 +122,7 @@ fi
 print_stage "Build upstream tarball"
 
 cd $_COMPANION_DIR
-cmake -S . -B $_BUILD_DIR -DGIT_COMMIT_HASH=$_GIT_COMMIT_HASH
+cmake -S . -B $_BUILD_DIR
 cmake --build $_BUILD_DIR --target package_source
 
 _TARBALL=$(ls $_BUILD_DIR/*.tar.gz)
