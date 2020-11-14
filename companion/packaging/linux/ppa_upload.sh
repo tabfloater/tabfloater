@@ -8,6 +8,7 @@ _PPA_HOST="ppa:ba32107/tabfloater"
 _SERIES_LIST="focal"
 
 _COMPANION_DIR=$(git rev-parse --show-toplevel)/companion
+_GIT_COMMIT_HASH=$(echo $(git rev-parse HEAD) | tr -d '\n')
 _PPA_RESOURCES_DIR=$_COMPANION_DIR/packaging/linux/ubuntu-ppa
 _BUILD_DIR=$_COMPANION_DIR/dist
 _PPA_BUILD_DIR=$_COMPANION_DIR/dist_ppa
@@ -88,7 +89,6 @@ function upload_to_launchpad() {
     dput --lintian $_dry_run_flags $_PPA_HOST $_changes_file
 }
 
-
 while [ $# -ge 1 ]; do
     _arg="$1"
     case "$_arg" in
@@ -120,7 +120,7 @@ fi
 print_stage "Build upstream tarball"
 
 cd $_COMPANION_DIR
-cmake -S . -B $_BUILD_DIR
+cmake -S . -B $_BUILD_DIR -DGIT_COMMIT_HASH=$_GIT_COMMIT_HASH
 cmake --build $_BUILD_DIR --target package_source
 
 _TARBALL=$(ls $_BUILD_DIR/*.tar.gz)
