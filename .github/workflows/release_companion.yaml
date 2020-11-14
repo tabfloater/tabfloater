@@ -38,7 +38,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
-        token: ${{ secrets.GH_PAGES_REPO_TOKEN }}
+        ssh-key: ${{ secrets.GH_PAGES_REPO_DEPLOY_KEY }}
     - name: Update and commit versions YAML
       working-directory: _data
       run: |
@@ -103,7 +103,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
-        token: ${{ secrets.GH_PAGES_REPO_TOKEN }}
+        ssh-key: ${{ secrets.GH_PAGES_REPO_DEPLOY_KEY }}
     - name: Update and commit versions YAML
       working-directory: _data
       run: |
