@@ -1,3 +1,9 @@
+tabfloater-companion (0.8.4~SERIES1) SERIES; urgency=medium
+
+  * Add Git commit hash to version
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 14 Nov 2020 14:01:53 +0000
+
 tabfloater-companion (0.8.3~SERIES1) SERIES; urgency=medium
 
   * Bump version for testing

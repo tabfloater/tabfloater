@@ -21,7 +21,8 @@
  * Currently only implemented for Linux.
  *
  * @param version application version
+ * @param gitCommitHash the Git commit hash the binary was built from
  * @param argc number of arguments, as passed into the main method
  * @param argv arguments, as passed into the main method
  */
-int startInteractiveMode(std::string version, int argc, char *argv[]);
+int startInteractiveMode(std::string version, std::string gitCommitHash, int argc, char *argv[]);
