@@ -22,17 +22,20 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.8.4" CACHE STRING "Application version")
+set(VERSION "0.8.5" CACHE STRING "Application version")
+set(GIT_COMMIT_HASH "" CACHE STRING "Git commit hash the application is being built from")
 set(DEV_BUILD false CACHE BOOL "If true, the application is built for development")
 
-execute_process(
+if (NOT GIT_COMMIT_HASH)
+    execute_process(
          COMMAND git rev-parse HEAD
          COMMAND tr -d '\n'
          RESULTS_VARIABLE GIT_COMMAND_RESULTS
          OUTPUT_VARIABLE GIT_COMMIT_HASH)
 
-if(NOT GIT_COMMAND_RESULTS MATCHES "0;0")
-    set(GIT_COMMIT_HASH "unknown")
+    if(NOT GIT_COMMAND_RESULTS MATCHES "0;0")
+        set(GIT_COMMIT_HASH "unknown")
+    endif()
 endif()
 
 project(tabfloater-companion VERSION ${VERSION} DESCRIPTION "Companion application for the TabFloater browser extension")
