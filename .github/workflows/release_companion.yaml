@@ -43,7 +43,7 @@ jobs:
       working-directory: _data
       run: |
         export TAG=$(echo "${{ github.ref }}" | sed -e "s|refs/tags/||g")
-        export VERSION=$(echo $TAG | sed -e "s/_companion//g")
+        export VERSION=$(echo $TAG | sed -e "s/_companion//g" | sed -e "/s/v//g")
         wget --quiet https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
         chmod +x ./yq_linux_amd64
         ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version $VERSION
@@ -109,7 +109,7 @@ jobs:
       run: |
         $GITHUB_REF = "${{ github.ref }}"
         $TAG = $GITHUB_REF -replace "refs/tags/",""
-        $VERSION = $TAG -replace "_companion",""
+        $VERSION = $TAG -replace "_companion","" -replace "v",""
         $INSTALLER = [System.IO.Path]::GetFileName("${{ env.WIN_INSTALLER_FULL_PATH }}") -replace " ","."
         $PORTABLE = [System.IO.Path]::GetFileName("${{ env.WIN_PORTABLE_FULL_PATH }}") -replace " ","."
         Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_windows_amd64.exe" -OutFile "yq.exe"
