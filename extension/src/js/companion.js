@@ -15,7 +15,7 @@
  */
 
 import { CompanionName } from "./constants.js";
-import { CompanionLatestVersions } from "./constants.js";
+import { CompanionLatestVersionsFallback } from "./constants.js";
 import { loadOptionsAsync } from "./main.js";
 import * as logger from "./logging/logger.js";
 
@@ -30,15 +30,16 @@ export async function getCompanionInfoAsync() {
         logger.info(`Companion responded to ping request. Status: '${companionInfo.status}', Version: ${companionInfo.version} (${companionInfo.os})`);
 
         if (companionInfo.status === "ok") {
-            const isOutdated = isOutdatedVersion(companionInfo);
+            const latestVersion = await getLatestCompanionVersionAsync(companionInfo);
+            const isOutdated = isOutdatedVersion(companionInfo, latestVersion);
 
             return {
                 status: "connected",
                 version: companionInfo.version,
                 os: companionInfo.os,
-                latestVersion: getLatestCompanionVersion(companionInfo),
+                latestVersion: latestVersion,
                 isOutdated: isOutdated,
-                latestVersionHasBreakingChanges: isOutdated ? latestVersionHasBreakingChanges(companionInfo) : false,
+                latestVersionHasBreakingChanges: isOutdated ? latestVersionHasBreakingChanges(companionInfo, latestVersion) : false,
                 logFilePath: companionInfo.logfile
             };
         } else {
@@ -86,11 +87,33 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
     }
 }
 
-function isOutdatedVersion(companionInfo) {
-    const current = companionInfo.version.replace("-dev", "");
-    const latest = getLatestCompanionVersion(companionInfo);
+export async function fetchLatestVersionsAsync() {
+    await fetchAndSaveLatestCompanionVersionAsync("linux", CompanionLatestVersionsFallback.Linux);
+    await fetchAndSaveLatestCompanionVersionAsync("windows", CompanionLatestVersionsFallback.Windows);
+}
 
-    logger.info(`Companion version check. Current version: ${current}, lastest version: ${latest}`);
+async function fetchAndSaveLatestCompanionVersionAsync(platform, fallbackValue) {
+    const url = `https://www.tabfloater.io/companion-latest-${platform}`;
+    let version;
+
+    try {
+        const response = await fetch(url, { cache: 'no-cache' });
+        version = await response.text();
+    } catch (error) {
+        console.log(`Error while fetching latest companion version: ${error}`);
+        console.log(`Falling back to hardcoded value: ${fallbackValue}`);
+        version = fallbackValue;
+    }
+
+    const latestVersion = {};
+    latestVersion[`companion-latest-${platform}`] = version;
+    await browser.storage.local.set(latestVersion);
+}
+
+function isOutdatedVersion(companionInfo, latest) {
+    const current = companionInfo.version.replace("-dev", "");
+
+    logger.info(`Companion version check. Current version: ${current}, latest version: ${latest}`);
 
     const currentMajor = getMajorVersion(current);
     const latestMajor = getMajorVersion(latest);
@@ -120,16 +143,14 @@ function isOutdatedVersion(companionInfo) {
     return false;
 }
 
-function getLatestCompanionVersion(companionInfo) {
-    switch (companionInfo.os) {
-        case "Linux": return CompanionLatestVersions.Linux;
-        case "Windows": return CompanionLatestVersions.Windows;
-        default: return "unknown";
-    }
+async function getLatestCompanionVersionAsync(companionInfo) {
+    const storageKey = `companion-latest-${companionInfo.os.toLowerCase()}`;
+    var versionObject = await browser.storage.local.get(storageKey);
+    return versionObject[storageKey];
 }
 
-function latestVersionHasBreakingChanges(companionInfo) {
-    return getMajorVersion(companionInfo.version) < getMajorVersion(getLatestCompanionVersion(companionInfo));
+function latestVersionHasBreakingChanges(companionInfo, latest) {
+    return getMajorVersion(companionInfo.version) < getMajorVersion(latest);
 }
 
 function getMajorVersion(version) {
