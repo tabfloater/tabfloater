@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: tabfloater-companion
 Upstream-Contact: Balazs Gyurak <balazs@tabfloater.io>
-Source: http://tabfloater.io/
+Source: http://www.tabfloater.io/
 
 Files: *
 Copyright: 2020 Balazs Gyurak <balazs@tabfloater.io>

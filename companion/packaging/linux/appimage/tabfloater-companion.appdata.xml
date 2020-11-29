@@ -5,11 +5,11 @@
   <extends>io.github.tabfloater</extends>
   <name>TabFloater Companion</name>
   <summary>Companion application for the TabFloater browser extension</summary>
-  <url type="homepage">https://tabfloater.io/</url>
+  <url type="homepage">https://www.tabfloater.io/</url>
   <url type="bugtracker">https://github.com/tabfloater/tabfloater</url>
-  <url type="faq">https://github.com/tabfloater/tabfloater</url>
-  <url type="help">https://github.com/tabfloater/tabfloater</url>
-  <url type="contact">https://github.com/tabfloater/tabfloater</url>
+  <url type="faq">https://www.tabfloater.io/documentation</url>
+  <url type="help">https://github.com/tabfloater/tabfloater/issues/new</url>
+  <url type="contact">https://github.com/tabfloater/tabfloater/issues/new</url>
   <metadata_license>MIT</metadata_license>
   <project_license>Apache-2.0</project_license>
   <developer_name>Balazs Gyurak</developer_name>

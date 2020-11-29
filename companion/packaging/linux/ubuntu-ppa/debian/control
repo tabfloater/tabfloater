@@ -6,7 +6,7 @@ Build-Depends: cmake,
                debhelper-compat (= 12),
                libx11-dev
 Standards-Version: 4.5.0.3
-Homepage: https://tabfloater.io/
+Homepage: https://www.tabfloater.io/
 Vcs-Browser: https://github.com/tabfloater/tabfloater
 Vcs-Git: https://github.com/tabfloater/tabfloater.git
 

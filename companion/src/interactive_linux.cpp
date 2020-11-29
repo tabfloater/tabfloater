@@ -280,16 +280,16 @@ void printChromiumSnapWarning()
     if (isRunningAsAppImage())
     {
         std::cout << std::endl;
-        std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap Chromium." << std::endl;
-        std::cout << "To learn more about alternatives, visit TODO" << std::endl;
+        std::cout << "Warning: you are running TabFloater Companion as AppImage. This will not work with Snap browsers." << std::endl;
+        std::cout << "To learn more about alternatives, visit https://www.tabfloater.io/documentation#browsers-installed-via-snap" << std::endl;
         std::cout << std::endl;
     }
     else if (!isCurrentExecutableInHomeDirectory())
     {
         std::cout << std::endl;
-        std::cout << "Warning: this executable is not in your home directory. Snap Chromium will not be able to communicate with it." << std::endl;
-        std::cout << "In order to use TabFloater Companion with Snap Chromium, copy this executable to your home directory," << std::endl;
-        std::cout << "run it from there and register Snap Chromium. Learn more by running 'man tabfloater-companion'." << std::endl;
+        std::cout << "Warning: this executable is not in your home directory. Snap browsers will not be able to communicate with it." << std::endl;
+        std::cout << "In order to use TabFloater Companion with Snap browsers, copy this executable to your home directory," << std::endl;
+        std::cout << "run it from there and register the desired Snap browsers. Learn more by running 'man tabfloater-companion'." << std::endl;
         std::cout << std::endl;
     }
 }
@@ -558,7 +558,7 @@ void printVersion(std::string version, std::string gitCommitHash)
     std::cout << "TabFloater Companion version " << version << std::endl;
     std::cout << "Git commit hash: " << gitCommitHash << std::endl;
     std::cout << std::endl;
-    std::cout << "Homepage: https://tabfloater.io/" << std::endl;
+    std::cout << "Homepage: https://www.tabfloater.io/" << std::endl;
     std::cout << "Bug reports: https://github.com/tabfloater/tabfloater/" << std::endl;
     std::cout << std::endl;
     std::cout << "Copyright (C) 2020 Balazs Gyurak" << std::endl;
@@ -571,7 +571,7 @@ void printMainUsage(std::string executableName)
     std::cout << std::endl;
     std::cout << "Usage: " << executableName << " COMMAND" << std::endl;
     std::cout << std::endl;
-    std::cout << "Companion application for the TabFloater browser extension. Learn more about TabFloater at https://tabfloater.io/" << std::endl;
+    std::cout << "Companion application for the TabFloater browser extension. Learn more about TabFloater at https://www.tabfloater.io/" << std::endl;
     std::cout << "The command line use of this application is only intended to register the Companion for your preferred browsers." << std::endl;
     std::cout << "Once registered, the TabFloater browser extension will work with the Companion seamlessly." << std::endl;
     std::cout << std::endl;
