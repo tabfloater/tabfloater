@@ -97,11 +97,11 @@ async function fetchAndSaveLatestCompanionVersionAsync(platform, fallbackValue) 
     let version;
 
     try {
-        const response = await fetch(url, { cache: 'no-cache' });
+        const response = await fetch(url, { cache: "no-cache" });
         version = await response.text();
     } catch (error) {
-        console.log(`Error while fetching latest companion version: ${error}`);
-        console.log(`Falling back to hardcoded value: ${fallbackValue}`);
+        logger.warn(`Error while fetching latest companion version: ${error}`);
+        logger.warn(`Falling back to hardcoded value: ${fallbackValue}`);
         version = fallbackValue;
     }
 

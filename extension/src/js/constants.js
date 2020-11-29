@@ -55,7 +55,7 @@ export const GoogleAnalyticsTrackingId = {
 export const FloatingTabPaddings = {
     fixedPositioning: 50,
     smartPositioning: 25
-}
+};
 
 export const MinimumFloatingTabSideLength = 300;
 
