@@ -17,7 +17,7 @@
 import * as constants from "./constants.js";
 import * as env from "./environment.js";
 import * as floater from "./floater.js";
-import { getCompanionInfoAsync } from "./companion.js";
+import * as companion from "./companion.js";
 import * as analytics from "./analytics/analytics.js";
 import * as googleAnalytics from "./analytics/googleAnalytics.js";
 import { NullAnalytics } from "./analytics/nullAnalytics.js";
@@ -65,6 +65,7 @@ async function startupAsync() {
         browser.tabs.onActivated.addListener(activeTabChangedListenerAsync);
     }
 
+    await companion.fetchLatestVersionsAsync();
     await floater.clearFloatingTabAsync();
     await floater.clearFloatingProgressAsync();
 }
@@ -173,7 +174,7 @@ browser.runtime.onMessage.addListener(async request => {
     logger.info(`Request received: ${request.action}`);
 
     switch (request.action) {
-        case "getCompanionInfo": return await getCompanionInfoAsync();
+        case "getCompanionInfo": return await companion.getCompanionInfoAsync();
         case "loadOptions": return await loadOptionsAsync();
         case "runningOnFirefox": return await env.runningOnFirefoxAsync();
         case "isDevelopmentEnv": return await env.isDevelopmentAsync();

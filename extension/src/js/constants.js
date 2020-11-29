@@ -15,9 +15,9 @@
  */
 
 export const CompanionName = "io.github.tabfloater.companion";
-export const CompanionLatestVersions = {
-    Linux: "0.8.0",
-    Windows: "0.8.0"
+export const CompanionLatestVersionsFallback = {
+    Linux: "0.8.8",
+    Windows: "0.8.8"
 };
 
 export const CommandToPositionMapping = {
@@ -55,7 +55,7 @@ export const GoogleAnalyticsTrackingId = {
 export const FloatingTabPaddings = {
     fixedPositioning: 50,
     smartPositioning: 25
-}
+};
 
 export const MinimumFloatingTabSideLength = 300;
 
