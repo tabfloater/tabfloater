@@ -171,8 +171,8 @@ async function positioningStrategyChangedAsync() {
                     "and calculating the optimal position for the floating tab. In order to do this, " +
                     "the extension requires additional permissions from the browser. It will not read " +
                     "any data on the websites you visit and will not track your browsing history. " +
-                    "If you wish to learn more about this, click <a href=\"#\" target=\"_blank\">here</a> " +
-                    "for more information." +
+                    "Learn more about this by visiting our <a href=\"https://www.tabfloater.io/privacy\" " +
+                    "target=\"_blank\">privacy policy</a>." +
                     "<br/><br/>" +
                     "If you wish to proceed, click OK and grant the permissions. You only need to do this once.");
 

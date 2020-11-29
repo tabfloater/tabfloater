@@ -77,16 +77,17 @@ The supported browsers, with their corresponding \fIbrowser\fP commands are the 
 .br
 The command \fIall\fP can be used for all browsers.
 
-.SS "Support for Chromium as Snap"
-On Ubuntu 19.10 and up, Chromium is only available via the Snap package manager. Due to Snap's confinement rules, Chromium is not able to invoke every
-executable on the machine. The only binaries allowed to be invoked are the ones that are located somewhere within the user's home directory. Therefore,
-to use \fBTabFloater Companion\fP with Chromium Snap, you need to copy it to your home directory, run it from there and register for Chromum Snap.
-Note that if you copy the executable to a hidden directory (e.g. "~/.tabfloater-companion/"), Chromium Snap will not be able to use it. The application
-must reside in a regular, non-hidden directory.
+.SS "Support for browsers install via Snap"
+Due to Snap's confinement rules, browsers installed via Snap are not able to invoke every executable on the machine. The only binaries allowed
+to be invoked are the ones that are located somewhere within the user's home directory. Therefore, to use \fBTabFloater Companion\fP with these browsers,
+you need to copy it to your home directory, run it from there and register the desired browser. Note that if you copy the executable to a hidden directory
+(e.g. "~/.tabfloater-companion/"), the Snap browser will not be able to use it. The application must reside in a regular, non-hidden directory.
+
+On Ubuntu 19.10 and above, Chromium is only available via the Snap package manager.
 
 Example:
 .br
-mkdir ~/bin && cp `which tabfloater-companion` ~/bin
+mkdir -p ~/bin && cp `which tabfloater-companion` ~/bin
 
 .SH MANIFEST FILE LOCATIONS
 The manifest files are stored in the home directory. The exact locations are:
@@ -121,7 +122,7 @@ $ tabfloater-companion register all --force
 .SH AUTHOR
 \fBTabFloater\fP and \fBTabFloater Companion\fP is developed and maintained by Balazs Gyurak <balazs@tabfloater.io>
 
-Homepage: https://tabfloater.io/
+Homepage: https://www.tabfloater.io/
 .br
 Copyright (C) 2020 Balazs Gyurak
 .br
