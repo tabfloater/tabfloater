@@ -96,6 +96,7 @@ browser.runtime.onInstalled.addListener(async details => {
 
     if (!isDevelopment) {
         await showWelcomePageOnFirstInstallationAsync(details);
+        await window.browser.runtime.setUninstallURL("https://www.tabfloater.io/uninstall");
     }
 
     const os = await env.getOperatingSystemAsync();
