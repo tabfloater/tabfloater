@@ -22,7 +22,7 @@ const optionsButton = window.optionsButton;
 optionsButton.onclick = async function () {
     await browser.tabs.create({ active: true });
     await browser.runtime.openOptionsPage();
-}
+};
 
 window.onload = async function () {
     const companionInfo = await browser.runtime.sendMessage({ action: "getCompanionInfo" });
@@ -40,4 +40,4 @@ window.onload = async function () {
     if (runningOnFirefox) {
         pinExtensionWarning.hidden = true;
     }
-}
+};
