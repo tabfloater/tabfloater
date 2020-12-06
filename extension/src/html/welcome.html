@@ -22,7 +22,7 @@ limitations under the License.
     <link rel="stylesheet" href="../css/tabfloater.css" />
     <link rel="stylesheet" href="../css/uk-switch.css" />
     <link rel="stylesheet" href="../css/generated/uk-tabfloater.css" />
-    <script src="../libs/uikit//uikit.min.js"></script>
+    <script src="../libs/uikit/uikit.min.js"></script>
     <script src="../libs/uikit/uikit-icons.min.js"></script>
     <script type="module" src="../libs/webextension-polyfill/browser-polyfill.min.js"></script>
 </head>
@@ -34,23 +34,88 @@ limitations under the License.
                 <div class="uk-grid-match" uk-grid>
                     <div>
                         <a href="https://www.tabfloater.io/" target="_blank">
-                            <img data-src="../images/logo.png" alt="tabfloater_logo" uk-img>
+                            <img data-src="../images/logo.png" width="245" alt="tabfloater_logo" uk-img>
                         </a>
-                    </div>
-                    <div class="uk-width-expand"></div>
-                    <div class="uk-flex-middle">
-                        <a href="https://github.com/tabfloater/tabfloater" target="_blank"
-                            uk-icon="icon: github; ratio: 1.5"></a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section uk-height-viewport="expand: true" class="uk-margin-small-top">
-        <div class="uk-container uk-container-small uk-margin-small">
-            <h3>Welcome</h3>
-        </div>
+    <div id="arrowDiv" class="uk-position-top-right uk-position-medium uk-animation-fade uk-animation-fast" hidden>
+        <img src="../images/arrow.png" alt="arrow_to_icons" width="200" />
+    </div>
+
+    <section uk-height-viewport="expand: true">
+        <div class="uk-container uk-container-small uk-padding">
+            <h1>Welcome</h1>
+            <div>
+                Thank you for installing TabFloater. This short guide will help you get started.
+            </div>
+
+            <h2>1. Install the companion</h2>
+            <div id="installCompanionDiv" class="uk-invisible">
+                <div>
+                    <b>Companion required</b> <span
+                        class="uk-alert-warning uk-border-pill uk-padding-small uk-margin-left"
+                        uk-icon="icon: warning"></span>
+                    <p>
+                        To utilize the full power of TabFloater, we strongly recommend that you install the companion
+                        application.
+                    </p>
+                </div>
+                <div>
+                    <a href="https://www.tabfloater.io/download" target="_blank"
+                        class="uk-button uk-button-default uk-border-pill uk-margin-right"
+                        uk-icon="arrow-right">Download </a>
+                    <a href="https://www.tabfloater.io/documentation#why-do-i-need-to-install-an-application-on-my-computer-to-use-tabfloater"
+                        target="_blank">Why do I need this?</a>
+                </div>
+            </div>
+            <div id="companionAlreadyInstalledDiv" hidden>
+                <b>Companion installed</b> <span class="uk-alert-success uk-border-pill uk-padding-small uk-margin-left"
+                    uk-icon="icon: check"></span>
+            </div>
+
+            <h2>2. Try it!</h2>
+            <div>
+                To float or unfloat a tab, click the TabFloater icon in the upper right corner:
+                <img src="../images/icons/16.png" class="uk-margin-small-left">
+                <div class="uk-margin-small-top">
+                    <button class="uk-button uk-button-default uk-border-pill"
+                        uk-toggle="target: #arrowDiv; mode: hover">Show me</button>
+                </div>
+                <p id="pinExtensionWarning" class="uk-inline">
+                    <b>Note:</b> you may need to <span class="uk-link">pin the extension</span> to see the icon.
+                <div uk-drop="pos: bottom-right; delay-hide: 0">
+                    <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                        <img src="../images/pin.png" alt="pin_extension_help_screenshot">
+                    </div>
+                </div>
+                </p>
+            </div>
+
+            <h2>3. Check out the options</h2>
+            <div>
+                Visit the options page to see what you can do with TabFloater.
+                <ul class="uk-margin-small-top">
+                    <li>Hotkeys: move the floating window with the keyboard</li>
+                    <li>Smart Positioning: ensure the floating window doesn't cover up content</li>
+                </ul>
+                <button id="optionsButton" class="uk-button uk-button-default uk-border-pill"
+                    uk-icon="arrow-right">Options </button>
+                <p>
+                    <b>Note:</b> this application collects anonymous usage information. You can opt-out on the options
+                    page.
+                </p>
+            </div>
+
+            <h2>4. Learn more</h2>
+            <div>
+                Check out our <a href="https://www.tabfloater.io/documentation" target="_blank">documentation</a> and <a
+                    href="https://www.tabfloater.io/privacy" target="_blank">privacy policy</a> to learn more about
+                TabFloater.
+            </div>
     </section>
 
     <footer class="uk-section-xsmall uk-section-muted uk-preserve-color">
@@ -67,12 +132,14 @@ limitations under the License.
                     </div>
                 </div>
                 <div class="uk-flex-middle">
-                    <div>Powered by <a href="https://getuikit.com/" target="_blank"
-                            class="uk-small-margin-left uk-icon-button" uk-icon="uikit"></a></div>
+                    <a href="https://github.com/tabfloater/tabfloater" target="_blank" title="Visit on GitHub"
+                        uk-icon="icon: github; ratio: 1.5" data-uk-tooltip="delay: 500"></a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <script src="../js/welcome.js"></script>
 </body>
 
 </html>
