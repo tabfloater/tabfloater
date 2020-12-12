@@ -9,4 +9,4 @@
 
 ## Checklist
 - [ ] I have read the [Contributing document](https://github.com/tabfloater/tabfloater/blob/master/docs/CONTRIBUTING.md)
-- [ ] My PR includes code changes and I tested it on both Windows and Linux
+- [ ] My PR includes code changes and I tested it on Chrome/Firefox and Windows/Linux
