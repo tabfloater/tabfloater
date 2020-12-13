@@ -561,7 +561,7 @@ void printVersion(std::string version, std::string gitCommitHash)
     std::cout << "Homepage: https://www.tabfloater.io/" << std::endl;
     std::cout << "Bug reports: https://github.com/tabfloater/tabfloater/" << std::endl;
     std::cout << std::endl;
-    std::cout << "Copyright (C) 2020 Balazs Gyurak" << std::endl;
+    std::cout << "Copyright (C) 2020 TabFloater" << std::endl;
     std::cout << "Apache License 2.0" << std::endl;
     std::cout << std::endl;
 }
