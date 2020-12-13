@@ -127,7 +127,7 @@ if(DEV_BUILD)
 else()
 
     # Packaging
-    set(CPACK_PACKAGE_VENDOR "Balazs Gyurak")
+    set(CPACK_PACKAGE_VENDOR "TabFloater")
 
     if(WIN32)
         # Windows installer
