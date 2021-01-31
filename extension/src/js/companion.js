@@ -61,17 +61,24 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
 
     try {
         const debug = await isDebuggingEnabledAsync();
-        const result = await browser.runtime.sendNativeMessage(CompanionName, {
-            action: "setAsModelessDialog",
-            windowTitle: windowTitle,
-            parentWindowTitle: parentWindowTitle,
-            debug: debug.toString()
-        });
+        const maxRetryCount = 3;
+        let retryCount = 0;
 
-        if (result.status === "ok") {
-            return {
-                success: true
-            };
+        while (retryCount < maxRetryCount) {
+            const result = await browser.runtime.sendNativeMessage(CompanionName, {
+                action: "setAsModelessDialog",
+                windowTitle: windowTitle,
+                parentWindowTitle: parentWindowTitle,
+                debug: debug.toString()
+            });
+
+            if (result.status === "ok") {
+                return {
+                    success: true
+                };
+            }
+
+            retryCount++;
         }
 
         return {
