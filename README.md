@@ -1,6 +1,11 @@
 # <img src="resources/design/Logo.svg" width="40%">
 [<img src="https://img.shields.io/chrome-web-store/v/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
+[<img src="https://img.shields.io/chrome-web-store/users/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
+[<img src="https://img.shields.io/chrome-web-store/stars/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
+
 [<img src="https://img.shields.io/amo/v/tabfloater@tabfloater.io">](#)
+[<img src="https://img.shields.io/amo/users/tabfloater@tabfloater.io">](#)
+[<img src="https://img.shields.io/amo/stars/tabfloater@tabfloater.io">](#)
 
 TabFloater is a cross-browser extension that allows you to multitask by moving browser tabs into floating windows, similarly to the “Picture-in-Picture” functionality on TVs. You can keep browsing the web in both the floating and the main browser window.
 
