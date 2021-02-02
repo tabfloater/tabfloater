@@ -8,7 +8,7 @@ Prerequisites:
  * Install [npm](https://www.npmjs.com/)
  * Install [web-ext](https://github.com/mozilla/web-ext) (only for Firefox)
 
-To build the extension, run the folliwng. You only need to do this for the first time.
+To build the extension, run the following. You only need to do this for the first time.
 
 ```Shell
 cd extension
@@ -21,9 +21,10 @@ Once built, you can load the extension into your browser:
  * Chrome/Chromium: go to chrome://extensions/, enable Developer mode, then click "Load unpacked", and browse the `extension/src` directory.
  * Firefox: run `npm run run-ff`. This will set up the manifest files and use `web-ext` to load the extension into Firefox.
 
-During development for Chrome, you need to manually reload the extension after each change. Firefox will reload your changes automatically.
-
-Once you're done with your code change, run `npm run lint` to lint the source code.
+During development:
+ * For Chrome, you need to manually reload the extension after each change
+ * Firefox will reload your changes automatically
+ * Run `npm run lint` regularly to lint your code
 
 ## Companion
 
