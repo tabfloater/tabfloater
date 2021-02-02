@@ -1,27 +1,20 @@
-<img src="resources/design/Logo.svg" width="80%">
+
+# <img src="resources/design/Logo.svg" width="40%">
 ------
+[<img src="https://img.shields.io/chrome-web-store/v/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
+[<img src="https://img.shields.io/amo/v/tabfloater@tabfloater.io">](#)
 
-TabFloater is a cross-browser extension that allows you to interact with any browser tab in a Picture-in-Picture mode.
+TabFloater is a cross-browser extension that allows you to multitask by moving browser tabs into floating windows, similarly to the “Picture-in-Picture” functionality on TVs. You can keep browsing the web in both the floating and the main browser window.
 
+Scroll down to see it in action!
 
 ## Quickstart
 
+Go to https://www.tabfloater.io/download and follow the instructions.
 
-quickstart
-docs link
+## Documentation
 
-credits
-
-contact
-
-
-<img src="resources/images/demo.gif" width="75%">
-
-## Dependencies
-
- * Loguru: https://github.com/emilk/loguru
- * UIkit: https://github.com/uikit/uikit/
- * WebExtension API Polyfill: https://github.com/mozilla/webextension-polyfill
+Detailed docs are available on https://www.tabfloater.io/documentation
 
 ## Contributing & developing
 
@@ -40,3 +33,7 @@ TabFloater is under the [Apache 2.0](https://github.com/tabfloater/tabfloater/bl
 
  * PayPal: https://www.paypal.com/donate?hosted_button_id=8E2GR6WXHNY48
  * Buy Me A Coffee: https://www.buymeacoffee.com/ba32107
+
+## Demo
+
+<img src="resources/images/demo.gif" width="80%">
