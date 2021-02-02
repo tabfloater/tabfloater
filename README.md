@@ -1,4 +1,3 @@
-
 # <img src="resources/design/Logo.svg" width="40%">
 ------
 [<img src="https://img.shields.io/chrome-web-store/v/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
