@@ -5,7 +5,7 @@ TabFloater consists of two components: the browser extension and the companion a
 ## Extension
 
 Prerequisites:
- * Install `npm`
+ * Install [npm](https://www.npmjs.com/)
  * Install [web-ext](https://github.com/mozilla/web-ext) (only for Firefox)
 
 To build the extension, run the folliwng. You only need to do this for the first time.
