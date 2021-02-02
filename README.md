@@ -10,9 +10,7 @@ Scroll down to see it in action!
 
 ## Quickstart
 
- 1. Add the browser extension:
-   * Chrome/Chromium: TODO
-   * Firefox: TODO
+ 1. Add the browser extension: [Chrome/Chromium](#) or [Firefox](#)
  1. Download the [latest Companion](https://github.com/tabfloater/tabfloater/releases/latest)
  1. If you're on Linux, you need to register the companion. [Click here](https://www.tabfloater.io/documentation#how-do-i-set-up-the-companion-on-linux) to see how.
 
