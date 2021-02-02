@@ -1,8 +1,7 @@
 # TabFloater
 
-![TabFloater logo](resources/design/Logo.svg)
-![TabFloater logo](resources/images/gh_org_icon.png)
-<img src="resources/images/gh_org_icon.png">
+<img src="resources/design/Logo.svg" width="80%">
+---
 
 TabFloater is a cross-browser extension that allows you to interact with any browser tab in a Picture-in-Picture mode.
 
