@@ -1,4 +1,4 @@
-# <img src="resources/design/Logo.svg" width="50%">
+# <img src="resources/design/Logo.svg" width="40%">
 
 
 
