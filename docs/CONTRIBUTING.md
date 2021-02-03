@@ -24,8 +24,6 @@ Did you notice a typo? A development setup step is missing? Something looks weir
 
 If you have never contributed to an open source project before, check out [this great guide](https://www.firsttimersonly.com/) on how to get started. Feel free to also just ask questions in this repository - we will help you!
 
-We also have a label for issues specifically for first-time contributors, have a look [here](https://github.com/tabfloater/tabfloater/labels/first-timers-only).
-
 ### Thank you!
 
 And again, thank you - contributing to any open source project takes time and effort, and we are glad you chose TabFloater today.
