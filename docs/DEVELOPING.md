@@ -34,6 +34,6 @@ Prerequisites:
 
 To build the companion, simply run `build.sh` (`build.bat` on Windows). This will build the application and also register the native messaging host manifests, required for the browsers to find the Companion. You can read about the manifest [here for Chrome](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) and [here for Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests#manifest_location).
 
-You can unregister the manifests with `build.sh --clean`
+You can unregister the manifests with `build.sh --clean`.
 
 See also `build.sh --help` for more details.

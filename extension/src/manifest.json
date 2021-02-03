@@ -1,6 +1,6 @@
 {
     "name": "TabFloater",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "description": "Picture-in-Picture for ANY tab!",
     "permissions": [
         "nativeMessaging",
