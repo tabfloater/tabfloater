@@ -8,7 +8,7 @@ Prerequisites:
  * [npm](https://www.npmjs.com/)
  * [web-ext](https://github.com/mozilla/web-ext) (only for Firefox)
 
-To build the extension, run the following. You only need to do this for the first time.
+To build the extension, run the following. You only need to do this once.
 
 ```Shell
 cd extension
