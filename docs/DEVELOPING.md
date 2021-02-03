@@ -19,7 +19,7 @@ Once built, load the extension into your browser:
  * **Chrome/Chromium**: go to `chrome://extensions/`, enable "Developer mode", then click "Load unpacked", and browse the `extension/src` directory. You will need to manually reload the extension after each code change.
  * **Firefox**: simply run `npm run run-ff`. This will set up the manifest files and use `web-ext` to load the extension into Firefox and launch the browser. Your changes will also be reloaded automatically.
 
-**Important:** you can only run either Chrome/Chromium or Firefox at a time. This is because the manifest files are different for the two browsers, but both need to be named `manifest.json`.
+**Important:** you can only run either Chrome/Chromium or Firefox at a time. This is because the manifest files are different for the two browsers, but both need to be named `manifest.json`, so you cannot run the two browsers at the same time with the extension loaded.
 
 Once you're done with your changes, run `npm run lint` to lint your Javascript code.
 
