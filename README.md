@@ -1,4 +1,4 @@
-# <img src="resources/design/Logo.svg" width="40%">
+# <img src="resources/logo.svg" width="40%">
 [<img src="https://img.shields.io/chrome-web-store/v/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
 [<img src="https://img.shields.io/chrome-web-store/users/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
 [<img src="https://img.shields.io/chrome-web-store/stars/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
@@ -42,4 +42,4 @@ TabFloater is under the [Apache 2.0](https://github.com/tabfloater/tabfloater/bl
 
 ## Demo
 
-<img src="resources/images/demo.gif">
+<img src="resources/demo.gif">
