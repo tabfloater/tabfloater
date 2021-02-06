@@ -1,4 +1,4 @@
-# <img src="resources/design/Logo.svg" width="40%">
+# TabFloater
 [<img src="https://img.shields.io/chrome-web-store/v/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
 [<img src="https://img.shields.io/chrome-web-store/users/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
 [<img src="https://img.shields.io/chrome-web-store/stars/iojgbjjdoanmhcmmihbapiejfbbadhjd">](#)
