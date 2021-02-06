@@ -7,7 +7,7 @@
 [<img src="https://img.shields.io/amo/users/tabfloater@tabfloater.io">](#)
 [<img src="https://img.shields.io/amo/stars/tabfloater@tabfloater.io">](#)
 
-TabFloater is a cross-browser extension that allows you to multitask by moving browser tabs into floating windows, similarly to the “Picture-in-Picture” functionality on TVs. You can keep browsing the web in all windows at the same time.
+TabFloater is a cross-browser extension that allows you to multitask by moving browser tabs into floating windows, similar to the “Picture-in-Picture” functionality on TVs. You can keep browsing the web in all windows at the same time.
 
 Official website: https://www.tabfloater.io/
 
