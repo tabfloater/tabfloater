@@ -185,8 +185,8 @@ export async function clearFloatingProgressAsync() {
 export async function getFloatCountAsync() {
     const floatCountData = await browser.storage.local.get(["floatCount"]);
     return floatCountData && floatCountData.floatCount
-            ? floatCountData.floatCount
-            : 0;
+        ? floatCountData.floatCount
+        : 0;
 }
 
 async function floatingStartedAsync() {

@@ -20,7 +20,6 @@ const reviewPageFloatCount = window.reviewPageFloatCount;
 const reviewLink = window.reviewLink;
 
 window.onload = async function () {
-    debugger;
     reviewPageFloatCount.textContent = constants.FloatCountToShowReviewPageOn;
     const runningOnFirefox = await browser.runtime.sendMessage({ action: "runningOnFirefox" });
 
