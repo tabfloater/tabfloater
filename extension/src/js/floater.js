@@ -115,6 +115,7 @@ export async function floatTabAsync() {
                 if (result.success) {
                     notifier.setFloatingSuccessIndicator();
                     await analytics.reportFloatEventAsync();
+                    await increaseFloatCountAsync();
                 } else {
                     if (result.reason === "error") {
                         notifier.setErrorIndicator("The companion returned an error! Enable debugging to find out what's wrong.");
@@ -181,8 +182,23 @@ export async function clearFloatingProgressAsync() {
     await browser.storage.local.remove(["floatingInProgress"]);
 }
 
+export async function getFloatCountAsync() {
+    const floatCountData = await browser.storage.local.get(["floatCount"]);
+    return floatCountData && floatCountData.floatCount
+        ? floatCountData.floatCount
+        : 0;
+}
+
 async function floatingStartedAsync() {
     await browser.storage.local.set({ floatingInProgress: true });
+}
+
+async function increaseFloatCountAsync() {
+    const currentFloatCount = await getFloatCountAsync();
+
+    if (currentFloatCount !== -1) {
+        await browser.storage.local.set({ floatCount: currentFloatCount + 1 });
+    }
 }
 
 /**

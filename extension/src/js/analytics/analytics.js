@@ -49,5 +49,7 @@ export async function reportOptionsEventAsync(data) {
 }
 
 async function sendEventAsync(category, action, label, data) {
-    await analyticsImpl.sendEventAsync(category, action, label, data);
+    if (analyticsImpl) {
+        await analyticsImpl.sendEventAsync(category, action, label, data);
+    }
 }
