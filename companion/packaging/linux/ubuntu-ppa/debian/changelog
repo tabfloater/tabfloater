@@ -1,53 +1,5 @@
-tabfloater-companion (0.8.9~SERIES1) SERIES; urgency=medium
+tabfloater-companion (0.9.0~SERIES1) SERIES; urgency=medium
 
-  * Bump version
+  * Release candidate #1
 
- -- Balazs Gyurak <balazs@tabfloater.io>  Sun, 29 Nov 2020 20:25:47 +0000
-
-tabfloater-companion (0.8.8~SERIES1) SERIES; urgency=medium
-
-  * Minor updates
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sun, 29 Nov 2020 16:27:42 +0000
-
-tabfloater-companion (0.8.6~SERIES1) SERIES; urgency=medium
-
-  * Fix git commit
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 14 Nov 2020 16:50:54 +0000
-
-tabfloater-companion (0.8.5~SERIES1) SERIES; urgency=medium
-
-  * Fix versioning
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 14 Nov 2020 15:47:12 +0000
-
-tabfloater-companion (0.8.4~SERIES1) SERIES; urgency=medium
-
-  * Add Git commit hash to version
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 14 Nov 2020 14:01:53 +0000
-
-tabfloater-companion (0.8.3~SERIES1) SERIES; urgency=medium
-
-  * Bump version for testing
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 14 Nov 2020 09:54:23 +0000
-
-tabfloater-companion (0.8.2~SERIES1) SERIES; urgency=medium
-
-  * Bump version
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 31 Oct 2020 16:49:54 +0000
-
-tabfloater-companion (0.8.1~SERIES1) SERIES; urgency=medium
-
-  * Test
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 31 Oct 2020 15:16:59 +0000
-
-tabfloater-companion (0.8.0~SERIES1) SERIES; urgency=medium
-
-  * Publish 0.8.0 beta
-
- -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 24 Oct 2020 20:23:01 +0100
+ -- Balazs Gyurak <balazs@tabfloater.io>  Sun, 07 Feb 2021 18:31:49 +0000
