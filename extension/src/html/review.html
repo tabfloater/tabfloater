@@ -1,0 +1,102 @@
+<!--
+Copyright 2021 Balazs Gyurak
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Please review TabFloater</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/tabfloater.css" />
+    <link rel="stylesheet" href="../css/uk-switch.css" />
+    <link rel="stylesheet" href="../css/generated/uk-tabfloater.css" />
+    <script src="../libs/uikit/uikit.min.js"></script>
+    <script src="../libs/uikit/uikit-icons.min.js"></script>
+    <script type="module" src="../libs/webextension-polyfill/browser-polyfill.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="uk-section-xsmall uk-section-secondary uk-preserve-color">
+            <div class="uk-container uk-container-medium">
+                <div class="uk-grid-match" uk-grid>
+                    <div>
+                        <a href="https://www.tabfloater.io/" target="_blank">
+                            <img data-src="../images/logo.png" width="245" alt="tabfloater_logo" uk-img>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section uk-height-viewport="expand: true">
+        <div class="uk-container uk-container-small uk-padding">
+            <h1>Are you enjoying TabFloater?</h1>
+            <div>
+                <span class="uk-text-italic uk-text-large uk-text-primary">It looks like you use TabFloater quite a lot
+                    - you already floated a tab <span id="reviewPageFloatCount"></span> times!</span>
+            </div>
+
+            <h3>Any issues or problems?</h3>
+            <p>
+                If you encountered any issues or bugs, please <a href="https://github.com/tabfloater/tabfloater"
+                    target="_blank">open an issue on GitHub</a>, and we will do our best to address it as soon as
+                possible.
+            </p>
+
+            <h3>Take a moment to share your feedback</h3>
+            <p>
+                If you find this extension useful, please leave a review - this really helps us gain visibility and
+                enable many more people to discover it!
+
+            <div class="uk-margin-small-top">
+                <a id="reviewLink" href="#" target="_blank" class="uk-button uk-button-default uk-border-pill"
+                    uk-icon="arrow-right">Yes I will help and leave a review</a>
+            </div>
+            </p>
+
+            <h3>Please consider donating</h3>
+            <p>
+                <strong>This extension is - and always will be - free.</strong> Developing open source software takes
+                time and effort - if you'd like to support my work, please consider donating. It means more than you
+                might think! Thank you so much.
+            </p>
+
+            <div class="uk-margin-large-top uk-text-center" uk-grid>
+                <div class="uk-width-1-2">
+                    <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                        <input type="hidden" name="hosted_button_id" value="8E2GR6WXHNY48" />
+                        <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif"
+                            name="submit" title="PayPal - The safer, easier way to pay online!"
+                            alt="Donate with PayPal button" />
+                        <img alt="" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+                    </form>
+                </div>
+                <div class="uk-width-1-2">
+                    <a href="https://www.buymeacoffee.com/ba32107" target="_blank"><img
+                            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                            alt="Buy Me A Coffee button" title="Donate on Buy Me A Coffe"
+                            style="height: 60px !important;width: 217px !important;"></a>
+                </div>
+
+            </div>
+    </section>
+
+    <script type="module" src="../js/pages/review.js"></script>
+</body>
+
+</html>

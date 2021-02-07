@@ -68,6 +68,10 @@ async function startupAsync() {
     await companion.fetchLatestVersionsAsync();
     await floater.clearFloatingTabAsync();
     await floater.clearFloatingProgressAsync();
+
+    if (await floater.getFloatCountAsync() >= constants.FloatCountToShowReviewPageOn) {
+        await showReviewPageOnFloatCountHitAsync();
+    }
 }
 
 async function showWelcomePageOnFirstInstallationAsync(details) {
@@ -77,6 +81,12 @@ async function showWelcomePageOnFirstInstallationAsync(details) {
             await browser.tabs.create({ url: welcomePageUrl });
         } break;
     }
+}
+
+async function showReviewPageOnFloatCountHitAsync() {
+    const reviewPageUrl = chrome.runtime.getURL("html/review.html");
+    await browser.tabs.create({ url: reviewPageUrl });
+    await browser.storage.local.set({ floatCount: -1 });
 }
 
 async function floatTabIfPossibleAsync() {

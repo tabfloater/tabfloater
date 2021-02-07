@@ -47,6 +47,8 @@ export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
     debug: true
 });
 
+export const FloatCountToShowReviewPageOn = 20;
+
 export const GoogleAnalyticsTrackingId = {
     Production: "UA-175107528-2",
     Development: "UA-175107528-1"
