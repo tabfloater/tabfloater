@@ -84,7 +84,7 @@ async function showWelcomePageOnFirstInstallationAsync(details) {
 }
 
 async function showReviewPageOnFloatCountHitAsync() {
-    const reviewPageUrl = chrome.runtime.getURL("html/review.html");
+    const reviewPageUrl = browser.runtime.getURL("html/review.html");
     await browser.tabs.create({ url: reviewPageUrl });
     await browser.storage.local.set({ floatCount: -1 });
 }
