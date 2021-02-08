@@ -48,7 +48,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Install dependencies
       run: |
-        npm install --global web-ext
+        sudo npm install --global web-ext
         npm install
     - name: Build extension
       run: |
