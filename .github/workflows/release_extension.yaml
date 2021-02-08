@@ -1,0 +1,36 @@
+name: Release extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-chrome:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v2
+    - name: Build extension
+      run: |
+        mkdir ./extension/dist
+        cd ./extension/src
+        rm ./manifest_firefox.json
+        jq 'del(.key)' ./manifest.json > ./manifest_tmp.json
+        mv ./manifest_tmp.json ./manifest.json
+        zip -r ../dist/extension.zip *
+        cd ..
+    - name: Verify extension
+      run: |
+        cd dist
+        ls -l
+        unzip extension.zip
+        ls -l
+    # - name: Upload extension
+    #   uses: mnao305/chrome-extension-upload@1.1.1
+    #   with:
+    #     file-path: dist/extension.zip
+    #     extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
+    #     client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
+    #     client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
+    #     refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
