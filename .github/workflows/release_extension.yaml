@@ -1,6 +1,7 @@
 name: Release extension
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -15,6 +16,8 @@ jobs:
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
+    - name: Install dependencies
+      run: npm install
     - name: Build extension
       run: |
         mkdir dist
@@ -28,7 +31,7 @@ jobs:
         cd dist
         ls -l
         unzip extension.zip
-        ls -l
+        ls -lR
         cat ./manifest.json
     # - name: Upload extension
     #   uses: mnao305/chrome-extension-upload@1.1.1
@@ -38,3 +41,24 @@ jobs:
     #     client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
     #     client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
     #     refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+  release-firefox:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        npm install --global web-ext
+        npm install
+    - name: Build extension
+      run: |
+        cd src
+        rm ./manifest.json
+        mv ./manifest_firefox.json ./manifest.json
+        web-ext build
+    - name: Verify extension
+      run: |
+        cd src/web-ext-artifacts
+        ls -l
+        unzip *.zip
+        ls -lR
