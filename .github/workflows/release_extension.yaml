@@ -19,9 +19,13 @@ jobs:
         jq 'del(.key)' ./manifest.json > ./manifest_tmp.json
         mv ./manifest_tmp.json ./manifest.json
         zip -r ../dist/extension.zip *
+        pwd
         cd ..
+        pwd
     - name: Verify extension
       run: |
+        pwd
+        ls -l
         cd dist
         ls -l
         unzip extension.zip
