@@ -77,6 +77,6 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: extension-firefox-source-package.zip
+        file: ./extension-firefox-source-package.zip
         overwrite: true
         tag: ${{ github.ref }}
