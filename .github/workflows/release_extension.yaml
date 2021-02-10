@@ -72,5 +72,5 @@ jobs:
         rm ./src/manifest.json
         mv ./src/manifest_firefox.json ./src/manifest.json
         cp ../docs/DEVELOPING.md ./README.md
-        zip -r extension-firefox-source-package-{{ github.ref }}.zip
+        zip -r extension-firefox-source-package-${{ github.ref }}.zip
         ls -l
