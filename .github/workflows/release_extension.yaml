@@ -72,5 +72,11 @@ jobs:
         rm ./src/manifest.json
         mv ./src/manifest_firefox.json ./src/manifest.json
         cp ../docs/DEVELOPING.md ./README.md
-        zip -r extension-firefox-source-package-${{ github.ref }}.zip
-        ls -l
+        zip -r extension-firefox-source-package.zip
+    - name: Upload source package to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: extension-firefox-source-package.zip
+        overwrite: true
+        tag: ${{ github.ref }}
