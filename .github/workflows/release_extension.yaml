@@ -69,7 +69,6 @@ jobs:
       uses: actions/checkout@v2
     - name: Build source package
       run: |
-        cd src
         rm ./src/manifest.json
         mv ./src/manifest_firefox.json ./src/manifest.json
         cp ../docs/DEVELOPING.md ./README.md
