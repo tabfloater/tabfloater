@@ -24,8 +24,8 @@ window.onload = async function () {
     const runningOnFirefox = await browser.runtime.sendMessage({ action: "runningOnFirefox" });
 
     if (runningOnFirefox) {
-        reviewLink.href = "https://addons.mozilla.org/en-GB/firefox/";
+        reviewLink.href = "https://addons.mozilla.org/en-US/firefox/addon/tabfloater/";
     } else {
-        reviewLink.href = "https://chrome.google.com/webstore/category/extensions";
+        reviewLink.href = "https://chrome.google.com/webstore/detail/iojgbjjdoanmhcmmihbapiejfbbadhjd";
     }
 };
