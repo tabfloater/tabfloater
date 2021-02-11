@@ -1,0 +1,13 @@
+TabFloater building instructions
+--------------------------------
+
+Prerequisites:
+- OS: Linux or Windows
+- Software: npm
+
+To build the extension, execute:
+npm install
+
+The built extension will be in the 'src' folder.
+
+The list of libraries used (with exact versions) can be found in the package-lock.json file.

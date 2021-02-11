@@ -1,6 +1,6 @@
 {
     "name": "TabFloater: Picture-in-Picture for any tab!",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "description": "TabFloater allows you to multitask by moving browser tabs into floating windows, similar to “Picture-in-Picture” on TVs.",
     "permissions": [
         "nativeMessaging",

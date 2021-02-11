@@ -1,7 +1,7 @@
 {
   "name": "tabfloater",
-  "version": "0.9.0",
-  "description": "Picture-in-Picture for ANY tab!",
+  "version": "0.9.1",
+  "description": "TabFloater: Picture-in-Picture for any tab!",
   "private": true,
   "scripts": {
     "lint": "npx eslint src/js",
