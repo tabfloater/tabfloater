@@ -33,14 +33,14 @@ jobs:
         unzip extension.zip
         ls -lR
         cat ./manifest.json
-    # - name: Upload extension
-    #   uses: mnao305/chrome-extension-upload@1.1.1
-    #   with:
-    #     file-path: dist/extension.zip
-    #     extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
-    #     client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
-    #     client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
-    #     refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+    - name: Upload extension
+      uses: mnao305/chrome-extension-upload@1.1.1
+      with:
+        file-path: dist/extension.zip
+        extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
+        client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
+        client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
+        refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
   release-firefox:
     runs-on: ubuntu-20.04
     steps:
@@ -71,7 +71,7 @@ jobs:
       run: |
         rm ./src/manifest.json
         mv ./src/manifest_firefox.json ./src/manifest.json
-        cp ../docs/DEVELOPING.md ./README.md
+        cp ../docs/firefox_build_instructions.txt ./README.txt
         zip -r extension-firefox-source-package.zip *
     - name: Upload source package to Release
       uses: svenstaro/upload-release-action@v2
