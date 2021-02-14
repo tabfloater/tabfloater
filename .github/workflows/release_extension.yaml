@@ -38,18 +38,27 @@ jobs:
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
-    - name: Install dependencies
+    - name: Install web-ext
       run: |
         sudo npm install --global web-ext
-        npm install
-    - name: Build binary and source package
+    - name: Build source package
       run: |
-        cd src
-        rm ./manifest.json
-        mv ./manifest_firefox.json ./manifest.json
-        web-ext build
-        cp ../../docs/firefox_build_instructions.txt ./README.txt
+        rm ./src/manifest.json
+        mv ./src/manifest_firefox.json ./src/manifest.json
+        cp ../docs/firefox_build_instructions.txt ./README.txt
         zip -r extension-firefox-source-package.zip *
+    - name: Upload source package to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: extension/extension-firefox-source-package.zip
+        overwrite: true
+        tag: ${{ github.ref }}
+    - name: Build binary package
+      run: |
+        npm install
+        cd src
+        web-ext build
     - name: Upload binary package to Release
       uses: svenstaro/upload-release-action@v2
       with:
@@ -58,10 +67,4 @@ jobs:
         overwrite: true
         file_glob: true
         tag: ${{ github.ref }}
-    - name: Upload source package to Release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: extension/src/extension-firefox-source-package.zip
-        overwrite: true
-        tag: ${{ github.ref }}
+    
