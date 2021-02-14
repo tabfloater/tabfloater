@@ -25,14 +25,21 @@ jobs:
         jq 'del(.key)' ./manifest.json > ./manifest_tmp.json
         mv ./manifest_tmp.json ./manifest.json
         zip -r ../dist/extension.zip *
-    - name: Publish to Chrome Web Store
-      uses: mnao305/chrome-extension-upload@1.1.1
+#     - name: Publish to Chrome Web Store
+#       uses: mnao305/chrome-extension-upload@1.1.1
+#       with:
+#         file-path: extension/dist/extension.zip
+#         extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
+#         client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
+#         client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
+#         refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+    - name: Upload binary package to Release
+      uses: svenstaro/upload-release-action@v2
       with:
-        file-path: extension/dist/extension.zip
-        extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
-        client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
-        client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
-        refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: extension/dist/extension.zip
+        overwrite: true
+        tag: ${{ github.ref }}
   release-firefox:
     runs-on: ubuntu-20.04
     steps:
