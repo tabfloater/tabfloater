@@ -10,29 +10,29 @@ defaults:
     working-directory: extension
 
 jobs:
-  release-chrome:
-    runs-on: ubuntu-20.04
-    steps:
-    - name: Check out repo
-      uses: actions/checkout@v2
-    - name: Install dependencies
-      run: npm install
-    - name: Build extension
-      run: |
-        mkdir dist
-        cd src
-        rm ./manifest_firefox.json
-        jq 'del(.key)' ./manifest.json > ./manifest_tmp.json
-        mv ./manifest_tmp.json ./manifest.json
-        zip -r ../dist/extension.zip *
-    - name: Upload extension
-      uses: mnao305/chrome-extension-upload@1.1.1
-      with:
-        file-path: extension/dist/extension.zip
-        extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
-        client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
-        client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
-        refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
+#   publish-chrome:
+#     runs-on: ubuntu-20.04
+#     steps:
+#     - name: Check out repo
+#       uses: actions/checkout@v2
+#     - name: Install dependencies
+#       run: npm install
+#     - name: Build extension
+#       run: |
+#         mkdir dist
+#         cd src
+#         rm ./manifest_firefox.json
+#         jq 'del(.key)' ./manifest.json > ./manifest_tmp.json
+#         mv ./manifest_tmp.json ./manifest.json
+#         zip -r ../dist/extension.zip *
+#     - name: Publish to Chrome Web Store
+#       uses: mnao305/chrome-extension-upload@1.1.1
+#       with:
+#         file-path: extension/dist/extension.zip
+#         extension-id: iojgbjjdoanmhcmmihbapiejfbbadhjd
+#         client-id: ${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}
+#         client-secret: ${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}
+#         refresh-token: ${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}
   release-firefox:
     runs-on: ubuntu-20.04
     steps:
@@ -42,33 +42,26 @@ jobs:
       run: |
         sudo npm install --global web-ext
         npm install
-    - name: Build extension
+    - name: Build binary and source package
       run: |
         cd src
         rm ./manifest.json
         mv ./manifest_firefox.json ./manifest.json
         web-ext build
-    - name: Verify extension
-      run: |
-        cd src/web-ext-artifacts
-        ls -l
-        unzip *.zip
-        ls -lR
-  build-firefox-source-package:
-    runs-on: ubuntu-20.04
-    steps:
-    - name: Check out repo
-      uses: actions/checkout@v2
-    - name: Build source package
-      run: |
-        rm ./src/manifest.json
-        mv ./src/manifest_firefox.json ./src/manifest.json
-        cp ../docs/firefox_build_instructions.txt ./README.txt
+        cp ../../docs/firefox_build_instructions.txt ./README.txt
         zip -r extension-firefox-source-package.zip *
+    - name: Upload binary package to Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: extension/src/web-ext-artifacts/*.zip
+        overwrite: true
+        file_glob: true
+        tag: ${{ github.ref }}
     - name: Upload source package to Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: extension/extension-firefox-source-package.zip
+        file: extension/src/extension-firefox-source-package.zip
         overwrite: true
         tag: ${{ github.ref }}
