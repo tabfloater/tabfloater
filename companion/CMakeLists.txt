@@ -22,7 +22,7 @@ endif()
 
 # Variables
 set(MAIN_TARGET "tabfloater-companion" CACHE STRING "Main executable name")
-set(VERSION "0.9.2" CACHE STRING "Application version")
+set(VERSION "0.9.3" CACHE STRING "Application version")
 set(GIT_COMMIT_HASH "" CACHE STRING "Git commit hash the application is being built from")
 set(DEV_BUILD false CACHE BOOL "If true, the application is built for development")
 
