@@ -16,8 +16,8 @@
 
 export const CompanionName = "io.github.tabfloater.companion";
 export const CompanionLatestVersionsFallback = {
-    Linux: "0.9.2",
-    Windows: "0.9.2"
+    Linux: "0.9.3",
+    Windows: "0.9.3"
 };
 
 export const CommandToPositionMapping = {
@@ -47,7 +47,7 @@ export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
     debug: true
 });
 
-export const FloatCountToShowReviewPageOn = 20;
+export const FloatCountToShowReviewPageOn = 30;
 
 export const GoogleAnalyticsTrackingId = {
     Production: "UA-175107528-2",
