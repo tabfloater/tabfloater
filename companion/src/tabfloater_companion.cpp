@@ -223,21 +223,24 @@ int startCompanionMode(int argc, char *argv[]) {
 
         if (action.compare("ping") == 0)
         {
-            LOG_F(INFO, "Ping received");
             sendPingResponse(logFilePath);
         }
-        else if (action.compare("setAsModelessDialog") == 0)
+        else
         {
-            LOG_F(INFO, "setAsModelessDialog request received");
-
             std::string windowTitle = getJsonValueByKey(json, "windowTitle");
-            std::string parentWindowTitle = getJsonValueByKey(json, "parentWindowTitle");
             LOG_F(INFO, "Window title: \"%s\"", windowTitle.c_str());
-            LOG_F(INFO, "Parent window title: \"%s\"", parentWindowTitle.c_str());
 
             try
             {
-                setAsModelessDialog(windowTitle, parentWindowTitle);
+                if (action.compare("setAlwaysOnTop") == 0) {
+                    setWindowAlwaysOnTopAndSkipTaskbar(windowTitle);
+                } else if (action.compare("setAsModelessDialog") == 0) {
+                    std::string parentWindowTitle = getJsonValueByKey(json, "parentWindowTitle");
+                    LOG_F(INFO, "Parent window title: \"%s\"", parentWindowTitle.c_str());
+
+                    setAsModelessDialog(windowTitle, parentWindowTitle);
+                }
+
                 sendStatus("ok");
             }
             catch (std::exception &ex)

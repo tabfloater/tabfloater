@@ -22,6 +22,16 @@
 
 #define _NET_WM_STATE_ADD 1
 
+Display* getDisplay() {
+    Display *display = XOpenDisplay(NULL);
+    if (!display)
+    {
+        throw std::runtime_error("Unable to open display");
+    }
+
+    return display;
+}
+
 void throwIfNotFoundOrLog(Window window, std::string windowTitlePrefix)
 {
     if (!window)
@@ -103,6 +113,25 @@ bool windowTitleStartsWith(Display *display, Window window, std::string titlePre
     return title.rfind(titlePrefix, 0) == 0;
 }
 
+Window findSingleWindowInStackingOrder(Display *display, std::string windowTitlePrefix)
+{
+    std::vector<Window> windows = getWindowListInStackingOrderTopMostFirst(display);
+    Window window = 0;
+
+    for (auto w = windows.begin(); w != windows.end(); ++w)
+    {
+        if (!window && windowTitleStartsWith(display, *w, windowTitlePrefix))
+        {
+            window = *w;
+            break;
+        }
+    }
+
+    throwIfNotFoundOrLog(window, windowTitlePrefix);
+
+    return window;
+}
+
 std::pair<Window, Window> findWindowsInStackingOrder(Display *display, std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
 {
     std::vector<Window> windows = getWindowListInStackingOrderTopMostFirst(display);
@@ -138,7 +167,7 @@ std::pair<Window, Window> findWindowsInStackingOrder(Display *display, std::stri
     return std::make_pair(window, ownerWindow);
 }
 
-void sendXEventSkipTaskbar(Display *display, Window window)
+void sendXEvent(Display *display, Window window, std::vector<std::string> eventNames)
 {
     XEvent event;
     event.xclient.type = ClientMessage;
@@ -150,26 +179,41 @@ void sendXEventSkipTaskbar(Display *display, Window window)
     event.xclient.format = 32;
 
     event.xclient.data.l[0] = _NET_WM_STATE_ADD;
-    event.xclient.data.l[1] = XInternAtom(display, "_NET_WM_STATE_SKIP_TASKBAR", False);
+
+    int eventCounter = 1;
+    for (auto e = eventNames.begin(); e != eventNames.end(); ++e) {
+        event.xclient.data.l[eventCounter++] = XInternAtom(display, (*e).c_str(), False);
+    }
 
     XSendEvent(display, DefaultRootWindow(display), False,
                SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
+void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowTitlePrefix)
+{
+    Display *display = getDisplay();
+
+    Window window = findSingleWindowInStackingOrder(display, windowTitlePrefix);
+
+    std::vector<std::string> eventsToSet = {"_NET_WM_STATE_SKIP_TASKBAR", "_NET_WM_STATE_ABOVE"};
+    sendXEvent(display, window, eventsToSet);
+
+    XFlush(display);
+    XCloseDisplay(display);
+}
+
 void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
 {
-    Display *display = XOpenDisplay(NULL);
-    if (!display)
-    {
-        throw std::runtime_error("Unable to open display");
-    }
+    Display *display = getDisplay();
 
     std::pair<Window, Window> windowPair = findWindowsInStackingOrder(display, windowTitlePrefix, ownerWindowTitlePrefix);
     Window window = windowPair.first;
     Window ownerWindow = windowPair.second;
 
     XSetTransientForHint(display, window, ownerWindow);
-    sendXEventSkipTaskbar(display, window);
+
+    std::vector<std::string> eventsToSet = {"_NET_WM_STATE_SKIP_TASKBAR"};
+    sendXEvent(display, window, eventsToSet);
 
     XFlush(display);
     XCloseDisplay(display);
