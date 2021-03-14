@@ -38,6 +38,7 @@ const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const followTabSwitchSlider = window.followTabSwitchSlider;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
 const restrictMaxFloatingTabSizeSlider = window.restrictMaxFloatingTabSizeSlider;
+const hotkeyVivaldiWarning = window.hotkeyVivaldiWarning;
 const hotkeyMoveDownDescription = window.hotkeyMoveDownDescription;
 const hotkeyMoveDown = window.hotkeyMoveDown;
 const hotkeyMoveUpDescription = window.hotkeyMoveUpDescription;
@@ -203,6 +204,7 @@ window.onload = async function () {
     const options = await browser.runtime.sendMessage({ action: "loadOptions" });
     const companionInfo = await browser.runtime.sendMessage({ action: "getCompanionInfo" });
     const runningOnFirefox = await browser.runtime.sendMessage({ action: "runningOnFirefox" });
+    const runningOnVivaldi = await browser.runtime.sendMessage({ action: "runningOnVivaldi" });
     const isDevelopmentEnv = await browser.runtime.sendMessage({ action: "isDevelopmentEnv" });
 
     setCompanionFields(companionInfo);
@@ -231,6 +233,10 @@ window.onload = async function () {
         hotkeyChangeButton.onclick = function () {
             browser.tabs.create({ url: "chrome://extensions/shortcuts/" });
         };
+    }
+
+    if (runningOnVivaldi) {
+        hotkeyVivaldiWarning.hidden = false;
     }
 
     collectUsageStatsCheckbox.checked = options.collectUsageStats;

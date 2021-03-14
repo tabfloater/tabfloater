@@ -188,6 +188,7 @@ browser.runtime.onMessage.addListener(async request => {
         case "getCompanionInfo": return await companion.getCompanionInfoAsync();
         case "loadOptions": return await loadOptionsAsync();
         case "runningOnFirefox": return await env.runningOnFirefoxAsync();
+        case "runningOnVivaldi": return await env.runningOnVivaldiAsync();
         case "isDevelopmentEnv": return await env.isDevelopmentAsync();
         case "reportOptionsEvent": await analytics.reportOptionsEventAsync(request.data);
     }

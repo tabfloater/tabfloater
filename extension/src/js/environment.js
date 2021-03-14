@@ -27,6 +27,17 @@ export async function runningOnFirefoxAsync() {
     return false;
 }
 
+export async function runningOnVivaldiAsync() {
+    const tabs = await browser.tabs.query({ active: true });
+
+    if (tabs && tabs.length > 0) {
+        // this property is only available on Vivaldi
+        return tabs[0].extData;
+    }
+
+    return false;
+}
+
 export async function isDevelopmentAsync() {
     const extensionInfo = await browser.management.getSelf();
     return extensionInfo.installType === "development";

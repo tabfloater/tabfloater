@@ -61,13 +61,13 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
 
     try {
         const options = await loadOptionsAsync();
-        const maxRetryCount = 3;
+        const maxRetryCount = 5;
         let retryCount = 0;
         const action = options.alwaysOnTopAllApps
             ? "setAlwaysOnTop"
             : "setAsModelessDialog";
 
-        while (retryCount < maxRetryCount) {
+        while (retryCount <= maxRetryCount) {
             const result = await browser.runtime.sendNativeMessage(CompanionName, {
                 action: action,
                 windowTitle: windowTitle,
@@ -81,6 +81,7 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
                 };
             }
 
+            await sleep(100 + retryCount * 200);
             retryCount++;
         }
 
@@ -173,4 +174,8 @@ function getMinorVersion(version) {
 
 function getPatchVersion(version) {
     return parseInt(version.substring(version.lastIndexOf(".") + 1, version.length));
+}
+
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
