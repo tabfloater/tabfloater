@@ -32,6 +32,7 @@ export const CommandToPositionMapping = {
 };
 
 export const DefaultOptions = {
+    alwaysOnTopAllApps: false,
     positioningStrategy: "fixed",
     fixedPosition: "topRight",
     fixedTabSize: "standard",

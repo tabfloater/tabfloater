@@ -21,10 +21,10 @@ import * as logger from "./logging/logger.js";
 
 export async function getCompanionInfoAsync() {
     try {
-        const debug = await isDebuggingEnabledAsync();
+        const options = await loadOptionsAsync();
         const companionInfo = await browser.runtime.sendNativeMessage(CompanionName, {
             action: "ping",
-            debug: debug.toString()
+            debug: options.debug.toString()
         });
 
         logger.info(`Companion responded to ping request. Status: '${companionInfo.status}', Version: ${companionInfo.version} (${companionInfo.os})`);
@@ -60,16 +60,19 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
     logger.info(`MakeDialog request received. Window title: '${windowTitle}', parent window title: '${parentWindowTitle}'`);
 
     try {
-        const debug = await isDebuggingEnabledAsync();
+        const options = await loadOptionsAsync();
         const maxRetryCount = 3;
         let retryCount = 0;
+        const action = options.alwaysOnTopAllApps
+            ? "setAlwaysOnTop"
+            : "setAsModelessDialog";
 
         while (retryCount < maxRetryCount) {
             const result = await browser.runtime.sendNativeMessage(CompanionName, {
-                action: "setAsModelessDialog",
+                action: action,
                 windowTitle: windowTitle,
                 parentWindowTitle: parentWindowTitle,
-                debug: debug.toString()
+                debug: options.debug.toString()
             });
 
             if (result.status === "ok") {
@@ -170,9 +173,4 @@ function getMinorVersion(version) {
 
 function getPatchVersion(version) {
     return parseInt(version.substring(version.lastIndexOf(".") + 1, version.length));
-}
-
-async function isDebuggingEnabledAsync() {
-    const options = await loadOptionsAsync();
-    return options.debug;
 }

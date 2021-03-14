@@ -28,6 +28,7 @@ const companionOsHiddenField = window.companionOsHiddenField;
 const companionErrorMessageHiddenField = window.companionErrorMessageHiddenField;
 const downloadCompanionButton = window.downloadCompanionButton;
 const downloadCompanionLink = window.downloadCompanionLink;
+const alwaysOnTopAllAppsCheckbox = window.alwaysOnTopAllAppsCheckbox;
 const fixedPositionRadioButton = window.fixedPositionRadioButton;
 const fixPositionSelect = window.fixPositionSelect;
 const tabSizeSelect = window.tabSizeSelect;
@@ -59,6 +60,7 @@ const tabFloaterVersionField = window.tabFloaterVersionField;
 
 function buildOptionsObject() {
     return {
+        alwaysOnTopAllApps: alwaysOnTopAllAppsCheckbox.checked,
         positioningStrategy: fixedPositionRadioButton.checked ? "fixed" : "smart",
         fixedPosition: fixPositionSelect.value,
         fixedTabSize: tabSizeSelect.value,
@@ -205,6 +207,8 @@ window.onload = async function () {
 
     setCompanionFields(companionInfo);
 
+    alwaysOnTopAllAppsCheckbox.checked = options.alwaysOnTopAllApps;
+
     if (options.positioningStrategy === "fixed") {
         fixedPositionRadioButton.checked = true;
     } else if (options.positioningStrategy === "smart") {
@@ -257,6 +261,7 @@ window.onunload = async function () {
     });
 };
 
+alwaysOnTopAllAppsCheckbox.onchange = saveOptionsAsync;
 fixedPositionRadioButton.onchange = positioningStrategyChangedAsync;
 smartPositionRadioButton.onchange = positioningStrategyChangedAsync;
 fixPositionSelect.onchange = saveOptionsAsync;

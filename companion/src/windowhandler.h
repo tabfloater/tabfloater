@@ -17,6 +17,18 @@
 #include <string>
 
 /**
+ * Sets a window always on top. An always on top window always stays in the foreground,
+ * no matter what application is active. The window is also removed from the taskbar.
+ *
+ * The windows are matched by title prefix. Any window that starts with the
+ * specified arguments are matched. If there are more than one window that has
+ * the same prefix title, the topmost one is selected.
+ *
+ * @param windowTitlePrefix the prefix title of the window that should be set as always on top
+ */
+void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowTitlePrefix);
+
+/**
  * Sets a window as a modeless dialog of another window. A modeless dialog is
  * a window that does not block interaction with its owner window, but always
  * stays on top of the owner window. The modeless dialog window does not have
@@ -25,7 +37,7 @@
  *
  * The windows are matched by title prefix. Any window that starts with the
  * specified arguments are matched. If there are more than one window that has
- * the same prefix title, only one is picked nondeterministically.
+ * the same prefix title, the topmost one is selected.
  *
  * @param windowTitlePrefix the prefix title of the window that should be set as modeless dialog
  * @param ownerWindowTitlePrefix the prefix title of the window that should own the dialog

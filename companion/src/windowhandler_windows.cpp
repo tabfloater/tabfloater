@@ -19,6 +19,7 @@
 #include <codecvt>
 #include <regex>
 #include <windows.h>
+#include <shobjidl.h>
 #include <stdexcept>
 #include <vector>
 
@@ -83,6 +84,25 @@ bool windowTitleStartsWith(HWND window, std::string titlePrefix)
     return title.rfind(titlePrefix, 0) == 0;
 }
 
+HWND findSingleWindowInStackingOrder(std::string windowTitlePrefix)
+{
+    std::vector<HWND> windows = getWindowListInStackingOrderTopMostFirst();
+    HWND window = 0;
+
+    for (auto w = windows.begin(); w != windows.end(); ++w)
+    {
+        if (!window && windowTitleStartsWith(*w, windowTitlePrefix))
+        {
+            window = *w;
+            break;
+        }
+    }
+
+    throwIfNotFoundOrLog(window, windowTitlePrefix);
+
+    return window;
+}
+
 std::pair<HWND, HWND> findWindowsInStackingOrder(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
 {
     std::vector<HWND> windows = getWindowListInStackingOrderTopMostFirst();
@@ -116,6 +136,38 @@ std::pair<HWND, HWND> findWindowsInStackingOrder(std::string windowTitlePrefix, 
     throwIfNotFoundOrLog(ownerWindow, ownerWindowTitlePrefix);
 
     return std::make_pair(window, ownerWindow);
+}
+
+void removeWindowFromTaskbar(HWND window) {
+    CoInitialize(NULL);
+
+    ITaskbarList *pTaskbarList = NULL;
+    if (FAILED(CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList, (void **)&pTaskbarList)))
+    {
+        throw std::runtime_error("Failed to create ITaskbarList instance");
+    }
+    else
+    {
+        if (SUCCEEDED(pTaskbarList->HrInit()))
+        {
+            pTaskbarList->DeleteTab(window);
+        }
+        else
+        {
+            throw std::runtime_error("Failed to init ITaskbarList instance");
+        }
+
+        pTaskbarList->Release();
+    }
+
+    CoUninitialize();
+}
+
+void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowTitlePrefix)
+{
+    HWND window = findSingleWindowInStackingOrder(windowTitlePrefix);
+    SetWindowPos(window, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    removeWindowFromTaskbar(window);
 }
 
 void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
