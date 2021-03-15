@@ -81,7 +81,7 @@ export async function sendMakeDialogRequestAsync(windowTitle, parentWindowTitle)
                 };
             }
 
-            await sleep(100 + retryCount * 200);
+            await sleepAsync(100 + retryCount * 200);
             retryCount++;
         }
 
@@ -176,6 +176,6 @@ function getPatchVersion(version) {
     return parseInt(version.substring(version.lastIndexOf(".") + 1, version.length));
 }
 
-async function sleep(ms) {
+async function sleepAsync(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
