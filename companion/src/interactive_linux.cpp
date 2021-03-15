@@ -29,19 +29,22 @@
 #define CHROMIUM_SNAP 1
 #define GOOGLE_CHROME 2
 #define FIREFOX 3
+#define VIVALDI 4
 
 const std::string BROWSER_NAMES[] = {
     "Chromium",
     "Chromium (Snap)",
     "Google Chrome",
-    "Firefox"
+    "Firefox",
+    "Vivaldi"
 };
 
 const std::string MANIFEST_PATHS[] = {
     "/.config/chromium/NativeMessagingHosts/",
     "/snap/chromium/common/chromium/NativeMessagingHosts/",
     "/.config/google-chrome/NativeMessagingHosts/",
-    "/.mozilla/native-messaging-hosts/"
+    "/.mozilla/native-messaging-hosts/",
+    "/.config/vivaldi/NativeMessagingHosts/"
 };
 
 const std::string WHITESPACE = " \n\r\t\f\v";
@@ -193,6 +196,10 @@ bool isBrowserInstalled(int browserId)
         {
             return !executeCommandAndGetStdOut("which firefox").empty();
         }
+        case VIVALDI:
+        {
+            return !executeCommandAndGetStdOut("which vivaldi").empty();
+        }
         default:
         {
             throw std::runtime_error("Unknown browser ID: " + browserId);
@@ -308,6 +315,7 @@ void printStatus()
     printStatusRow(BROWSER_NAMES[CHROMIUM_SNAP], getManifestStatus(CHROMIUM_SNAP, homeDirectory, chromeManifest));
     printStatusRow(BROWSER_NAMES[GOOGLE_CHROME], getManifestStatus(GOOGLE_CHROME, homeDirectory, chromeManifest));
     printStatusRow(BROWSER_NAMES[FIREFOX], getManifestStatus(FIREFOX, homeDirectory, firefoxManifest));
+    printStatusRow(BROWSER_NAMES[VIVALDI], getManifestStatus(VIVALDI, homeDirectory, chromeManifest));
     std::cout << std::endl;
     std::cout << "Note: on Ubuntu 19.10 and up, Chromium is only available via Snap. On these systems, 'Chromium'" << std::endl;
     std::cout << "is reported to be installed, but it is actually identical to the Snap version." << std::endl;
@@ -367,6 +375,7 @@ bool registerManifestForAllBrowsers(bool force)
     bool registeredChromiumSnap = false;
     bool registeredChrome = false;
     bool registeredFirefox = false;
+    bool registeredVivaldi = false;
     bool atLeastOneOperationOccurred = false;
 
     if (force || isBrowserInstalled(CHROMIUM))
@@ -389,13 +398,18 @@ bool registerManifestForAllBrowsers(bool force)
         registeredFirefox = registerManifestForSingleBrowser(FIREFOX, force, true);
         atLeastOneOperationOccurred = true;
     }
+    if (force || isBrowserInstalled(VIVALDI))
+    {
+        registeredVivaldi = registerManifestForSingleBrowser(VIVALDI, force);
+        atLeastOneOperationOccurred = true;
+    }
 
     if (!atLeastOneOperationOccurred)
     {
         std::cout << "No installed browsers found." << std::endl;
     }
 
-    return registeredChromium || registeredChromiumSnap || registeredChrome || registeredFirefox;
+    return registeredChromium || registeredChromiumSnap || registeredChrome || registeredFirefox || registeredVivaldi;
 }
 
 void printRegisterUsage(std::string executableName)
@@ -412,6 +426,7 @@ void printRegisterUsage(std::string executableName)
     printOption("chromium-snap", "Register for " + BROWSER_NAMES[CHROMIUM_SNAP]);
     printOption("chrome", "Register for " + BROWSER_NAMES[GOOGLE_CHROME]);
     printOption("firefox", "Register for " + BROWSER_NAMES[FIREFOX]);
+    printOption("vivaldi", "Register for " + BROWSER_NAMES[VIVALDI]);
     std::cout << std::endl;
     std::cout << "Options: " << std::endl;
     printOption("--force", "Register even if browser is not installed; overwrite existing file");
@@ -450,6 +465,10 @@ void registerManifest(int argc, char *argv[])
         else if (subCommand.compare("firefox") == 0)
         {
             operationSucceeded = registerManifestForSingleBrowser(FIREFOX, force, true);
+        }
+        else if (subCommand.compare("vivaldi") == 0)
+        {
+            operationSucceeded = registerManifestForSingleBrowser(VIVALDI, force);
         }
         else
         {
@@ -506,6 +525,7 @@ void printUnregisterUsage(std::string executableName)
     printOption("chromium-snap", "Unregister from " + BROWSER_NAMES[CHROMIUM_SNAP]);
     printOption("chrome", "Unregister from " + BROWSER_NAMES[GOOGLE_CHROME]);
     printOption("firefox", "Unregister from " + BROWSER_NAMES[FIREFOX]);
+    printOption("vivaldi", "Unregister from " + BROWSER_NAMES[VIVALDI]);
     std::cout << std::endl;
 }
 
@@ -522,6 +542,7 @@ void unregisterManifest(int argc, char *argv[])
             unregisterManifestFromSingleBrowser(CHROMIUM_SNAP);
             unregisterManifestFromSingleBrowser(GOOGLE_CHROME);
             unregisterManifestFromSingleBrowser(FIREFOX);
+            unregisterManifestFromSingleBrowser(VIVALDI);
         }
         else if (subCommand.compare("chromium") == 0)
         {
@@ -538,6 +559,10 @@ void unregisterManifest(int argc, char *argv[])
         else if (subCommand.compare("firefox") == 0)
         {
             unregisterManifestFromSingleBrowser(FIREFOX);
+        }
+        else if (subCommand.compare("vivaldi") == 0)
+        {
+            unregisterManifestFromSingleBrowser(VIVALDI);
         }
         else
         {

@@ -113,6 +113,7 @@ if(DEV_BUILD)
             COMMAND trap 'test -d $ENV{HOME}/.config/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
             COMMAND trap 'test -d $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
             COMMAND trap 'test -d $ENV{HOME}/.mozilla/native-messaging-hosts && cp ${PROJECT_BINARY_DIR}/manifest_firefox_dev.json $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
+            COMMAND trap 'test -d $ENV{HOME}/.config/vivaldi/NativeMessagingHosts && cp ${PROJECT_BINARY_DIR}/manifest_chrome_dev.json $ENV{HOME}/.config/vivaldi/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
             COMMENT "Install native messaging host manifests..."
         )
         add_custom_target(clean_manifests
@@ -120,6 +121,7 @@ if(DEV_BUILD)
             COMMAND trap 'test -f $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.config/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
             COMMAND trap 'test -f $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/snap/chromium/common/chromium/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
             COMMAND trap 'test -f $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.mozilla/native-messaging-hosts/io.github.tabfloater.companion.json' EXIT
+            COMMAND trap 'test -f $ENV{HOME}/.config/vivaldi/NativeMessagingHosts/io.github.tabfloater.companion.json && rm $ENV{HOME}/.config/vivaldi/NativeMessagingHosts/io.github.tabfloater.companion.json' EXIT
             COMMENT "Cleaning native messaging host manifests..."
         )
     endif()

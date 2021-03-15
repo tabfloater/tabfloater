@@ -20,7 +20,7 @@ _tabfloater_companion()
     _init_completion || return
 
     local _commands="register status unregister version --help"
-    local _browsers="all chromium chromium-snap chrome firefox"
+    local _browsers="all chromium chromium-snap chrome firefox vivaldi"
 
     case $prev in
         register|unregister)
