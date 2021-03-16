@@ -74,12 +74,16 @@ async function startupAsync() {
     }
 }
 
-async function showWelcomePageOnFirstInstallationAsync(details) {
+async function showInformationPageAsync(details) {
     switch (details.reason) {
         case "install": {
             const welcomePageUrl = await browser.runtime.getURL("html/welcome.html");
             await browser.tabs.create({ url: welcomePageUrl });
         } break;
+        case "update": {
+            const updatePageUrl = await browser.runtime.getURL("html/updated.html");
+            await browser.tabs.create({ url: updatePageUrl });
+        }
     }
 }
 
@@ -105,7 +109,7 @@ browser.runtime.onInstalled.addListener(async details => {
     await startupAsync();
 
     if (!isDevelopment) {
-        await showWelcomePageOnFirstInstallationAsync(details);
+        await showInformationPageAsync(details);
         await window.browser.runtime.setUninstallURL("https://www.tabfloater.io/uninstall");
     }
 
