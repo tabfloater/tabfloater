@@ -16,8 +16,8 @@
 
 export const CompanionName = "io.github.tabfloater.companion";
 export const CompanionLatestVersionsFallback = {
-    Linux: "0.9.3",
-    Windows: "0.9.3"
+    Linux: "1.0.0",
+    Windows: "1.0.0"
 };
 
 export const CommandToPositionMapping = {

@@ -1,0 +1,105 @@
+<!--
+Copyright 2021 Balazs Gyurak
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TabFloater updated</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/tabfloater.css" />
+    <link rel="stylesheet" href="../css/uk-switch.css" />
+    <link rel="stylesheet" href="../css/generated/uk-tabfloater.css" />
+    <script src="../libs/uikit/uikit.min.js"></script>
+    <script src="../libs/uikit/uikit-icons.min.js"></script>
+    <script type="module" src="../libs/webextension-polyfill/browser-polyfill.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="uk-section-xsmall uk-section-secondary uk-preserve-color">
+            <div class="uk-container uk-container-medium">
+                <div class="uk-grid-match" uk-grid>
+                    <div>
+                        <a href="https://www.tabfloater.io/" target="_blank">
+                            <img data-src="../images/logo.png" width="245" alt="tabfloater_logo" uk-img>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section uk-height-viewport="expand: true">
+        <div class="uk-container uk-container-small uk-padding">
+            <h1>TabFloater has been updated</h1>
+
+            <h3>Version 1.0.0</h3>
+            <p>
+            <ul>
+                <li><b>New feature:</b> Option to make floating tab stay on top of all windows (<a
+                        href="https://github.com/tabfloater/tabfloater/issues/231" target="_blank">#231</a>)</li>
+                <li><b>New feature:</b> Vivaldi browser support (<a
+                        href="https://github.com/tabfloater/tabfloater/issues/233" target="_blank">#233</a>)</li>
+            </ul>
+            </p>
+
+            <p>
+                Want to request a feature or report a bug? Please <a href="https://github.com/tabfloater/tabfloater"
+                    target="_blank">open an issue on GitHub</a>.
+            </p>
+
+            <div class="uk-text-small uk-margin-large-top">
+                <h5>Feedback & donations</h5>
+
+                <div class="uk-margin-top uk-text-center" uk-grid>
+                    <div class="uk-width-1-2">
+                        <a id="reviewLink" href="#" target="_blank"
+                            class="uk-margin-left uk-button uk-button-link uk-border-pill" uk-icon="arrow-right">Write a
+                            review</a>
+                    </div>
+                </div>
+
+                <div class="uk-margin-top uk-text-center" uk-grid>
+                    <div class="uk-width-1-2">
+                        <div class="uk-grid-collapse" uk-grid>
+                            <div class="uk-width-1-2">
+                                <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                                    <input type="hidden" name="hosted_button_id" value="8E2GR6WXHNY48" />
+                                    <input type="image"
+                                        src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif"
+                                        name="submit" title="PayPal - The safer, easier way to pay online!"
+                                        alt="Donate with PayPal button" width="120px" />
+                                    <img alt="" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1"
+                                        height="1" />
+                                </form>
+                            </div>
+                            <div class="uk-width-1-2">
+                                <a href="https://www.buymeacoffee.com/ba32107" target="_blank"><img
+                                        src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                                        alt="Buy Me A Coffee button" title="Donate on Buy Me A Coffe"
+                                        style="width: 120px"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <script type="module" src="../js/pages/updated.js"></script>
+</body>
+
+</html>
