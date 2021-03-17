@@ -89,6 +89,7 @@ async function floatTabIfPossibleAsync() {
 }
 
 browser.runtime.onInstalled.addListener(async details => {
+    debugger;
     const isFirstTimeInstall = details.reason === "install";
     const isUpdate = details.reason === "update";
     const isDevelopment = await env.isDevelopmentAsync();
@@ -102,14 +103,12 @@ browser.runtime.onInstalled.addListener(async details => {
 
     if (!isDevelopment && (isFirstTimeInstall || isUpdate)) {
         const infoPageUrl = isUpdate ? "html/updated.html" : "html/welcome.html";
-        await browser.tabs.create({ url: infoPageUrl });
+        await window.browser.tabs.create({ url: infoPageUrl });
         await window.browser.runtime.setUninstallURL("https://www.tabfloater.io/uninstall");
     }
 
     const os = await env.getOperatingSystemAsync();
-    const browser = (await env.runningOnFirefoxAsync())
-        ? "firefox"
-        : (await env.runningOnVivaldiAsync()) ? "vivaldi" : "chrome";
+    const browser = await env.getBrowserAsync();
 
     await analytics.reportInstalledEventAsync(os, browser);
 });
