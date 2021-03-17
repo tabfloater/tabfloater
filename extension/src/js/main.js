@@ -89,7 +89,6 @@ async function floatTabIfPossibleAsync() {
 }
 
 browser.runtime.onInstalled.addListener(async details => {
-    debugger;
     const isFirstTimeInstall = details.reason === "install";
     const isUpdate = details.reason === "update";
     const isDevelopment = await env.isDevelopmentAsync();
