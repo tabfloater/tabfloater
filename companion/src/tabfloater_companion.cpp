@@ -234,14 +234,16 @@ int startCompanionMode(int argc, char *argv[]) {
             {
                 if (action.compare("setAlwaysOnTop") == 0) {
                     setWindowAlwaysOnTopAndSkipTaskbar(windowTitle);
+                    sendStatus("ok");
                 } else if (action.compare("setAsModelessDialog") == 0) {
                     std::string parentWindowTitle = getJsonValueByKey(json, "parentWindowTitle");
                     LOG_F(INFO, "Parent window title: \"%s\"", parentWindowTitle.c_str());
-
                     setAsModelessDialog(windowTitle, parentWindowTitle);
+                    sendStatus("ok");
+                } else {
+                    LOG_F(ERROR, "Received unknown action request: %s", action.c_str());
+                    sendStatus("unknown_action");
                 }
-
-                sendStatus("ok");
             }
             catch (std::exception &ex)
             {
