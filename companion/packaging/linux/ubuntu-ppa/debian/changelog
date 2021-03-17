@@ -2,6 +2,7 @@ tabfloater-companion (1.0.0~SERIES1) SERIES; urgency=medium
 
   * New feature: Option to make floating tab stay on top of all windows (https://github.com/tabfloater/tabfloater/issues/231)
   * New feature: Vivaldi browser support (https://github.com/tabfloater/tabfloater/issues/233)
+  * Bug fix: Settings should not reset after extension update (https://github.com/tabfloater/tabfloater/issues/240)
 
  -- Balazs Gyurak <balazs@tabfloater.io>  Tue, 16 Mar 2021 21:49:09 +0000
 
