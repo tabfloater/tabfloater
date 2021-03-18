@@ -40,12 +40,23 @@ export async function loadOptionsAsync() {
     return optionsData.options;
 }
 
-async function setDefaultOptionsAsync(isDevelopment) {
+async function initializeOptionsAsync(isDevelopment) {
     const defaultOptions = isDevelopment
         ? constants.DefaultOptionsDev
         : constants.DefaultOptions;
 
-    await browser.storage.sync.set({ options: defaultOptions });
+    const currentOptionsData = await browser.storage.sync.get(["options"]);
+
+    if (!currentOptionsData) {
+        await browser.storage.sync.set({ options: defaultOptions });
+    } else {
+        // If we already had saved options, we need to merge that
+        // object with the default options. This way, any newly added
+        // options will have the correct values.
+        const currentOptions = currentOptionsData.options;
+        const newOptions = Object.assign({}, defaultOptions, currentOptions);
+        await browser.storage.sync.set({ options: newOptions });
+    }
 }
 
 function initLogger(debug) {
@@ -96,8 +107,9 @@ browser.runtime.onInstalled.addListener(async details => {
     const isUpdate = details.reason === "update";
     const isDevelopment = await env.isDevelopmentAsync();
 
+    await initializeOptionsAsync(isDevelopment);
+
     if (isFirstTimeInstall) {
-        await setDefaultOptionsAsync(isDevelopment);
         await googleAnalytics.generateClientIdAsync();
     }
 
@@ -108,10 +120,8 @@ browser.runtime.onInstalled.addListener(async details => {
 
         if (isFirstTimeInstall) {
             await showPageAsync("html/welcome.html");
-        } else if (isUpdate) {
-            if ((await loadOptionsAsync()).showUpdatePage) {
-                await showPageAsync("html/updated.html");
-            }
+        } else if (isUpdate && (await loadOptionsAsync()).showUpdatePage) {
+            await showPageAsync("html/updated.html");
         }
     }
 
