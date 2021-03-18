@@ -40,11 +40,13 @@ export const DefaultOptions = {
     smartPositioningFollowTabSwitches: true,
     smartPositioningRestrictMaxFloatingTabSize: true,
     collectUsageStats: true,
+    showUpdatePage: true,
     debug: false
 };
 
 export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
     collectUsageStats: false,
+    showUpdatePage: false,
     debug: true
 });
 
