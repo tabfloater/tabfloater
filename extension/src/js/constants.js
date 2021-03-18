@@ -46,7 +46,6 @@ export const DefaultOptions = {
 
 export const DefaultOptionsDev = Object.assign({}, DefaultOptions, {
     collectUsageStats: false,
-    showUpdatePage: false,
     debug: true
 });
 
