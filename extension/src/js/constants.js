@@ -40,6 +40,7 @@ export const DefaultOptions = {
     smartPositioningFollowTabSwitches: true,
     smartPositioningRestrictMaxFloatingTabSize: true,
     collectUsageStats: true,
+    showUpdatePage: true,
     debug: false
 };
 

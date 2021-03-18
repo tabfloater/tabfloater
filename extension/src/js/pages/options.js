@@ -50,6 +50,7 @@ const hotkeyMoveRight = window.hotkeyMoveRight;
 const hotkeyChangeButton = window.hotkeyChangeButton;
 const firefoxHotKeyChangeInfo = window.firefoxHotKeyChangeInfo;
 const collectUsageStatsCheckbox = window.collectUsageStatsCheckbox;
+const showUpdatePageCheckbox = window.showUpdatePageCheckbox;
 const debugCheckbox = window.debugCheckbox;
 const chromeDebugInfo = window.chromeDebugInfo;
 const firefoxDebugInfo = window.firefoxDebugInfo;
@@ -69,6 +70,7 @@ function buildOptionsObject() {
         smartPositioningFollowTabSwitches: followTabSwitchCheckbox.checked,
         smartPositioningRestrictMaxFloatingTabSize: restrictMaxFloatingTabSizeCheckbox.checked,
         collectUsageStats: collectUsageStatsCheckbox.checked,
+        showUpdatePage: showUpdatePageCheckbox.checked,
         debug: debugCheckbox.checked
     };
 }
@@ -240,6 +242,7 @@ window.onload = async function () {
     }
 
     collectUsageStatsCheckbox.checked = options.collectUsageStats;
+    showUpdatePageCheckbox.checked = options.showUpdatePage;
     debugCheckbox.checked = options.debug;
     if (runningOnFirefox) {
         chromeDebugInfo.hidden = true;
@@ -284,6 +287,7 @@ viewportTopOffsetInput.onblur = async function () {
 followTabSwitchCheckbox.onchange = saveOptionsAsync;
 restrictMaxFloatingTabSizeCheckbox.onchange = saveOptionsAsync;
 collectUsageStatsCheckbox.onchange = saveOptionsAsync;
+showUpdatePageCheckbox.onchange = saveOptionsAsync;
 debugCheckbox.onchange = saveOptionsAsync;
 copyCompanionLogFilePathButton.onclick = async function () {
     const logFilePath = companionLogFileField.value;

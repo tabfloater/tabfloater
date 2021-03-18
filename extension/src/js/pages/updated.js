@@ -15,6 +15,7 @@
  */
 
 const reviewLink = window.reviewLink;
+const doNotShowUpdatePageCheckbox = window.doNotShowUpdatePageCheckbox;
 
 window.onload = async function () {
     const runningOnFirefox = await browser.runtime.sendMessage({ action: "runningOnFirefox" });
@@ -24,4 +25,12 @@ window.onload = async function () {
     } else {
         reviewLink.href = "https://chrome.google.com/webstore/detail/iojgbjjdoanmhcmmihbapiejfbbadhjd";
     }
+
+    doNotShowUpdatePageCheckbox.checked = !(await browser.runtime.sendMessage({ action: "loadOptions" })).showUpdatePage;
+};
+
+doNotShowUpdatePageCheckbox.onchange = async function () {
+    const options = await browser.runtime.sendMessage({ action: "loadOptions" });
+    options.showUpdatePage = !doNotShowUpdatePageCheckbox.checked;
+    await browser.storage.sync.set({ options: options });
 };

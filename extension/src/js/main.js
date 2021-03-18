@@ -56,6 +56,10 @@ function initAnalytics(collectUsageStats) {
     analytics.setAnalyticsImpl(collectUsageStats ? googleAnalytics.GoogleAnalytics : NullAnalytics);
 }
 
+async function showPageAsync(url) {
+    await browser.tabs.create({ url: browser.runtime.getURL(url) });
+}
+
 async function startupAsync() {
     const options = await loadOptionsAsync();
     initLogger(options.debug);
@@ -75,8 +79,7 @@ async function startupAsync() {
 }
 
 async function showReviewPageOnFloatCountHitAsync() {
-    const reviewPageUrl = browser.runtime.getURL("html/review.html");
-    await browser.tabs.create({ url: reviewPageUrl });
+    await showPageAsync("html/review.html");
     await browser.storage.local.set({ floatCount: -1 });
 }
 
@@ -100,10 +103,16 @@ browser.runtime.onInstalled.addListener(async details => {
 
     await startupAsync();
 
-    if (!isDevelopment && (isFirstTimeInstall || isUpdate)) {
-        const infoPageUrl = isUpdate ? "html/updated.html" : "html/welcome.html";
-        await window.browser.tabs.create({ url: infoPageUrl });
+    if (!isDevelopment) {
         await window.browser.runtime.setUninstallURL("https://www.tabfloater.io/uninstall");
+
+        if (isFirstTimeInstall) {
+            await showPageAsync("html/welcome.html");
+        } else if (isUpdate) {
+            if ((await loadOptionsAsync()).showUpdatePage) {
+                await showPageAsync("html/updated.html");
+            }
+        }
     }
 
     const os = await env.getOperatingSystemAsync();
