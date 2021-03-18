@@ -74,19 +74,6 @@ async function startupAsync() {
     }
 }
 
-async function showInformationPageAsync(details) {
-    switch (details.reason) {
-        case "install": {
-            const welcomePageUrl = await browser.runtime.getURL("html/welcome.html");
-            await browser.tabs.create({ url: welcomePageUrl });
-        } break;
-        case "update": {
-            const updatePageUrl = await browser.runtime.getURL("html/updated.html");
-            await browser.tabs.create({ url: updatePageUrl });
-        }
-    }
-}
-
 async function showReviewPageOnFloatCountHitAsync() {
     const reviewPageUrl = browser.runtime.getURL("html/review.html");
     await browser.tabs.create({ url: reviewPageUrl });
@@ -102,19 +89,26 @@ async function floatTabIfPossibleAsync() {
 }
 
 browser.runtime.onInstalled.addListener(async details => {
+    const isFirstTimeInstall = details.reason === "install";
+    const isUpdate = details.reason === "update";
     const isDevelopment = await env.isDevelopmentAsync();
 
-    await setDefaultOptionsAsync(isDevelopment);
-    await googleAnalytics.generateClientIdAsync();
+    if (isFirstTimeInstall) {
+        await setDefaultOptionsAsync(isDevelopment);
+        await googleAnalytics.generateClientIdAsync();
+    }
+
     await startupAsync();
 
-    if (!isDevelopment) {
-        await showInformationPageAsync(details);
+    if (!isDevelopment && (isFirstTimeInstall || isUpdate)) {
+        const infoPageUrl = isUpdate ? "html/updated.html" : "html/welcome.html";
+        await window.browser.tabs.create({ url: infoPageUrl });
         await window.browser.runtime.setUninstallURL("https://www.tabfloater.io/uninstall");
     }
 
     const os = await env.getOperatingSystemAsync();
-    const browser = (await env.runningOnFirefoxAsync()) ? "firefox" : "chrome";
+    const browser = await env.getBrowserAsync();
+
     await analytics.reportInstalledEventAsync(os, browser);
 });
 

@@ -18,6 +18,18 @@ export async function getOperatingSystemAsync() {
     return (await browser.runtime.getPlatformInfo()).os;
 }
 
+export async function getBrowserAsync() {
+    if (await runningOnFirefoxAsync()) {
+        return "firefox";
+    }
+
+    if (await runningOnVivaldiAsync()) {
+        return "vivaldi";
+    }
+
+    return "chrome";
+}
+
 export async function runningOnFirefoxAsync() {
     if (browser.runtime.getBrowserInfo) {
         const browserInfo = await browser.runtime.getBrowserInfo();
