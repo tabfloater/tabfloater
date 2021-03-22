@@ -1,6 +1,6 @@
 {
   "name": "tabfloater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TabFloater: Picture-in-Picture for any tab!",
   "private": true,
   "scripts": {
@@ -26,7 +26,7 @@
   "author": "Balazs Gyurak",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/tabfloater/tabfloater/issues"
+    "url": "https://github.com/tabfloater/tabfloater/issues/new/choose"
   },
   "homepage": "https://github.com/tabfloater/tabfloater#readme",
   "dependencies": {
