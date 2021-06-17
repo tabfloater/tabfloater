@@ -38,6 +38,7 @@ const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const followTabSwitchSlider = window.followTabSwitchSlider;
 const restrictMaxFloatingTabSizeCheckbox = window.restrictMaxFloatingTabSizeCheckbox;
 const restrictMaxFloatingTabSizeSlider = window.restrictMaxFloatingTabSizeSlider;
+const customPositionRadioButton = window.customPositionRadioButton;
 const hotkeyVivaldiWarning = window.hotkeyVivaldiWarning;
 const hotkeyMoveDownDescription = window.hotkeyMoveDownDescription;
 const hotkeyMoveDown = window.hotkeyMoveDown;
@@ -63,7 +64,7 @@ const tabFloaterVersionField = window.tabFloaterVersionField;
 function buildOptionsObject() {
     return {
         alwaysOnTopAllApps: alwaysOnTopAllAppsCheckbox.checked,
-        positioningStrategy: fixedPositionRadioButton.checked ? "fixed" : "smart",
+        positioningStrategy: getPositioningStrategy(),
         fixedPosition: fixPositionSelect.value,
         fixedTabSize: tabSizeSelect.value,
         viewportTopOffset: parseInt(viewportTopOffsetInput.value),
@@ -80,18 +81,18 @@ async function saveOptionsAsync() {
 }
 
 function setPositioningControlStates() {
-    fixPositionSelect.disabled = smartPositionRadioButton.checked;
-    tabSizeSelect.disabled = smartPositionRadioButton.checked;
-    viewportTopOffsetInput.disabled = smartPositionRadioButton.checked;
-    followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked;
-    restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked;
+    fixPositionSelect.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
+    tabSizeSelect.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
+    viewportTopOffsetInput.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
+    followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked || customPositionRadioButton.checked;
+    restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked || customPositionRadioButton.checked;
 
-    if (fixedPositionRadioButton.checked) {
-        followTabSwitchSlider.classList.add("uk-switch-slider-disabled");
-        restrictMaxFloatingTabSizeSlider.classList.add("uk-switch-slider-disabled");
-    } else {
+    if (smartPositionRadioButton.checked) {
         followTabSwitchSlider.classList.remove("uk-switch-slider-disabled");
         restrictMaxFloatingTabSizeSlider.classList.remove("uk-switch-slider-disabled");
+    } else {
+        followTabSwitchSlider.classList.add("uk-switch-slider-disabled");
+        restrictMaxFloatingTabSizeSlider.classList.add("uk-switch-slider-disabled");
     }
 }
 
@@ -162,7 +163,7 @@ async function setHotKeysLabelsAsync(positioningStrategy) {
 }
 
 async function positioningStrategyChangedAsync() {
-    const selectedPositioningStrategy = fixedPositionRadioButton.checked ? "fixed" : "smart";
+    const selectedPositioningStrategy = getPositioningStrategy();
     let preventSwitchToSmartPositioning = false;
 
     if (selectedPositioningStrategy === "smart") {
@@ -213,10 +214,10 @@ window.onload = async function () {
 
     alwaysOnTopAllAppsCheckbox.checked = options.alwaysOnTopAllApps;
 
-    if (options.positioningStrategy === "fixed") {
-        fixedPositionRadioButton.checked = true;
-    } else if (options.positioningStrategy === "smart") {
-        smartPositionRadioButton.checked = true;
+    switch (options.positioningStrategy) {
+        case "fixed": fixedPositionRadioButton.checked = true; break;
+        case "smart": smartPositionRadioButton.checked = true; break;
+        case "custom": customPositionRadioButton.checked = true; break;
     }
 
     setPositioningControlStates();
@@ -273,6 +274,7 @@ window.onunload = async function () {
 alwaysOnTopAllAppsCheckbox.onchange = saveOptionsAsync;
 fixedPositionRadioButton.onchange = positioningStrategyChangedAsync;
 smartPositionRadioButton.onchange = positioningStrategyChangedAsync;
+customPositionRadioButton.onchange = positioningStrategyChangedAsync;
 fixPositionSelect.onchange = saveOptionsAsync;
 tabSizeSelect.onchange = saveOptionsAsync;
 viewportTopOffsetInput.onblur = async function () {
@@ -321,6 +323,12 @@ function showCopySuccessIndicators(visible) {
     copyCompanionLogFilePathButton.hidden = visible;
     copyCompanionLogFilePathSuccessIcon.hidden = !visible;
     copyCompanionLogFilePathSuccessMessage.hidden = !visible;
+}
+
+function getPositioningStrategy() {
+    return fixedPositionRadioButton.checked
+        ? "fixed"
+        : (smartPositionRadioButton.checked ? "smart" : "custom");
 }
 
 function delay(ms) {

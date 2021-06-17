@@ -61,10 +61,14 @@ export async function calculateCoordinatesAsync() {
 
     let coordinates;
 
-    if (options.positioningStrategy === "fixed") {
-        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options);
+    if (options.positioningStrategy === "custom" && options.customPosition) {
+        coordinates = options.customPosition;
     } else if (options.positioningStrategy === "smart") {
         coordinates = await getSmartPositionCoordinatesAsync(parentWindow, options);
+    } else {
+        // either positioning strategy is fixed, or it
+        // is custom, but we have no position saved yet
+        coordinates = getFixedPositionCoordinates(parentWindow, fixedPosition, options);
     }
 
     const normalizedCoordinates = normalizeDimensions(coordinates);
@@ -72,6 +76,24 @@ export async function calculateCoordinatesAsync() {
     logger.info(`Calculated coordinates: ${JSON.stringify(coordinates)}, normalized coordinates: ${JSON.stringify(normalizedCoordinates)}`);
 
     return normalizedCoordinates;
+}
+
+export async function saveCurrentPositionAsync() {
+    const { floatingTab } = await tryGetFloatingTabAsync();
+    const floatingWindow = await browser.windows.get(floatingTab.windowId);
+
+    const currentPosition = {
+        top: floatingWindow.top,
+        left: floatingWindow.left,
+        width: floatingWindow.width,
+        height: floatingWindow.height
+    };
+
+    logger.info(`Saving current floating window position and dimensions: ${JSON.stringify(currentPosition)}`);
+
+    const options = await loadOptionsAsync();
+    options.customPosition = currentPosition;
+    await browser.storage.sync.set({ options: options });
 }
 
 function getFixedPositionCoordinates(parentWindow, position, options) {
@@ -163,6 +185,5 @@ function normalizeDimensions(coordinates) {
         left: coordinates.left,
         width: Math.max(coordinates.width, MinimumFloatingTabSideLength),
         height: Math.max(coordinates.height, MinimumFloatingTabSideLength)
-
     };
 }
