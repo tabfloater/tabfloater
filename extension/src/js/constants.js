@@ -36,6 +36,7 @@ export const DefaultOptions = {
     positioningStrategy: "fixed",
     fixedPosition: "topRight",
     fixedTabSize: "standard",
+    customPosition: undefined,
     viewportTopOffset: 150,
     smartPositioningFollowTabSwitches: true,
     smartPositioningRestrictMaxFloatingTabSize: true,

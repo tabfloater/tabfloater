@@ -138,6 +138,7 @@ export async function unfloatTabAsync() {
     const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
+        await positioner.saveCurrentPositionAsync();
         await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
         await clearFloatingTabAsync();
         await analytics.reportUnfloatEventAsync();
