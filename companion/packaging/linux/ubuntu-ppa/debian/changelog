@@ -1,3 +1,10 @@
+tabfloater-companion (1.1.0~SERIES1) SERIES; urgency=medium
+
+  * New feature: Add option to remember last used floating tab size & position (https://github.com/tabfloater/tabfloater/issues/252)
+  * New feature: Brave browser support (https://github.com/tabfloater/tabfloater/issues/242)
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Fri, 18 Jun 2021 21:29:03 +0100
+
 tabfloater-companion (1.0.0~SERIES1) SERIES; urgency=medium
 
   * New feature: Option to make floating tab stay on top of all windows (https://github.com/tabfloater/tabfloater/issues/231)
