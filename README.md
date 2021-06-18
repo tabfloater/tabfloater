@@ -15,7 +15,7 @@ Official website: https://www.tabfloater.io/
 
 ## Quickstart
 
- 1. Add the browser extension: [Chrome/Chromium/Vivaldi](https://chrome.google.com/webstore/detail/iojgbjjdoanmhcmmihbapiejfbbadhjd) or [Firefox](https://addons.mozilla.org/en-US/firefox/addon/tabfloater/)
+ 1. Add the browser extension: [Brave/Chrome/Chromium/Vivaldi](https://chrome.google.com/webstore/detail/iojgbjjdoanmhcmmihbapiejfbbadhjd) or [Firefox](https://addons.mozilla.org/en-US/firefox/addon/tabfloater/)
  1. Download the [latest Companion](https://github.com/tabfloater/tabfloater/releases/latest)
  1. If you're on Linux, you need to explicitly register the companion. [Click here](https://www.tabfloater.io/documentation#how-do-i-set-up-the-companion-on-linux) to see how.
 

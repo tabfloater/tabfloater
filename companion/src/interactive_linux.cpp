@@ -25,13 +25,15 @@
 
 #define MANIFEST_FILE_NAME "io.github.tabfloater.companion.json"
 
-#define CHROMIUM 0
-#define CHROMIUM_SNAP 1
-#define GOOGLE_CHROME 2
-#define FIREFOX 3
-#define VIVALDI 4
+#define BRAVE 0
+#define CHROMIUM 1
+#define CHROMIUM_SNAP 2
+#define GOOGLE_CHROME 3
+#define FIREFOX 4
+#define VIVALDI 5
 
 const std::string BROWSER_NAMES[] = {
+    "Brave",
     "Chromium",
     "Chromium (Snap)",
     "Google Chrome",
@@ -40,6 +42,7 @@ const std::string BROWSER_NAMES[] = {
 };
 
 const std::string MANIFEST_PATHS[] = {
+    "/.config/BraveSoftware/Brave-Browser/NativeMessagingHosts/",
     "/.config/chromium/NativeMessagingHosts/",
     "/snap/chromium/common/chromium/NativeMessagingHosts/",
     "/.config/google-chrome/NativeMessagingHosts/",
@@ -173,6 +176,10 @@ bool isBrowserInstalled(int browserId)
     {
         switch (browserId)
         {
+        case BRAVE:
+        {
+            return !executeCommandAndGetStdOut("which brave-browser").empty();
+        }
         case CHROMIUM:
         {
             if (!executeCommandAndGetStdOut("which chromium-browser").empty())
@@ -311,6 +318,7 @@ void printStatus()
     std::cout << std::endl;
     printStatusRow("BROWSER", "TABFLOATER STATUS");
     std::cout << std::endl;
+    printStatusRow(BROWSER_NAMES[BRAVE], getManifestStatus(BRAVE, homeDirectory, chromeManifest));
     printStatusRow(BROWSER_NAMES[CHROMIUM], getManifestStatus(CHROMIUM, homeDirectory, chromeManifest));
     printStatusRow(BROWSER_NAMES[CHROMIUM_SNAP], getManifestStatus(CHROMIUM_SNAP, homeDirectory, chromeManifest));
     printStatusRow(BROWSER_NAMES[GOOGLE_CHROME], getManifestStatus(GOOGLE_CHROME, homeDirectory, chromeManifest));
@@ -371,6 +379,7 @@ bool registerManifestForSingleBrowser(int browserId, bool force, bool useFirefox
 
 bool registerManifestForAllBrowsers(bool force)
 {
+    bool registeredBrave = false;
     bool registeredChromium = false;
     bool registeredChromiumSnap = false;
     bool registeredChrome = false;
@@ -378,6 +387,11 @@ bool registerManifestForAllBrowsers(bool force)
     bool registeredVivaldi = false;
     bool atLeastOneOperationOccurred = false;
 
+    if (force || isBrowserInstalled(BRAVE))
+    {
+        registeredBrave = registerManifestForSingleBrowser(BRAVE, force);
+        atLeastOneOperationOccurred = true;
+    }
     if (force || isBrowserInstalled(CHROMIUM))
     {
         registeredChromium = registerManifestForSingleBrowser(CHROMIUM, force);
@@ -409,7 +423,7 @@ bool registerManifestForAllBrowsers(bool force)
         std::cout << "No installed browsers found." << std::endl;
     }
 
-    return registeredChromium || registeredChromiumSnap || registeredChrome || registeredFirefox || registeredVivaldi;
+    return registeredBrave || registeredChromiumSnap || registeredChrome || registeredFirefox || registeredVivaldi;
 }
 
 void printRegisterUsage(std::string executableName)
@@ -422,6 +436,7 @@ void printRegisterUsage(std::string executableName)
     std::cout << std::endl;
     std::cout << "Supported browsers: " << std::endl;
     printOption("all", "Register for all installed browsers");
+    printOption("brave", "Register for " + BROWSER_NAMES[BRAVE]);
     printOption("chromium", "Register for " + BROWSER_NAMES[CHROMIUM]);
     printOption("chromium-snap", "Register for " + BROWSER_NAMES[CHROMIUM_SNAP]);
     printOption("chrome", "Register for " + BROWSER_NAMES[GOOGLE_CHROME]);
@@ -446,7 +461,11 @@ void registerManifest(int argc, char *argv[])
         bool force = argc > 3 && std::string(argv[3]).compare("--force") == 0;
         bool operationSucceeded = false;
 
-        if (subCommand.compare("all") == 0)
+        if (subCommand.compare("brave") == 0)
+        {
+            operationSucceeded = registerManifestForSingleBrowser(BRAVE, force);
+        }
+        else if (subCommand.compare("all") == 0)
         {
             operationSucceeded = registerManifestForAllBrowsers(force);
         }
@@ -521,6 +540,7 @@ void printUnregisterUsage(std::string executableName)
     std::cout << std::endl;
     std::cout << "Supported browsers: " << std::endl;
     printOption("all", "Unregister from all browsers");
+    printOption("brave", "Unregister from " + BROWSER_NAMES[BRAVE]);
     printOption("chromium", "Unregister from " + BROWSER_NAMES[CHROMIUM]);
     printOption("chromium-snap", "Unregister from " + BROWSER_NAMES[CHROMIUM_SNAP]);
     printOption("chrome", "Unregister from " + BROWSER_NAMES[GOOGLE_CHROME]);
@@ -538,11 +558,16 @@ void unregisterManifest(int argc, char *argv[])
 
         if (subCommand.compare("all") == 0)
         {
+            unregisterManifestFromSingleBrowser(BRAVE);
             unregisterManifestFromSingleBrowser(CHROMIUM);
             unregisterManifestFromSingleBrowser(CHROMIUM_SNAP);
             unregisterManifestFromSingleBrowser(GOOGLE_CHROME);
             unregisterManifestFromSingleBrowser(FIREFOX);
             unregisterManifestFromSingleBrowser(VIVALDI);
+        }
+        else if (subCommand.compare("brave") == 0)
+        {
+            unregisterManifestFromSingleBrowser(BRAVE);
         }
         else if (subCommand.compare("chromium") == 0)
         {

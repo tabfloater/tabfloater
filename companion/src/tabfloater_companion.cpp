@@ -258,9 +258,9 @@ int startCompanionMode(int argc, char *argv[]) {
 }
 
 bool shouldRunInInteractiveMode(int argc, char *argv[]) {
-    // Chrome, Chromium and Vivaldi passes one argument with the extension ID
+    // Firefox passes two arguments, the second one is the extension ID.
+    // All other browsers pass one argument with the extension ID.
     bool invokedByChrome = argc == 2 && std::string(argv[1]).rfind("chrome-extension://", 0) == 0;
-    // Firefox passes two arguments, the second one is the extension ID
     bool invokedByFirefox = argc == 3 && std::string(argv[2]).compare("tabfloater@tabfloater.io") == 0;
 
     return !invokedByChrome && !invokedByFirefox;

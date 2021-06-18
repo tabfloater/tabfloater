@@ -16,6 +16,7 @@ npm install
 ```
 
 Once built, load the extension into your browser:
+ * **Brave**: tbd
  * **Chrome/Chromium**: go to `chrome://extensions/`, enable "Developer mode", then click "Load unpacked", and browse the `extension/src` directory. You will need to manually reload the extension after each code change.
  * **Firefox**: simply run `npm run run-ff`. This will set up the manifest files and use `web-ext` to load the extension into Firefox and launch the browser. Your changes will also be reloaded automatically.
  * **Vivaldi**: go to `vivaldi://extensions/`, the rest of the process is the same as for Chrome/Chromium
