@@ -171,7 +171,7 @@ browser.commands.onCommand.addListener(async command => {
     if (floatingTab) {
         logger.info(`Positioning strategy: ${options.positioningStrategy}, current position: ${tabProps.position}`);
 
-        if (options.positioningStrategy === "smart" || options.positioningStrategy == "custom" || tabProps.position === "smart") {
+        if (options.positioningStrategy === "smart" || options.positioningStrategy === "custom" || tabProps.position === "smart") {
             if (command === "moveUp") {
                 await floater.unfloatTabAsync();
             }
