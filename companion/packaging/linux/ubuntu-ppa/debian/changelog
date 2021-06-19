@@ -1,3 +1,9 @@
+tabfloater-companion (1.1.0~SERIES2) SERIES; urgency=medium
+
+  * Fix version number in 1.1.0
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Sat, 19 Jun 2021 06:31:24 +0100
+
 tabfloater-companion (1.1.0~SERIES1) SERIES; urgency=medium
 
   * New feature: Add option to remember last used floating tab size & position (https://github.com/tabfloater/tabfloater/issues/252)
