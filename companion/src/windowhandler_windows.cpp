@@ -163,7 +163,7 @@ void removeWindowFromTaskbar(HWND window) {
     CoUninitialize();
 }
 
-void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowTitlePrefix)
+void setWindowAlwaysOnTop(std::string windowTitlePrefix)
 {
     HWND window = findSingleWindowInStackingOrder(windowTitlePrefix);
     SetWindowPos(window, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);

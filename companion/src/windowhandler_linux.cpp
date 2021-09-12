@@ -189,13 +189,13 @@ void sendXEvent(Display *display, Window window, std::vector<std::string> eventN
                SubstructureRedirectMask | SubstructureNotifyMask, &event);
 }
 
-void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowTitlePrefix)
+void setWindowAlwaysOnTop(std::string windowTitlePrefix)
 {
     Display *display = getDisplay();
 
     Window window = findSingleWindowInStackingOrder(display, windowTitlePrefix);
 
-    std::vector<std::string> eventsToSet = {"_NET_WM_STATE_SKIP_TASKBAR", "_NET_WM_STATE_ABOVE"};
+    std::vector<std::string> eventsToSet = {"_NET_WM_STATE_ABOVE"};
     sendXEvent(display, window, eventsToSet);
 
     XFlush(display);
@@ -211,9 +211,6 @@ void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowT
     Window ownerWindow = windowPair.second;
 
     XSetTransientForHint(display, window, ownerWindow);
-
-    std::vector<std::string> eventsToSet = {"_NET_WM_STATE_SKIP_TASKBAR"};
-    sendXEvent(display, window, eventsToSet);
 
     XFlush(display);
     XCloseDisplay(display);
