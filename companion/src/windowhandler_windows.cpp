@@ -138,7 +138,7 @@ std::pair<HWND, HWND> findWindowsInStackingOrder(std::string windowTitlePrefix, 
     return std::make_pair(window, ownerWindow);
 }
 
-void removeWindowFromTaskbar(HWND window) {
+void activateTaskbarEntry(HWND window) {
     CoInitialize(NULL);
 
     ITaskbarList *pTaskbarList = NULL;
@@ -150,7 +150,7 @@ void removeWindowFromTaskbar(HWND window) {
     {
         if (SUCCEEDED(pTaskbarList->HrInit()))
         {
-            pTaskbarList->DeleteTab(window);
+            pTaskbarList->ActivateTab(window);
         }
         else
         {
@@ -163,11 +163,10 @@ void removeWindowFromTaskbar(HWND window) {
     CoUninitialize();
 }
 
-void setWindowAlwaysOnTopAndSkipTaskbar(std::string windowTitlePrefix)
+void setWindowAlwaysOnTop(std::string windowTitlePrefix)
 {
     HWND window = findSingleWindowInStackingOrder(windowTitlePrefix);
     SetWindowPos(window, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-    removeWindowFromTaskbar(window);
 }
 
 void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowTitlePrefix)
@@ -177,4 +176,10 @@ void setAsModelessDialog(std::string windowTitlePrefix, std::string ownerWindowT
     HWND ownerWindow = windowPair.second;
 
     SetWindowLongPtr(window, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(ownerWindow));
+
+    // The previous call sets the window to be an "owned" window. This automatically hides the taskbar entry.
+    // We want to restore that, to enable users to minimize/restore the window. We restore the taskbar entry
+    // by setting the window to be an "app window".
+    SetWindowLongPtr(window, GWL_EXSTYLE, WS_EX_APPWINDOW);
+    activateTaskbarEntry(window);
 }

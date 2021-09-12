@@ -233,7 +233,7 @@ int startCompanionMode(int argc, char *argv[]) {
             try
             {
                 if (action.compare("setAlwaysOnTop") == 0) {
-                    setWindowAlwaysOnTopAndSkipTaskbar(windowTitle);
+                    setWindowAlwaysOnTop(windowTitle);
                     sendStatus("ok");
                 } else if (action.compare("setAsModelessDialog") == 0) {
                     std::string parentWindowTitle = getJsonValueByKey(json, "parentWindowTitle");
