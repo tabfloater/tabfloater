@@ -27,4 +27,4 @@ assignees: ''
  * **Companion version:** 
  * **Operating system:**
  * **Browser**: 
- * **Companion installation:**
+ * **Companion installation (e.g. installed/portable, PPA/AppImage, etc):**
