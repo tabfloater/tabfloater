@@ -1,6 +1,6 @@
 {
   "name": "tabfloater",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "TabFloater: Picture-in-Picture for any tab!",
   "private": true,
   "scripts": {
@@ -30,14 +30,14 @@
   },
   "homepage": "https://github.com/tabfloater/tabfloater#readme",
   "dependencies": {
-    "uikit": "^3.7.3",
+    "uikit": "^3.9.4",
     "uuid": "^8.3.2",
     "webextension-polyfill": "^0.6.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
-    "eslint-plugin-no-unsanitized": "^3.1.5",
+    "eslint-plugin-no-unsanitized": "^3.2.0",
     "run-script-os": "^1.1.6",
-    "sass": "^1.39.2"
+    "sass": "^1.45.1"
   }
 }

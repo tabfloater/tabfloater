@@ -1,3 +1,9 @@
+tabfloater-companion (1.2.1~SERIES1) SERIES; urgency=medium
+
+  * Bug fix: titles with special characters sometimes don't work on Windows (https://github.com/tabfloater/tabfloater/issues/264)
+
+ -- Balazs Gyurak <balazs@tabfloater.io>  Thu, 30 Dec 2021 21:09:54 +0000
+
 tabfloater-companion (1.2.0~SERIES1) SERIES; urgency=medium
 
   * Change: do not hide floating window from taskbar (https://github.com/tabfloater/tabfloater/issues/258)
