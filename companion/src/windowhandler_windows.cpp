@@ -37,7 +37,7 @@ void throwIfNotFoundOrLog(HWND window, std::string windowTitlePrefix)
 
 std::string wstringToUtf8String(const std::wstring &str)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
     return convert.to_bytes(str);
 }
 
