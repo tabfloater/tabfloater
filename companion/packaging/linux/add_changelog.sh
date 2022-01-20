@@ -2,8 +2,8 @@
 
 set -e
 
-export DEBFULLNAME="Balazs Gyurak"
-export DEBEMAIL="balazs@tabfloater.io"
+export DEBFULLNAME="TabFloater"
+export DEBEMAIL="contact@tabfloater.io"
 
 _COMPANION_DIR=$(git rev-parse --show-toplevel)/companion
 

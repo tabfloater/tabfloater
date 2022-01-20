@@ -23,7 +23,7 @@
     "picture-in-picture",
     "floating-window"
   ],
-  "author": "Balazs Gyurak",
+  "author": "TabFloater",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/tabfloater/tabfloater/issues/new/choose"
