@@ -3,7 +3,7 @@ tabfloater-companion (1.2.2~SERIES1) SERIES; urgency=medium
   * Improvement: publish to new PPA
   * Update dependencies
 
- -- TabFloater <contact@tabfloater.io>  Thu, 20 Jan 2022 21:20:40 +0000
+ -- Balazs Gyurak <balazs@tabfloater.io>  Thu, 20 Jan 2022 21:20:40 +0000
 
 tabfloater-companion (1.2.1~SERIES1) SERIES; urgency=medium
 
