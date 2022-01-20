@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install cmake debhelper devscripts
     - name: Build DEB package
-      run: ./packaging/linux/ppa_upload.sh --dry-run
+      run: ./packaging/linux/ppa_upload.sh ppa:tabfloater/companion --dry-run
   build-windows:
     runs-on: windows-2019
     steps:
