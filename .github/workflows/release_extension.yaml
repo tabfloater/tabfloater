@@ -1,10 +1,9 @@
 name: Release extension
 
 on:
-  workflow_dispatch
-  #push:
-  #  tags:
-  #    - 'v*'
+  push:
+   tags:
+     - 'v*'
 
 defaults:
   run:
