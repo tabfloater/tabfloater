@@ -1,6 +1,6 @@
 {
   "name": "tabfloater",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "TabFloater: Picture-in-Picture for any tab!",
   "private": true,
   "scripts": {
