@@ -4,7 +4,6 @@ set -e
 
 export DEBFULLNAME="Balazs Gyurak"
 export DEBEMAIL="balazs@tabfloater.io"
-_PPA_HOST="ppa:ba32107/tabfloater"
 _SERIES_LIST="focal"
 
 _COMPANION_DIR=$(git rev-parse --show-toplevel)/companion
@@ -15,12 +14,13 @@ _PPA_BUILD_DIR=$_COMPANION_DIR/dist_ppa
 _STAGE_COUNTER=1
 _DRY_RUN=""
 _CLEAN_ONLY=""
+_PPA_HOST=""
 
 function print_usage() {
     echo
     echo "Builds TabFloater Companion DEB source packages and uploads to Launchpad."
     echo
-    echo "Usage: $0 [options]"
+    echo "Usage: $0 <ppa_host> [options]"
     echo
     echo "Options:"
     echo "  -c   --clean      Cleans up build files and directories"
@@ -91,8 +91,16 @@ function upload_to_launchpad() {
     dput --lintian $_dry_run_flags $_PPA_HOST $_changes_file
 }
 
-while [ $# -ge 1 ]; do
-    _arg="$1"
+if [ $# -lt 1 ]; then
+    echo "Error: missing PPA host argument"
+    print_usage
+    exit 1
+fi
+
+_PPA_HOST="$1"
+
+while [ $# -ge 2 ]; do
+    _arg="$2"
     case "$_arg" in
         -c|--clean)
             _CLEAN_ONLY=true ;;
@@ -136,7 +144,7 @@ do
     build_deb_source_package $_series
 done
 
-print_stage "Uploading to Launchpad ${_DRY_RUN:+-- DRY RUN}"
+print_stage "Uploading to Launchpad to '${_PPA_HOST}' ${_DRY_RUN:+-- DRY RUN}"
 
 for _series in $(echo $_SERIES_LIST | sed "s/,/ /g")
 do
