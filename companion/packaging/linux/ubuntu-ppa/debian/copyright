@@ -1,10 +1,10 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: tabfloater-companion
-Upstream-Contact: Balazs Gyurak <balazs@tabfloater.io>
+Upstream-Contact: TabFloater <contact@tabfloater.io>
 Source: http://www.tabfloater.io/
 
 Files: *
-Copyright: 2021 Balazs Gyurak <balazs@tabfloater.io>
+Copyright: 2021 TabFloater <contact@tabfloater.io>
 License: Apache-2.0
 
 License: Apache-2.0
