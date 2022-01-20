@@ -1,61 +1,63 @@
 name: Release companion
 
 on:
-  push:
-    tags:
-      - 'v*_companion'
+  workflow_dispatch:
+    
+  #push:
+  #  tags:
+  #    - 'v*_companion'
 
 defaults:
   run:
     working-directory: companion
 
 jobs:
-  build-appimage-linux:
-    runs-on: ubuntu-20.04
-    steps:
-    - name: Check out TabFloater repo
-      uses: actions/checkout@v2
-    - name: Import GPG key
-      env:
-        GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
-      run: |
-        echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
-        FINGERPRINT=$(gpg --batch --fingerprint --with-colons | grep "pub" --after-context=1 | tail -1 | cut -d ':' -f 10)
-        echo "Fingerprint: $FINGERPRINT"
-        echo "$FINGERPRINT:6:" | gpg --import-ownertrust
-    - name: Build AppImage
-      run: |
-        source ./packaging/linux/build_appimage.sh --sign
-        echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
-    - name: Upload AppImage to Release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ env.APPIMAGE_FULL_PATH }}
-        overwrite: true
-        tag: ${{ github.ref }}
-    - name: Checkout GitHub Pages repo
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
-        ssh-key: ${{ secrets.GH_PAGES_REPO_DEPLOY_KEY }}
-    - name: Update and commit versions YAML
-      working-directory: _data
-      run: |
-        export TAG=$(echo "${{ github.ref }}" | sed -e "s|refs/tags/||g")
-        export VERSION=$(echo $TAG | sed -e "s/v//g" | sed -e "s/_companion//g" )
-        wget --quiet https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
-        chmod +x ./yq_linux_amd64
-        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version $VERSION
-        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.tag $TAG
-        ./yq_linux_amd64 write --inplace downloads.yml companion.linux.appimage `basename ${{ env.APPIMAGE_FULL_PATH }}`
-        echo "Updated versions YAML:"
-        cat ./downloads.yml
-        git config --global user.name "TabFloater GH Actions"
-        git config --global user.email "github-actions@tabfloater.io"
-        git add ./downloads.yml
-        git commit -m "Update Linux versions for release $VERSION"
-        git push
+#   build-appimage-linux:
+#     runs-on: ubuntu-20.04
+#     steps:
+#     - name: Check out TabFloater repo
+#       uses: actions/checkout@v2
+#     - name: Import GPG key
+#       env:
+#         GPG_PRIVATE_KEY: ${{ secrets.TABFLOATER_GPG_PRIVATE_KEY }}
+#       run: |
+#         echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --import
+#         FINGERPRINT=$(gpg --batch --fingerprint --with-colons | grep "pub" --after-context=1 | tail -1 | cut -d ':' -f 10)
+#         echo "Fingerprint: $FINGERPRINT"
+#         echo "$FINGERPRINT:6:" | gpg --import-ownertrust
+#     - name: Build AppImage
+#       run: |
+#         source ./packaging/linux/build_appimage.sh --sign
+#         echo "APPIMAGE_FULL_PATH=$_APPIMAGE_FILENAME" >> $GITHUB_ENV
+#     - name: Upload AppImage to Release
+#       uses: svenstaro/upload-release-action@v2
+#       with:
+#         repo_token: ${{ secrets.GITHUB_TOKEN }}
+#         file: ${{ env.APPIMAGE_FULL_PATH }}
+#         overwrite: true
+#         tag: ${{ github.ref }}
+#     - name: Checkout GitHub Pages repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
+#         ssh-key: ${{ secrets.GH_PAGES_REPO_DEPLOY_KEY }}
+#     - name: Update and commit versions YAML
+#       working-directory: _data
+#       run: |
+#         export TAG=$(echo "${{ github.ref }}" | sed -e "s|refs/tags/||g")
+#         export VERSION=$(echo $TAG | sed -e "s/v//g" | sed -e "s/_companion//g" )
+#         wget --quiet https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64
+#         chmod +x ./yq_linux_amd64
+#         ./yq_linux_amd64 write --inplace downloads.yml companion.linux.version $VERSION
+#         ./yq_linux_amd64 write --inplace downloads.yml companion.linux.tag $TAG
+#         ./yq_linux_amd64 write --inplace downloads.yml companion.linux.appimage `basename ${{ env.APPIMAGE_FULL_PATH }}`
+#         echo "Updated versions YAML:"
+#         cat ./downloads.yml
+#         git config --global user.name "TabFloater GH Actions"
+#         git config --global user.email "github-actions@tabfloater.io"
+#         git add ./downloads.yml
+#         git commit -m "Update Linux versions for release $VERSION"
+#         git push
   upload-ppa-linux:
     runs-on: ubuntu-20.04
     steps:
@@ -75,54 +77,54 @@ jobs:
       run: ./packaging/linux/ppa_upload.sh ppa:ba32107/tabfloater
     - name: Build DEB package and upload to new PPA
       run: ./packaging/linux/ppa_upload.sh ppa:tabfloater/companion
-  build-windows-packages:
-    runs-on: windows-2019
-    steps:
-    - name: Check out TabFloater repo
-      uses: actions/checkout@v2
-    - name: Build packages
-      run: |
-        ./build.bat --package
-        $WIN_INSTALLER_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.msi").Fullname
-        $WIN_PORTABLE_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.zip").Fullname
-        echo "WIN_INSTALLER_FULL_PATH=$WIN_INSTALLER_FULL_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "WIN_PORTABLE_FULL_PATH=$WIN_PORTABLE_FULL_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-    - name: Upload installer to Release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ env.WIN_INSTALLER_FULL_PATH }}
-        overwrite: true
-        tag: ${{ github.ref }}
-    - name: Upload portable package to Release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ env.WIN_PORTABLE_FULL_PATH }}
-        overwrite: true
-        tag: ${{ github.ref }}
-    - name: Checkout GitHub Pages repo
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
-        ssh-key: ${{ secrets.GH_PAGES_REPO_DEPLOY_KEY }}
-    - name: Update and commit versions YAML
-      working-directory: _data
-      run: |
-        $GITHUB_REF = "${{ github.ref }}"
-        $TAG = $GITHUB_REF -replace "refs/tags/",""
-        $VERSION = $TAG -replace "v","" -replace "_companion",""
-        $INSTALLER = [System.IO.Path]::GetFileName("${{ env.WIN_INSTALLER_FULL_PATH }}") -replace " ","."
-        $PORTABLE = [System.IO.Path]::GetFileName("${{ env.WIN_PORTABLE_FULL_PATH }}") -replace " ","."
-        Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_windows_amd64.exe" -OutFile "yq.exe"
-        .\yq.exe write --inplace downloads.yml companion.windows.version $VERSION
-        .\yq.exe write --inplace downloads.yml companion.windows.tag $TAG
-        .\yq.exe write --inplace downloads.yml companion.windows.installer $INSTALLER
-        .\yq.exe write --inplace downloads.yml companion.windows.portable $PORTABLE
-        echo "Updated versions YAML:"
-        cat .\downloads.yml
-        git config --global user.name "TabFloater GH Actions"
-        git config --global user.email "github-actions@tabfloater.io"
-        git add .\downloads.yml
-        git commit -m "Update Windows versions for release $VERSION"
-        git push
+#   build-windows-packages:
+#     runs-on: windows-2019
+#     steps:
+#     - name: Check out TabFloater repo
+#       uses: actions/checkout@v2
+#     - name: Build packages
+#       run: |
+#         ./build.bat --package
+#         $WIN_INSTALLER_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.msi").Fullname
+#         $WIN_PORTABLE_FULL_PATH = (Get-ChildItem -Path dist -Filter "*.zip").Fullname
+#         echo "WIN_INSTALLER_FULL_PATH=$WIN_INSTALLER_FULL_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+#         echo "WIN_PORTABLE_FULL_PATH=$WIN_PORTABLE_FULL_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+#     - name: Upload installer to Release
+#       uses: svenstaro/upload-release-action@v2
+#       with:
+#         repo_token: ${{ secrets.GITHUB_TOKEN }}
+#         file: ${{ env.WIN_INSTALLER_FULL_PATH }}
+#         overwrite: true
+#         tag: ${{ github.ref }}
+#     - name: Upload portable package to Release
+#       uses: svenstaro/upload-release-action@v2
+#       with:
+#         repo_token: ${{ secrets.GITHUB_TOKEN }}
+#         file: ${{ env.WIN_PORTABLE_FULL_PATH }}
+#         overwrite: true
+#         tag: ${{ github.ref }}
+#     - name: Checkout GitHub Pages repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
+#         ssh-key: ${{ secrets.GH_PAGES_REPO_DEPLOY_KEY }}
+#     - name: Update and commit versions YAML
+#       working-directory: _data
+#       run: |
+#         $GITHUB_REF = "${{ github.ref }}"
+#         $TAG = $GITHUB_REF -replace "refs/tags/",""
+#         $VERSION = $TAG -replace "v","" -replace "_companion",""
+#         $INSTALLER = [System.IO.Path]::GetFileName("${{ env.WIN_INSTALLER_FULL_PATH }}") -replace " ","."
+#         $PORTABLE = [System.IO.Path]::GetFileName("${{ env.WIN_PORTABLE_FULL_PATH }}") -replace " ","."
+#         Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_windows_amd64.exe" -OutFile "yq.exe"
+#         .\yq.exe write --inplace downloads.yml companion.windows.version $VERSION
+#         .\yq.exe write --inplace downloads.yml companion.windows.tag $TAG
+#         .\yq.exe write --inplace downloads.yml companion.windows.installer $INSTALLER
+#         .\yq.exe write --inplace downloads.yml companion.windows.portable $PORTABLE
+#         echo "Updated versions YAML:"
+#         cat .\downloads.yml
+#         git config --global user.name "TabFloater GH Actions"
+#         git config --global user.email "github-actions@tabfloater.io"
+#         git add .\downloads.yml
+#         git commit -m "Update Windows versions for release $VERSION"
+#         git push
