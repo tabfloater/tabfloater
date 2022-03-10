@@ -37,3 +37,14 @@ An example release preparatory PR: https://github.com/tabfloater/tabfloater/pull
 An example release: https://github.com/tabfloater/tabfloater/releases/tag/v1.2.1_companion
 
 Once https://github.com/tabfloater/tabfloater/issues/227 is solved, the Firefox release pipeline will be fully automated as well.
+
+## One-time setup
+
+The automated release pipeline requires setting up some secrets. The pipeline uploads assets to two destinations: the Chrome Web Store and Launchpad. Secrets need to be set up for both.
+
+#### Chrome Web Store
+
+Uploading to the Chrome Web Store in an automated fashion requires 3 secrets: a client ID, a client secret, and a refresh token. All these are associated with the Google account that owns the Chrome Web Store item. The values are [used here](https://github.com/tabfloater/tabfloater/blob/master/.github/workflows/release_extension.yaml#L33).
+
+ * Refer to [this guide](https://github.com/fregante/chrome-webstore-upload/blob/c4f264605ff0618b268a38924332bc217fa7ca49/How%20to%20generate%20Google%20API%20keys.md) to generate the values
+ * Save the values in the [corresponding secrets in this repo](https://github.com/tabfloater/tabfloater/settings/secrets/actions)
