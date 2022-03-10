@@ -48,3 +48,7 @@ Uploading to the Chrome Web Store in an automated fashion requires 3 secrets: a 
 
  * Refer to [this guide](https://github.com/fregante/chrome-webstore-upload/blob/c4f264605ff0618b268a38924332bc217fa7ca49/How%20to%20generate%20Google%20API%20keys.md) to generate the values
  * Save the values in the [corresponding secrets in this repo](https://github.com/tabfloater/tabfloater/settings/secrets/actions)
+
+#### Launchpad
+
+TODO
