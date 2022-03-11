@@ -46,9 +46,25 @@ The automated release pipeline requires setting up some secrets. The pipeline up
 
 Uploading to the Chrome Web Store in an automated fashion requires 3 secrets: a client ID, a client secret, and a refresh token. All these are associated with the Google account that owns the Chrome Web Store item. The values are [used here](https://github.com/tabfloater/tabfloater/blob/master/.github/workflows/release_extension.yaml#L33).
 
- * Refer to [this guide](https://github.com/fregante/chrome-webstore-upload/blob/c4f264605ff0618b268a38924332bc217fa7ca49/How%20to%20generate%20Google%20API%20keys.md) to generate the values
- * Save the values in the [corresponding secrets in this repo](https://github.com/tabfloater/tabfloater/settings/secrets/actions)
+ 1. Refer to [this guide](https://github.com/fregante/chrome-webstore-upload/blob/c4f264605ff0618b268a38924332bc217fa7ca49/How%20to%20generate%20Google%20API%20keys.md) to generate the values
+ 2. Save the values in the [corresponding secrets in this repo](https://github.com/tabfloater/tabfloater/settings/secrets/actions)
 
 #### Launchpad
 
-TODO
+[Launchpad](https://launchpad.net) is a repository which hosts Ubuntu PPAs (Personal Package Archives). We use it to publish the Linux version of TabFloater Companion, so people who use Ubuntu can install the software easily.
+
+How to set it up:
+
+ 1. Generate a GPG keypair
+ 2. Register your public key with the Ubuntu keyserver
+ 3. Add the public key to your Launchpad account and sign the Ubuntu Code of Conduct
+ 4. A helpful guide for the above: https://help.launchpad.net/YourAccount/ImportingYourPGPKey
+ 5. Make sure your Launchpad account is part of the [TabFloater Team](https://launchpad.net/~tabfloater)
+ 6. Set your name and GPG email address in the following files. This must be the name & email address that you used to generate the GPG key.
+   * https://github.com/tabfloater/tabfloater/blob/master/companion/packaging/linux/add_changelog.sh#L6
+   * https://github.com/tabfloater/tabfloater/blob/master/companion/packaging/linux/build_appimage.sh#L5
+   * https://github.com/tabfloater/tabfloater/blob/master/companion/packaging/linux/ppa_upload.sh#L6
+   * https://github.com/tabfloater/tabfloater/blob/master/companion/packaging/linux/ubuntu-ppa/debian/control#L4
+   * https://github.com/tabfloater/tabfloater/blob/master/companion/packaging/linux/ubuntu-ppa/debian/copyright#L7
+   * https://github.com/tabfloater/tabfloater/blob/master/companion/packaging/linux/ubuntu-ppa/debian/README#L9
+ 7. Add your private key to the `TABFLOATER_GPG_PRIVATE_KEY` secret [here](https://github.com/tabfloater/tabfloater/settings/secrets/actions)
