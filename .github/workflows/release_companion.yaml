@@ -71,8 +71,6 @@ jobs:
         FINGERPRINT=$(gpg --batch --fingerprint --with-colons | grep "pub" --after-context=1 | tail -1 | cut -d ':' -f 10)
         echo "Fingerprint: $FINGERPRINT"
         echo "$FINGERPRINT:6:" | gpg --import-ownertrust
-    - name: Build DEB package and upload to legacy PPA
-      run: ./packaging/linux/ppa_upload.sh ppa:ba32107/tabfloater
     - name: Build DEB package and upload to new PPA
       run: ./packaging/linux/ppa_upload.sh ppa:tabfloater/companion
   build-windows-packages:
