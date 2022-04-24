@@ -57,9 +57,11 @@ export async function floatTabAsync() {
             const currentTab = allActiveTabs[0];
 
             if (currentTab) {
+
+                const currentWindow = await browser.windows.get(currentTab.windowId);
                 const tabProps = {
                     tabId: currentTab.id,
-                    parentWindowId: currentTab.windowId,
+                    parentWindowId: currentWindow.id,
                     originalIndex: currentTab.index,
                     position: await positioner.getStartingPositionAsync()
                 };
@@ -85,6 +87,7 @@ export async function floatTabAsync() {
                     "left": coordinates.left,
                     "width": coordinates.width,
                     "height": coordinates.height,
+                    "incognito": currentWindow.incognito,
                 });
 
                 let floatingTabTitle = currentTab.title;
