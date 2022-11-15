@@ -167,7 +167,8 @@ function getFixedFloatingTabDimensions(parentWindow, options) {
     }
 
     const topOffset = Math.min(Math.max(options.viewportTopOffset, 0), parentWindow.height / divisor);
-    const rawWidth = parseInt(parentWindow.width / divisor);
+    const rightOffset = Math.max(options.viewportRightOffset, 0);
+    const rawWidth = parseInt((parentWindow.width - rightOffset) / divisor);
     const rawHeight = parseInt((parentWindow.height - topOffset) / divisor);
 
     logger.info(`viewportTopOffset: ${options.viewportTopOffset}, divisor: ${divisor}`);
