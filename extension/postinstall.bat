@@ -10,3 +10,4 @@ mkdir src\\libs\\uuid
 copy node_modules\\uuid\\dist\\umd\\uuidv4.min.js src\\libs\\uuid
 
 sass src\\sass\\tabfloater.scss > src\\css\\generated\\uk-tabfloater.css
+pause

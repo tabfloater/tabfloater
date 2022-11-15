@@ -67,9 +67,9 @@ function buildOptionsObject() {
         alwaysOnTopAllApps: alwaysOnTopAllAppsCheckbox.checked,
         positioningStrategy: getPositioningStrategy(),
         fixedPosition: fixPositionSelect.value,
-        fixedTabSize: tabSizeSelect.value,top
+        fixedTabSize: tabSizeSelect.value,
         viewportTopOffset: parseInt(viewportTopOffsetInput.value),
-        viewportRightOffset: parseInt(viewportRightOffset.value),
+        viewportRightOffset: parseInt(viewportRightOffsetInput.value),
         smartPositioningFollowTabSwitches: followTabSwitchCheckbox.checked,
         smartPositioningRestrictMaxFloatingTabSize: restrictMaxFloatingTabSizeCheckbox.checked,
         collectUsageStats: collectUsageStatsCheckbox.checked,
@@ -86,7 +86,7 @@ function setPositioningControlStates() {
     fixPositionSelect.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
     tabSizeSelect.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
     viewportTopOffsetInput.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
-    viewportRightOffset.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
+    viewportRightOffsetInput.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked || customPositionRadioButton.checked;
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked || customPositionRadioButton.checked;
 
@@ -228,6 +228,7 @@ window.onload = async function () {
     fixPositionSelect.value = options.fixedPosition;
     tabSizeSelect.value = options.fixedTabSize;
     viewportTopOffsetInput.value = options.viewportTopOffset;
+    viewportRightOffsetInput.value = options.viewportRightOffset;
     followTabSwitchCheckbox.checked = options.smartPositioningFollowTabSwitches;
     restrictMaxFloatingTabSizeCheckbox.checked = options.smartPositioningRestrictMaxFloatingTabSize;
 
@@ -285,6 +286,15 @@ viewportTopOffsetInput.onblur = async function () {
         viewportTopOffsetInput.classList.remove("uk-form-danger");
     } else {
         viewportTopOffsetInput.classList.add("uk-form-danger");
+    }
+
+    await saveOptionsAsync();
+};
+viewportRightOffsetInput.onblur = async function () {
+    if (isNumberInputValid(viewportRightOffsetInput)) {
+        viewportRightOffsetInput.classList.remove("uk-form-danger");
+    } else {
+        viewportRightOffsetInput.classList.add("uk-form-danger");
     }
 
     await saveOptionsAsync();

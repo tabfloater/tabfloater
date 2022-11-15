@@ -107,6 +107,8 @@ function getFixedPositionCoordinates(parentWindow, position, options) {
         ? parentWindow.top + options.viewportTopOffset
         : parentWindow.top + parentWindow.height - padding - dimensions.height;
 
+    // const rightOffset = Math.max(options.viewportRightOffset, 0);
+
     dimensions.left = position.endsWith("Left")
         ? parentWindow.left + padding
         : parentWindow.left + parentWindow.width - padding - dimensions.width;
@@ -167,8 +169,7 @@ function getFixedFloatingTabDimensions(parentWindow, options) {
     }
 
     const topOffset = Math.min(Math.max(options.viewportTopOffset, 0), parentWindow.height / divisor);
-    const rightOffset = Math.max(options.viewportRightOffset, 0);
-    const rawWidth = parseInt((parentWindow.width - rightOffset) / divisor);
+    const rawWidth = parseInt(parentWindow.width / divisor);
     const rawHeight = parseInt((parentWindow.height - topOffset) / divisor);
 
     logger.info(`viewportTopOffset: ${options.viewportTopOffset}, divisor: ${divisor}`);

@@ -19,6 +19,7 @@ import * as positioner from "./positioning/positioner.js";
 import * as notifier from "./notifier.js";
 import * as logger from "./logging/logger.js";
 import * as analytics from "./analytics/analytics.js";
+import { loadOptionsAsync } from "./main.js";
 import { runningOnFirefoxAsync } from "./environment.js";
 
 export async function tryGetFloatingTabAsync() {
@@ -48,6 +49,7 @@ export async function tryGetFloatingTabAsync() {
 
 export async function floatTabAsync() {
     const { floatingTab } = await tryGetFloatingTabAsync();
+    const options = await loadOptionsAsync();
 
     if (!floatingTab) {
         await floatingStartedAsync();
@@ -82,12 +84,20 @@ export async function floatTabAsync() {
                 const coordinates = await positioner.calculateCoordinatesAsync();
                 const newWindow = await browser.windows.create({
                     "tabId": currentTab.id,
-                    "type": "popup",
+                    "type": "normal",
                     "top": coordinates.top,
                     "left": coordinates.left,
                     "width": coordinates.width,
                     "height": coordinates.height,
                     "incognito": currentWindow.incognito,
+                });
+				
+                const rightOffset = Math.max(options.viewportRightOffset, 0);
+                await browser.windows.update(newWindow.id, {
+                    "top": coordinates.top,
+                    "left": coordinates.left + rightOffset,
+                    "width": coordinates.width,
+                    "height": coordinates.height + 40,
                 });
 
                 let floatingTabTitle = currentTab.title;
