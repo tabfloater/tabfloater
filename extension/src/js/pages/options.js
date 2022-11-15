@@ -33,6 +33,7 @@ const fixedPositionRadioButton = window.fixedPositionRadioButton;
 const fixPositionSelect = window.fixPositionSelect;
 const tabSizeSelect = window.tabSizeSelect;
 const viewportTopOffsetInput = window.viewportTopOffsetInput;
+const viewportRightOffsetInput = window.viewportRightOffsetInput;
 const smartPositionRadioButton = window.smartPositionRadioButton;
 const followTabSwitchCheckbox = window.followTabSwitchCheckbox;
 const followTabSwitchSlider = window.followTabSwitchSlider;
@@ -66,8 +67,9 @@ function buildOptionsObject() {
         alwaysOnTopAllApps: alwaysOnTopAllAppsCheckbox.checked,
         positioningStrategy: getPositioningStrategy(),
         fixedPosition: fixPositionSelect.value,
-        fixedTabSize: tabSizeSelect.value,
+        fixedTabSize: tabSizeSelect.value,top
         viewportTopOffset: parseInt(viewportTopOffsetInput.value),
+        viewportRightOffset: parseInt(viewportRightOffset.value),
         smartPositioningFollowTabSwitches: followTabSwitchCheckbox.checked,
         smartPositioningRestrictMaxFloatingTabSize: restrictMaxFloatingTabSizeCheckbox.checked,
         collectUsageStats: collectUsageStatsCheckbox.checked,
@@ -84,6 +86,7 @@ function setPositioningControlStates() {
     fixPositionSelect.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
     tabSizeSelect.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
     viewportTopOffsetInput.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
+    viewportRightOffset.disabled = smartPositionRadioButton.checked || customPositionRadioButton.checked;
     followTabSwitchCheckbox.disabled = fixedPositionRadioButton.checked || customPositionRadioButton.checked;
     restrictMaxFloatingTabSizeCheckbox.disabled = fixedPositionRadioButton.checked || customPositionRadioButton.checked;
 
