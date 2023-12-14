@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-const stripe = require('stripe')('sk_test_51Kv37gL873epB8fndzKYmuC0J8LP69H3dPhamCdMseyQIQjQiSscCWsvqjPoDz156kzczYuXIQFR3NhKMFjfyEkM00wEMtDJKR');
+require('dotenv').config(); // Add this line to load environment variables from .env file
+
+const stripe = require('stripe')(process.env.STRIPE_API_KEY); // Use process.env to access the Stripe API Key from .env file
 
 const elements = stripe.elements();
 const card = elements.create('card');
