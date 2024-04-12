@@ -7,15 +7,15 @@
         "storage",
         "tabs"
     ],
-    "optional_permissions": [
+    "host_permissions": [
         "<all_urls>"
     ],
     "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlazRJmLWlYBPmSrgf5gEmXPtTk6JDnTYtcgB685fp0rjBDZm8BJRtQcsk8wWL1w59ULFYsWGjPa0OSXJfx0xATWM9nX1SlRrXjkmEfQtFokFFq/blVVOU5gsXETBbJh2fGcmXhHxma0qa6/N3JKAMsymyDmfz8igIGWxBK3ps5J+y0Eeqxo2rV1ocnAcX23ieDNSZmUezv4bfpOrB9WJ8jTptkeWHdBj7myNAKpPUJV0Q6oechq96koUG3Dwh4Ru2rdSzWKsTkGh8hVvi38tRgg1E11AFhPammYigjOoWrGL4Ov4PGoRyugrVywAudFywKoHWkvyTiBDRqrW6GJUOwIDAQAB",
     "background": {
-        "page": "html/background.html",
-        "persistent": false
+        "service_worker": "js/main.js",
+        "type": "module"
     },
-    "browser_action": {
+    "action": {
         "default_title": "Float tab!",
         "default_icon": {
             "16": "images/icons/16.png",
@@ -60,5 +60,5 @@
         "48": "images/icons/48.png",
         "128": "images/icons/128.png"
     },
-    "manifest_version": 2
+    "manifest_version": 3
 }
