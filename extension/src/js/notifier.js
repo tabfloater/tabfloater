@@ -39,7 +39,7 @@ export function setIconProperties(tooltip, badgeText, level) {
         case "error": color = "#DC143C"; break;
     }
 
-    browser.browserAction.setTitle({ title: tooltip });
-    browser.browserAction.setBadgeText({ text: badgeText });
-    browser.browserAction.setBadgeBackgroundColor({ color: color });
+    browser.action.setTitle({ title: tooltip });
+    browser.action.setBadgeText({ text: badgeText });
+    browser.action.setBadgeBackgroundColor({ color: color });
 }

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import "../libs/uuid/uuidv4.min.js";
+import "../libs/webextension-polyfill/browser-polyfill.min.js";
+
 import * as constants from "./constants.js";
 import * as env from "./environment.js";
 import * as floater from "./floater.js";
@@ -152,7 +155,7 @@ browser.windows.onRemoved.addListener(async closingWindowId => {
     }
 });
 
-browser.browserAction.onClicked.addListener(async () => {
+browser.action.onClicked.addListener(async () => {
     const { floatingTab } = await floater.tryGetFloatingTabAsync();
 
     if (floatingTab) {
