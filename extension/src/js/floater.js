@@ -20,6 +20,7 @@ import * as notifier from "./notifier.js";
 import * as logger from "./logging/logger.js";
 import * as analytics from "./analytics/analytics.js";
 import { runningOnFirefoxAsync } from "./environment.js";
+import { gtag } from './gtags.js';
 
 export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);
@@ -119,6 +120,11 @@ export async function floatTabAsync() {
                     notifier.setFloatingSuccessIndicator();
                     await analytics.reportFloatEventAsync();
                     await increaseFloatCountAsync();
+                    gtag('event', 'float_tab', {
+                        'event_category': 'Tab Actions',
+                        'event_label': currentTab.url,
+                        'value': 1
+                    });
                 } else {
                     if (result.reason === "error") {
                         notifier.setErrorIndicator("The companion returned an error! Enable debugging to find out what's wrong.");
@@ -127,10 +133,23 @@ export async function floatTabAsync() {
                     }
 
                     await analytics.reportFloatErrorEventAsync(result.reason);
+                    gtag('event', 'float_tab_error', {
+                        'event_category': 'Tab Actions',
+                        'event_label': currentTab.url,
+                        'value': 1,
+                        'error_message': result.reason
+                    });
                 }
             } else {
                 logger.info("Tried to float current tab, but no active tab found - is Chrome DevTools in focus?");
             }
+        } catch (error) {
+            gtag('event', 'float_tab_error', {
+                'event_category': 'Tab Actions',
+                'event_label': currentTab.url,
+                'value': 1,
+                'error_message': error.message
+            });
         } finally {
             await clearFloatingProgressAsync();
         }
@@ -141,12 +160,48 @@ export async function unfloatTabAsync() {
     const { floatingTab, tabProps } = await tryGetFloatingTabAsync();
 
     if (floatingTab) {
-        await positioner.saveCurrentPositionAsync();
-        await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
-        await clearFloatingTabAsync();
-        await analytics.reportUnfloatEventAsync();
+        try {
+            await positioner.saveCurrentPositionAsync();
+            await browser.tabs.move(tabProps.tabId, { windowId: tabProps.parentWindowId, index: tabProps.originalIndex });
+            await clearFloatingTabAsync();
+            await analytics.reportUnfloatEventAsync();
+            gtag('event', 'unfloat_tab', {
+                'event_category': 'Tab Actions',
+                'event_label': tabProps.url,
+                'value': 1
+            });
+        } catch (error) {
+            gtag('event', 'unfloat_tab_error', {
+                'event_category': 'Tab Actions',
+                'event_label': tabProps.url,
+                'value': 1,
+                'error_message': error.message
+            });
+        }
     }
 }
+
+// Track DAUs and MAUs
+export async function trackUserActivity() {
+    const userId = await getUserIdAsync();
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    await analytics.trackDailyActiveUserAsync(userId, currentDate);
+    await analytics.trackMonthlyActiveUserAsync(userId, currentDate);
+}
+
+// Track total numbers of tabs floated per day/month compared to total number of users
+export async function trackTabFloatCounts() {
+    const userId = await getUserIdAsync();
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    await analytics.trackDailyTabFloatCountAsync(userId, currentDate);
+    await analytics.trackMonthlyTabFloatCountAsync(userId, currentDate);
+}
+
+// Call these tracking functions within floatTabAsync and unfloatTabAsync
+await trackUserActivity();
+await trackTabFloatCounts();
 
 export async function repositionFloatingTabIfExistsAsync() {
     const { floatingTab } = await tryGetFloatingTabAsync();
