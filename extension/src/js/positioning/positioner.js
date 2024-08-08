@@ -18,6 +18,7 @@ import { FloatingTabPaddings, MinimumFloatingTabSideLength } from "../constants.
 import { loadOptionsAsync } from "../main.js";
 import { tryGetFloatingTabAsync } from "../floater.js";
 import * as logger from "../logging/logger.js";
+import { gtag } from '../analytics/gtags.js';
 
 /**
  * Returns the textual representation of the position that a new floating tab should have.
@@ -32,6 +33,13 @@ export async function getStartingPositionAsync() {
     } else if (options.positioningStrategy === "smart") {
         startingPosition = "smart";
     }
+
+    // GA4 tracking code
+    gtag('event', 'positioning_strategy', {
+        'event_category': 'Options',
+        'event_label': options.positioningStrategy,
+        'value': 1
+    });
 
     return startingPosition;
 }

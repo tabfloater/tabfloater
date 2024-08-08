@@ -20,7 +20,7 @@ import * as notifier from "./notifier.js";
 import * as logger from "./logging/logger.js";
 import * as analytics from "./analytics/analytics.js";
 import { runningOnFirefoxAsync } from "./environment.js";
-import { gtag } from './gtags.js';
+import { gtag } from './analytics/gtags.js';
 
 export async function tryGetFloatingTabAsync() {
     const data = await browser.storage.local.get(["floatingTabProperties"]);

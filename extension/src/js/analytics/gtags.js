@@ -1,4 +1,3 @@
-// Load the Google Analytics library
 (function() {
     var script = document.createElement('script');
     script.async = true;
@@ -6,7 +5,6 @@
     document.head.appendChild(script);
 })();
 
-// Initialize the dataLayer and gtag function
 window.dataLayer = window.dataLayer || [];
 function gtag() { dataLayer.push(arguments); }
 gtag('js', new Date());
@@ -20,11 +18,12 @@ function trackFeatureAdoption(floatingTab) {
 }
 
 // Custom event tracking for feature request
-function trackFeatureRequest(featureName) {
+// Placeholder if future feature requests are centralized outside of GitHub
+/*function trackFeatureRequest(featureName) {
     gtag('event', 'feature_requested', {
         'feature_name': featureName
     });
-}
+}*/
 
 // Custom event tracking for conversions (e.g., free to paid)
 function trackConversion(conversionType) {
@@ -42,19 +41,19 @@ function trackPurchase(value, currency, subscriptionType) {
     });
 }
 
-// Custom event tracking for NPS
-function trackNPS(npsScore) {
+// Placeholder event tracking for NPS
+/*function trackNPS(npsScore) {
     gtag('event', 'nps_response', {
         'nps_score': npsScore
     });
-}
+}*/
 
 // Custom event tracking for CSAT
-function trackCSAT(csatScore) {
+/*function trackCSAT(csatScore) {
     gtag('event', 'csat_response', {
         'csat_score': csatScore
     });
-}
+}*/
 
 // Custom event tracking for floating tab actions
 function trackFloatTab(url) {
